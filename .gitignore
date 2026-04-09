@@ -1,0 +1,6 @@
+.DS_Store
+*.~*
+bms_back/
+bms_front/
+fnc_back/
+fnc-front/
