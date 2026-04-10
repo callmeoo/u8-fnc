@@ -242,9 +242,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
             <div class="card-body">
               <div class="info-block">
-                <b>结算机构：</b>番禺车管分所 &nbsp;&nbsp; <b>已选明细：</b>4条 &nbsp;&nbsp;
+                <b>结算机构：</b>番禺车管分所 &nbsp;&nbsp; <b>费用类型：</b>服务商服务费 &nbsp;&nbsp; <b>已选明细：</b>4条 &nbsp;&nbsp;
                 <b>明细合计：</b><span class="amount">¥ 1,360.00</span>
               </div>
+              <div class="alert alert-info" style="margin-bottom:14px">ℹ️ 每次结算仅支持同一费用类型，当前已选明细费用类型为：<b>服务商服务费</b>。如需结算其他费用类型，请单独发起申请。</div>
               <div class="section-title" style="margin-bottom:14px">基本信息</div>
               <div class="form-row">
                 <div class="form-item">
@@ -329,7 +330,22 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                 </div>
               </div>
-              <div class="section-title" style="margin-bottom:14px;margin-top:4px">发票上传<span style="font-size:11px;color:#999;font-weight:400;margin-left:6px">（选填）</span></div>
+              <div class="section-title" style="margin-bottom:14px;margin-top:4px">发票信息</div>
+              <div class="form-row">
+                <div class="form-item">
+                  <label class="form-label req">发票类型</label>
+                  <div class="form-control">
+                    <select class="sel" style="width:100%" v-model="formInvoiceType">
+                      <option value="">请选择发票类型...</option>
+                      <option value="putong">普票</option>
+                      <option value="zhuan">专票</option>
+                      <option value="xingzheng">行政类发票</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-item"></div>
+              </div>
+              <div style="font-size:12px;color:#666;margin-bottom:8px;font-weight:500">上传发票<span style="font-size:11px;color:#999;font-weight:400;margin-left:6px">（选填）</span></div>
               <div class="upload-area" style="margin-bottom:8px;cursor:pointer" @click="$refs.formFileInput.click()" @dragover.prevent @drop.prevent="handleFormDrop">
                 <div class="upload-icon">📁</div>
                 <div>点击或拖拽上传发票（JPG / PNG / PDF，单文件≤10MB，最多5张）</div>
@@ -362,14 +378,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <td style="color:#999">—</td><td style="color:#999">—</td><td style="color:#999">—</td>
                   </tr>
                   <tr>
-                    <td>粤C·11111</td><td>LFV3A2BM2N3xxxxx3</td><td>代办过户费</td><td>番禺车管分所</td>
+                    <td>粤C·11111</td><td>LFV3A2BM2N3xxxxx3</td><td>服务商服务费</td><td>番禺车管分所</td>
                     <td class="amount">400.00</td><td class="amount">400.00</td><td class="amount">400.00</td>
-                    <td>2026-01-12</td><td>番禺车管分所服务中心</td><td>广州番禺区车辆管理所</td>
+                    <td style="color:#999">—</td><td style="color:#999">—</td><td style="color:#999">—</td>
                   </tr>
                   <tr>
-                    <td>粤D·22222</td><td>LFV3A2BM2N3xxxxx4</td><td>代办过户费</td><td>番禺车管分所</td>
+                    <td>粤D·22222</td><td>LFV3A2BM2N3xxxxx4</td><td>服务商服务费</td><td>番禺车管分所</td>
                     <td class="amount">240.00</td><td class="amount">240.00</td><td class="amount">240.00</td>
-                    <td>2026-01-14</td><td>番禺车管分所服务中心</td><td>广州番禺区车辆管理所</td>
+                    <td style="color:#999">—</td><td style="color:#999">—</td><td style="color:#999">—</td>
                   </tr>
                   <tr><td colspan="7" style="text-align:right;font-weight:600">合计</td><td colspan="3" class="amount">1,360.00</td></tr>
                 </table>
@@ -389,7 +405,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="card-title">BMS — 批量结算列表</span>
                 <div style="display:flex;gap:8px">
                   <button class="btn btn-default" @click="importDialog=true">📥 导入对账明细</button>
-                  <button class="btn btn-primary" @click="bmsView='form'">＋ 申请结算</button>
+                  <button class="btn btn-primary" @click="bmsCheckedCount > 0 ? bmsView='form' : showToast('请先勾选需要申请结算的明细记录')">＋ 申请结算</button>
                 </div>
               </div>
               <div class="card-body">
@@ -415,7 +431,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <option>全部</option><option>服务商服务费</option><option>代办过户费</option><option>牌证费及邮寄费</option>
                     </select>
                   </div>
-                  <div class="filter-item"><label>申请人</label><input class="inp" placeholder="姓名/工号" style="width:100px"></div>
+                  <div class="filter-item"><label>申请人</label><input class="inp" placeholder="申请人" style="width:100px"></div>
+                  <div class="filter-item">
+                    <label>结算状态</label>
+                    <select class="sel" @change="filterChanged=true">
+                      <option>全部</option><option>待提交</option><option>待审批</option><option>待支付</option><option>已驳回</option><option>已废弃</option>
+                    </select>
+                  </div>
                   <button class="btn btn-primary btn-sm">🔍 查询</button>
                   <button class="btn btn-default btn-sm" @click="filterChanged=false">重置</button>
                 </div>
@@ -425,13 +447,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="table-wrap">
                   <table>
                     <tr>
-                      <th class="check-col"><input type="checkbox"></th>
-                      <th>申请编号</th><th>标题</th><th>结算机构</th><th>费用类型</th><th>结算年月</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
+                      <th class="check-col"><input type="checkbox" @change="bmsCheckedCount = $event.target.checked ? filteredBmsList.length : 0"></th>
+                      <th>标题</th><th>结算机构</th><th>费用类型</th><th>结算年月</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
                     </tr>
                     <template v-for="r in filteredBmsList" :key="r.id">
                       <tr>
-                        <td class="check-col"><input type="checkbox"></td>
-                        <td>{{r.id}}</td>
+                        <td class="check-col"><input type="checkbox" @change="bmsCheckedCount = Math.max(0, bmsCheckedCount + ($event.target.checked ? 1 : -1))"></td>
                         <td style="max-width:140px;white-space:normal">{{r.title}}</td>
                         <td>{{r.org}}</td>
                         <td>{{r.feeType}}</td>
@@ -459,7 +480,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <!-- 已驳回：展示驳回理由 -->
                       <tr v-if="r.status==='rejected' && r.rejectReason" class="reject-reason-row">
                         <td></td>
-                        <td colspan="14">
+                        <td colspan="13">
                           <span style="color:#999;margin-right:6px">驳回原因：</span>
                           <span class="reject-reason-cell">{{r.rejectReason}}</span>
                           <span style="color:#999;margin-left:12px;font-size:11px">— {{r.rejectBy}} · {{r.rejectTime}}</span>
@@ -467,7 +488,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       </tr>
                     </template>
                     <tr v-if="filteredBmsList.length===0">
-                      <td colspan="15" style="text-align:center;color:#999;padding:30px">暂无数据</td>
+                      <td colspan="14" style="text-align:center;color:#999;padding:30px">暂无数据</td>
                     </tr>
                   </table>
                 </div>
@@ -1421,6 +1442,7 @@ new Vue({
       formPayer: 'weipu',
       formMonth: '2026年1月',
       formPayee: '常有（天津）信息技术有限公司',
+      formInvoiceType: '',
       formUploadedFiles: ['invoice_001.pdf', 'invoice_002.jpg'],
       dialogUploadedFiles: ['invoice_001.pdf', 'invoice_002.jpg'],
       payerMap: {
@@ -1431,6 +1453,7 @@ new Vue({
       bmsView: 'list',
       bmsStatusTab: 'all',
       bmsCurrentDetail: null,
+      bmsCheckedCount: 0,
       bmsStatusTabs: [
         {key:'all',    label:'全部',  count:0},
         {key:'draft',  label:'待提交', count:2},
