@@ -722,7 +722,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div class="card">
             <div class="card-header">
               <span class="card-title">FNC — 批量结算（待支付申请列表）</span>
-              <button class="btn btn-primary" @click="voucherNewStep=1">从批量结算新增凭证 →</button>
             </div>
             <div class="card-body">
               <div class="alert alert-info">💡 此列表展示BMS三级审批已通过（状态"待支付"）的结算申请，财务可选择一笔或多笔生成凭证，或对信息有误的申请发起"打回"。</div>
@@ -822,9 +821,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div class="card">
             <div class="card-header">
               <span class="card-title">FNC — 财务管理 / 凭证管理</span>
-              <div style="display:flex;gap:8px">
-                <button class="btn btn-primary" @click="voucherNewStep=1">＋ 新增</button>
-              </div>
             </div>
             <div class="card-body">
               <div class="tabs">
@@ -832,44 +828,90 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   {{t.label}}<span v-if="t.count" class="badge">{{t.count}}</span>
                 </span>
               </div>
-              <div class="filter-bar">
-                <div class="filter-item"><label>凭证期间</label><input class="inp" type="date" style="width:120px"><span>—</span><input class="inp" type="date" style="width:120px"></div>
-                <div class="filter-item"><label>制单日期</label><input class="inp" type="date" style="width:120px"><span>—</span><input class="inp" type="date" style="width:120px"></div>
-                <div class="filter-item"><label>摘要</label><input class="inp" placeholder="请输入" style="width:140px"></div>
-                <button class="btn btn-primary btn-sm">查询</button>
+
+              <!-- 凭证列表视图 -->
+              <div v-if="voucherTab!=='mapping'">
+                <div class="filter-bar">
+                  <div class="filter-item"><label>凭证期间</label><input class="inp" type="date" placeholder="开始日期" style="width:120px"><span>—</span><input class="inp" type="date" placeholder="结束日期" style="width:120px"></div>
+                  <div class="filter-item"><label>制单日期</label><input class="inp" type="date" placeholder="开始日期" style="width:120px"><span>—</span><input class="inp" type="date" placeholder="结束日期" style="width:120px"></div>
+                  <div class="filter-item"><label>摘要</label><input class="inp" placeholder="请输入" style="width:140px"></div>
+                  <span style="flex:1"></span>
+                  <button class="btn btn-primary btn-sm">查询</button>
+                  <button class="btn btn-primary btn-sm" @click="voucherNewStep=1">新增</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <tr>
+                      <th>凭证号</th><th>凭证期间</th><th>摘要</th><th>所属科目</th>
+                      <th>制单日期</th><th>制单人</th>
+                      <th>借方金额（元）</th><th>贷方金额（元）</th>
+                      <th>状态</th><th>操作</th>
+                    </tr>
+                    <tr v-for="v in filteredVoucherList" :key="v.id">
+                      <td>{{v.id}}</td>
+                      <td>{{v.period}}</td>
+                      <td style="max-width:180px;white-space:normal;line-height:1.4">{{v.summary}}</td>
+                      <td style="padding:0;font-size:12px">
+                        <div style="padding:10px 8px;border-bottom:1px dashed #f0f0f0">{{v.subjectDebit}}</div>
+                        <div style="padding:10px 8px">{{v.subjectCredit}}</div>
+                      </td>
+                      <td>{{v.date}}</td>
+                      <td>{{v.user}}</td>
+                      <td class="amount" style="padding:0">
+                        <div style="padding:10px 8px;border-bottom:1px dashed #f0f0f0">{{v.debit}}</div>
+                        <div style="padding:10px 8px;color:#ccc">&nbsp;</div>
+                      </td>
+                      <td class="amount" style="padding:0">
+                        <div style="padding:10px 8px;border-bottom:1px dashed #f0f0f0;color:#ccc">&nbsp;</div>
+                        <div style="padding:10px 8px">{{v.credit}}</div>
+                      </td>
+                      <td><span class="tag" :class="v.tagClass">{{v.status}}</span></td>
+                      <td style="white-space:nowrap">
+                        <button class="btn-link" @click="openVoucherDetail(v)">查看</button>
+                        <span v-if="v.statusKey==='pending'"> <button class="btn-link">开具</button> <button class="btn-link" style="color:#ff4d4f">删除</button></span>
+                        <span v-else-if="v.statusKey==='failed'"> <span class="tooltip-btn"><button class="btn-link" style="color:#ff4d4f">失败原因</button><div class="tooltip-box">{{v.failReason}}</div></span> <button class="btn-link">开具</button> <button class="btn-link" style="color:#ff4d4f">删除</button></span>
+                        <span v-else-if="v.statusKey==='issued'"> <button class="btn-link" style="color:#ff4d4f">删除</button></span>
+                      </td>
+                    </tr>
+                    <tr v-if="filteredVoucherList.length===0">
+                      <td colspan="10" style="text-align:center;color:#999;padding:30px">暂无数据</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="pagination">
+                  <span>共 {{filteredVoucherList.length}} 条</span>
+                  <div class="page-btn active">1</div>
+                </div>
               </div>
-              <div class="table-wrap">
-                <table>
-                  <tr><th>凭证号</th><th>凭证期间</th><th>摘要</th><th>所属科目</th><th>制单日期</th><th>制单人</th><th>借方金额（元）</th><th>贷方金额（元）</th><th>状态</th><th>操作</th></tr>
-                  <tr v-for="v in filteredVoucherList" :key="v.id">
-                    <td>{{v.id}}</td>
-                    <td>{{v.period}}</td>
-                    <td style="max-width:180px;white-space:normal;line-height:1.4">{{v.summary}}</td>
-                    <td style="max-width:120px;white-space:normal;line-height:1.4;font-size:11px;color:#666">{{v.subject}}</td>
-                    <td>{{v.date}}</td>
-                    <td>{{v.user}}</td>
-                    <td class="amount">{{v.debit}}</td>
-                    <td class="amount">{{v.credit}}</td>
-                    <td><span class="tag" :class="v.tagClass">{{v.status}}</span></td>
-                    <td style="white-space:nowrap">
-                      <button class="btn-link" @click="openVoucherDetail(v)">查看</button>
-                      <span v-if="v.statusKey==='pending'"> | <button class="btn-link">开具</button> | <button class="btn-link" style="color:#ff4d4f" @click="showReturnVoucher=true">取消</button></span>
-                      <span v-if="v.statusKey==='failed'"> | <span class="tooltip-btn"><button class="btn-link" style="color:#ff4d4f">失败原因</button><div class="tooltip-box">{{v.failReason}}</div></span> | <button class="btn-link">开具</button> | <button class="btn-link">取消</button></span>
-                      <span v-if="v.statusKey==='timeout'"> | <button class="btn-link" style="color:#fa8c16" @click="showBackfill=true">手动回填凭证号</button> | <button class="btn-link">重新开具</button></span>
-                      <span v-if="v.statusKey==='issued'"> | <button class="btn-link" style="color:#999">取消（不可逆）</button></span>
-                    </td>
-                  </tr>
-                  <tr v-if="filteredVoucherList.length===0">
-                    <td colspan="10" style="text-align:center;color:#999;padding:30px">暂无数据</td>
-                  </tr>
-                </table>
-              </div>
-              <div v-if="voucherTab==='timeout'||voucherTab==='all'" class="alert alert-warning" style="margin-top:12px">
-                ⚠️ <b>开具超时说明：</b>超时时U8可能已接收并落账，请先在U8系统核查，再选择"手动回填凭证号"或"重新开具"，<b>切勿未核查直接重试</b>。
-              </div>
-              <div class="pagination">
-                <span>共 {{filteredVoucherList.length}} 条</span>
-                <div class="page-btn active">1</div>
+
+              <!-- 部门编码映射 tab -->
+              <div v-if="voucherTab==='mapping'">
+                <div class="alert alert-info" style="margin-top:12px">⚙️ <b>方案二：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</div>
+                <div class="filter-bar">
+                  <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
+                  <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
+                  <div class="filter-item"><label>状态</label><select class="sel"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <span style="flex:1"></span>
+                  <button class="btn btn-primary btn-sm">查询</button>
+                  <button class="btn btn-primary btn-sm" @click="deptMappingDialog=true">新增</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
+                    <tr v-for="d in deptMappingData" :key="d.code">
+                      <td><b>{{d.code}}</b></td>
+                      <td>{{d.name}}</td>
+                      <td style="color:#999">{{d.remark||'—'}}</td>
+                      <td><span class="tag" :class="d.active?'tag-green':'tag-gray'">{{d.active?'启用':'停用'}}</span></td>
+                      <td style="color:#999">{{d.updatedAt}}</td>
+                      <td><button class="btn-link">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''">{{d.active?'停用':'启用'}}</button></td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="pagination">
+                  <span>共 {{deptMappingData.length}} 条</span>
+                  <div class="page-btn active">1</div>
+                </div>
               </div>
             </div>
           </div>
@@ -939,7 +981,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="form-item" style="flex:0 0 100%"><label class="form-label">摘要</label><div class="form-control"><input class="inp" style="width:100%;background:#f5f5f5" readonly value="付2026年1月，常有（天津）信息技术有限公司"><div class="form-note">自动生成：付"结算月份"＋"收款方名称"</div></div></div>
                 </div>
                 <div class="alert alert-info" style="margin-bottom:6px">📊 含税金额和进项税额仅供核对，不推送U8；推送字段为借方金额（不含税）。</div>
-                <div class="alert alert-warning" style="margin-bottom:8px">⚙️ <b>部门编码</b>已按结算机构映射自动带入，修改任意行将同步更新所有行。<b>不可为空。</b></div>
+                <div class="alert alert-warning" style="margin-bottom:8px">⚙️ <b>部门编码</b>需在下拉中手动选择U8部门，修改任意行将同步更新所有行。<b>不可为空。</b></div>
 
                 <!-- 表头固定 -->
                 <div style="border:1px solid #e8e8e8;border-radius:3px;overflow:hidden">
@@ -1010,8 +1052,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td style="color:#f5222d;font-weight:600">{{row.debit}}</td>
                           <td>—</td>
                           <td>{{row.plate}}</td>
-                          <td style="font-size:11px">车客主文事业部</td>
-                          <td><input class="inp" style="width:76px;background:#fff3cd" :value="voucherDeptCode" @input="voucherDeptCode=$event.target.value"></td>
+                          <td style="font-size:11px">{{voucherDeptName}}</td>
+                          <td>
+                            <select class="sel" style="width:78px;background:#fff3cd" v-model="voucherDeptCode">
+                              <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.code">{{d.code}}</option>
+                            </select>
+                          </td>
                         </tr>
                         <!-- 进项税额分录行 -->
                         <tr style="background:#fffbe6;border-bottom:1px solid #f0f0f0">
@@ -1151,20 +1197,20 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <div v-if="activeMenu==='dept-mapping'">
           <div class="card">
             <div class="card-header">
-              <span class="card-title">FNC后台 — 基础配置 / 结算机构→U8部门编码映射</span>
-              <button class="btn btn-primary" @click="deptMappingDialog=true">＋ 新增映射</button>
+              <span class="card-title">FNC后台 — 基础配置 / U8部门编码维护</span>
+              <button class="btn btn-primary" @click="deptMappingDialog=true">＋ 新增</button>
             </div>
             <div class="card-body">
-              <div class="alert alert-info">⚙️ <b>方案二（已确认）：</b>U8无部门查询接口，由此处维护"结算机构 → U8部门编码"映射关系。生成整理费凭证时，系统根据结算机构自动带入部门编码，财务可在凭证预览弹窗中手动修改，但不可为空。</div>
+              <div class="alert alert-info">⚙️ <b>说明：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</div>
               <div class="filter-bar">
-                <div class="filter-item"><label>结算机构</label><input class="inp" placeholder="搜索..."></div>
+                <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
+                <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
                 <div class="filter-item"><label>状态</label><select class="sel"><option>全部</option><option>启用</option><option>停用</option></select></div>
                 <button class="btn btn-primary btn-sm">🔍 查询</button>
               </div>
               <table>
-                <tr><th>结算机构</th><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
-                <tr v-for="d in deptMappingData" :key="d.id">
-                  <td>{{d.org}}</td>
+                <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
+                <tr v-for="d in deptMappingData" :key="d.code">
                   <td><b>{{d.code}}</b></td>
                   <td>{{d.name}}</td>
                   <td style="color:#999">{{d.remark||'—'}}</td>
@@ -1178,19 +1224,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <!-- Mapping dialog -->
           <div class="modal-mask" v-if="deptMappingDialog" @click.self="deptMappingDialog=false">
             <div class="modal" style="max-width:480px">
-              <div class="modal-header"><span class="modal-title">新增 / 编辑映射</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
+              <div class="modal-header"><span class="modal-title">新增 / 编辑U8部门</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
               <div class="modal-body">
                 <div class="form-row">
-                  <div class="form-item full">
-                    <label class="form-label req">结算机构</label>
-                    <div class="form-control">
-                      <select class="sel" style="width:100%"><option>请选择...</option><option>番禺车管分所</option><option>天河车管</option><option>越秀车管</option></select>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402" value="7402"></div></div>
-                  <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车客主文事业部（番禺）" value="车客主文事业部（番禺）"></div></div>
+                  <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402"></div></div>
+                  <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）"></div></div>
                 </div>
                 <div class="form-row">
                   <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填"></div></div>
@@ -1483,12 +1521,40 @@ new Vue({
         {plate:'粤J·77777', withTax:'360.00', tax:'20.38', debit:'339.62'},
       ],
       deptMappingData: [
-        {id:1,org:'番禺车管分所',code:'7402',name:'车客主文事业部（番禺）',remark:'',active:true,updatedAt:'2026-04-09'},
-        {id:2,org:'天河车管',code:'7403',name:'车客主文事业部（天河）',remark:'',active:true,updatedAt:'2026-04-09'},
-        {id:3,org:'越秀车管',code:'7404',name:'车客主文事业部（越秀）',remark:'',active:true,updatedAt:'2026-04-09'},
-        {id:4,org:'中山车管',code:'7405',name:'车客主文事业部（中山）',remark:'',active:true,updatedAt:'2026-04-09'},
-        {id:5,org:'花都车管',code:'7406',name:'车客主文事业部（花都）',remark:'',active:true,updatedAt:'2026-04-09'},
-        {id:6,org:'南沙车管',code:'7407',name:'车客主文事业部（南沙）',remark:'暂停使用',active:false,updatedAt:'2026-03-15'},
+        {code:'01',  name:'财务部',                          remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'64',  name:'经营发展部-中控中心',              remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'65',  name:'平台产品部（产品分析组）',         remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'66',  name:'总经办',                          remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'67',  name:'产品运营部-产品运营部（核身项目组）',remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'68',  name:'平台产品部（用户运营组）',         remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'69',  name:'交易中心（销售）',                 remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'70',  name:'交易中心（广州）',                 remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'71',  name:'交易中心（出口）',                 remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'73',  name:'车源生态事业部（政企）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7401',name:'车源生态事业部（广州）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7402',name:'车源生态事业部（武汉）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7403',name:'车源生态事业部（长沙）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7404',name:'车源生态事业部（成都）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7405',name:'车源生态事业部（深圳）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7406',name:'车源生态事业部（东莞）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7407',name:'车源生态事业部（中山）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7409',name:'车源生态事业部（太原）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7410',name:'车源生态事业部（南宁）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7411',name:'车源生态事业部 广西-南宁',         remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7412',name:'车源生态事业部（佛山）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7413',name:'车源生态事业部（惠州）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7414',name:'车源生态事业部（本部）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7415',name:'车源生态事业部（北京）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7416',name:'车源生态事业部（贵阳）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'7417',name:'车源生态事业部（海口）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'75',  name:'创新产品研发部',                   remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'76',  name:'平台研发部',                       remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'77',  name:'检测评估中心',                     remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'78',  name:'平台产品部',                       remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'79',  name:'商户运营中心-商户运营中心—东莞服务',remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'82',  name:'经营发展部-经营发展部（本部）',     remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'83',  name:'服务中心—便民站（东涌）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'84',  name:'服务中心—便民站（黄阁）',           remark:'',active:true,updatedAt:'2026-04-10'},
       ],
       // FNC Voucher
       voucherNewStep: 0,
@@ -1497,32 +1563,33 @@ new Vue({
         {key:'all',     label:'全部',   count:0},
         {key:'pending', label:'待开具', count:3},
         {key:'issuing', label:'开具中', count:1},
-        {key:'issued',  label:'已开具', count:5},
+        {key:'issued',  label:'已开具', count:9},
         {key:'failed',  label:'开具失败',count:2},
         {key:'deleted', label:'已删除', count:1},
-        {key:'cancelled',label:'已取消',count:2},
+        {key:'mapping', label:'部门编码映射'},
       ],
       voucherAllData: [
-        // 待开具
-        {id:'V2026001',period:'2026-01',summary:'付1月服务费，常有（天津）信息技术有限公司',subject:'64010102 服务费',date:'2026-01-20',user:'王财务',debit:'3,460.00',credit:'3,460.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
-        {id:'V2026004',period:'2026-01',summary:'付1月过户费，好快帮（广州）科技有限公司',subject:'64010201 过户费',date:'2026-01-22',user:'王财务',debit:'3,800.00',credit:'3,800.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
-        {id:'V2026007',period:'2026-02',summary:'付2月服务费，常有（天津）信息技术有限公司',subject:'64010102 服务费',date:'2026-02-15',user:'李会计',debit:'1,800.00',credit:'1,800.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
+        // 待开具 (BMS新流程)
+        {id:'V2026001',period:'2026-4',summary:'付4月服务费，常有（天津）信息技术有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2026-04-10',user:'王财务',debit:'3,460.00',credit:'3,460.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
+        {id:'V2026004',period:'2026-4',summary:'付4月过户费，好快帮（广州）科技有限公司',subjectDebit:'64010103',subjectCredit:'10020101',date:'2026-04-10',user:'王财务',debit:'3,800.00',credit:'3,800.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
+        {id:'V2026007',period:'2026-4',summary:'付4月整理费，常有（天津）信息技术有限公司',subjectDebit:'64011209',subjectCredit:'10020101',date:'2026-04-10',user:'李会计',debit:'1,800.00',credit:'1,800.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
         // 开具中
-        {id:'V2026006',period:'2026-02',summary:'付2月过户费，好快帮（广州）科技有限公司',subject:'64010201 过户费',date:'2026-02-18',user:'王财务',debit:'2,700.00',credit:'2,700.00',statusKey:'issuing',status:'开具中',tagClass:'tag-cyan',fromBatch:true},
-        // 已开具
-        {id:'V2025098',period:'2025-12',summary:'付12月过户费，好快帮（广州）科技有限公司',subject:'64010201 过户费',date:'2026-01-05',user:'王财务',debit:'3,800.00',credit:'3,800.00',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:true},
-        {id:'V2025097',period:'2025-12',summary:'记 (4:01-06)',subject:'10020101 银行存款',date:'2025-12-28',user:'李会计',debit:'12,400.00',credit:'12,400.00',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
-        {id:'V2025096',period:'2025-11',summary:'付11月服务费，常有（天津）信息技术有限公司',subject:'64010102 服务费',date:'2025-11-25',user:'王财务',debit:'4,100.00',credit:'4,100.00',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:true},
-        {id:'V2025095',period:'2025-11',summary:'付11月整理费，常有（天津）信息技术有限公司',subject:'64011209 整理费',date:'2025-11-26',user:'王财务',debit:'2,800.00',credit:'2,800.00',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:true},
-        {id:'V2025090',period:'2025-10',summary:'付10月服务费，好快帮（广州）科技有限公司',subject:'64010102 服务费',date:'2025-10-20',user:'李会计',debit:'3,200.00',credit:'3,200.00',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:true},
+        {id:'V2026006',period:'2026-3',summary:'付3月过户费，好快帮（广州）科技有限公司',subjectDebit:'64010103',subjectCredit:'10020101',date:'2026-03-25',user:'王财务',debit:'2,700.00',credit:'2,700.00',statusKey:'issuing',status:'开具中',tagClass:'tag-cyan',fromBatch:true},
+        // 已开具 (U8同步真实样例)
+        {id:'记0009',period:'2026-4',summary:'保证金（4.01-06）',subjectDebit:'10020804',subjectCredit:'224103',date:'2026-04-07',user:'张晖',debit:'426,000',credit:'426,000',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
+        {id:'记0008',period:'2026-4',summary:'支付服务费（4.01-06）',subjectDebit:'122109',subjectCredit:'10020802',date:'2026-04-07',user:'张晖',debit:'8,078',credit:'8,078',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:true},
+        {id:'记0194',period:'2026-3',summary:'唯普收益户3月29-31日流水',subjectDebit:'10020805',subjectCredit:'224103',date:'2026-03-31',user:'陈霞',debit:'334,128.93',credit:'334,128.93',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
+        {id:'记0193',period:'2026-3',summary:'唯普收益户3月收益提现',subjectDebit:'10020805',subjectCredit:'10020701',date:'2026-03-31',user:'陈霞',debit:'2,308,382.24',credit:'2,308,382.24',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
+        {id:'记0186',period:'2026-3',summary:'保证金（3.30-31）',subjectDebit:'10020804',subjectCredit:'224103',date:'2026-03-31',user:'张晖',debit:'2,014,000',credit:'2,014,000',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
+        {id:'记0185',period:'2026-3',summary:'支付服务费（3.30-31）',subjectDebit:'122109',subjectCredit:'10020802',date:'2026-03-31',user:'张晖',debit:'9,585',credit:'9,585',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:true},
+        {id:'记0066',period:'2026-3',summary:'唯普云收益3月流水',subjectDebit:'10020401',subjectCredit:'22410103',date:'2026-03-31',user:'陈霞',debit:'—',credit:'—',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
+        {id:'记0063',period:'2026-3',summary:'wpybmz3月29-31日流水',subjectDebit:'10020402',subjectCredit:'22410103',date:'2026-03-31',user:'陈霞',debit:'52,365.5',credit:'52,365.5',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
+        {id:'记0062',period:'2026-3',summary:'wpybmz3月收益提现',subjectDebit:'10020402',subjectCredit:'10020101',date:'2026-03-31',user:'陈霞',debit:'79,091.2',credit:'79,091.2',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
         // 开具失败
-        {id:'V2026002',period:'2026-01',summary:'付1月整理费，常有（天津）信息技术有限公司',subject:'64011209 整理费',date:'2026-01-21',user:'王财务',debit:'2,100.00',credit:'2,100.00',statusKey:'failed',status:'开具失败',tagClass:'tag-red',fromBatch:true,failReason:'2026-01-21 14:23 失败原因：会计期间早于开账日期'},
-        {id:'V2025085',period:'2025-09',summary:'付9月服务费，常有（天津）信息技术有限公司',subject:'64010102 服务费',date:'2025-09-25',user:'李会计',debit:'1,500.00',credit:'1,500.00',statusKey:'failed',status:'开具失败',tagClass:'tag-red',fromBatch:true,failReason:'2025-09-25 10:45 失败原因：账套未找到对应科目编码'},
+        {id:'V2026002',period:'2026-3',summary:'付3月整理费，常有（天津）信息技术有限公司',subjectDebit:'64011209',subjectCredit:'10020101',date:'2026-03-21',user:'王财务',debit:'2,100.00',credit:'2,100.00',statusKey:'failed',status:'开具失败',tagClass:'tag-red',fromBatch:true,failReason:'2026-03-21 14:23 失败原因：会计期间早于开账日期'},
+        {id:'V2025085',period:'2025-9',summary:'付9月服务费，常有（天津）信息技术有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2025-09-25',user:'李会计',debit:'1,500.00',credit:'1,500.00',statusKey:'failed',status:'开具失败',tagClass:'tag-red',fromBatch:true,failReason:'2025-09-25 10:45 失败原因：账套未找到对应科目编码'},
         // 已删除
-        {id:'V2025080',period:'2025-08',summary:'付8月服务费，好快帮（广州）科技有限公司',subject:'64010102 服务费',date:'2025-08-20',user:'王财务',debit:'2,600.00',credit:'2,600.00',statusKey:'deleted',status:'已删除',tagClass:'tag-gray',fromBatch:true},
-        // 已取消
-        {id:'V2025075',period:'2025-07',summary:'付7月过户费，好快帮（广州）科技有限公司',subject:'64010201 过户费',date:'2025-07-18',user:'王财务',debit:'3,100.00',credit:'3,100.00',statusKey:'cancelled',status:'已取消',tagClass:'tag-gray',fromBatch:true},
-        {id:'V2025074',period:'2025-07',summary:'付7月服务费，常有（天津）信息技术有限公司',subject:'64010102 服务费',date:'2025-07-19',user:'李会计',debit:'2,200.00',credit:'2,200.00',statusKey:'cancelled',status:'已取消',tagClass:'tag-gray',fromBatch:false},
+        {id:'V2025080',period:'2025-8',summary:'付8月服务费，好快帮（广州）科技有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2025-08-20',user:'王财务',debit:'2,600.00',credit:'2,600.00',statusKey:'deleted',status:'已删除',tagClass:'tag-gray',fromBatch:true},
       ],
       // Approval
       approvalMode: 'pc',
@@ -1565,8 +1632,12 @@ new Vue({
       return this.bmsAllData.filter(r => r.status === this.bmsStatusTab)
     },
     filteredVoucherList() {
-      if (this.voucherTab === 'all') return this.voucherAllData
+      if (this.voucherTab === 'all' || this.voucherTab === 'mapping') return this.voucherAllData
       return this.voucherAllData.filter(v => v.statusKey === this.voucherTab)
+    },
+    voucherDeptName() {
+      const m = this.deptMappingData.find(d => d.code === this.voucherDeptCode)
+      return m ? m.name : '—'
     },
   },
   methods: {
