@@ -191,6 +191,25 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 /* Reject reason row */
 .reject-reason-row td{background:#fff9f9}
 .reject-reason-cell{color:#cf1322;font-size:11px;max-width:220px;white-space:normal;line-height:1.4}
+/* Print A4 */
+@media print {
+  @page{size:A4 portrait;margin:12mm 10mm}
+  .sidebar,.topbar,.detail-overlay-bar,.btn,.status-tabs,.filter-bar,.pagination,.toast{display:none!important}
+  .layout,.main{display:block!important;overflow:visible!important}
+  .content{overflow:visible!important;padding:0!important}
+  .detail-overlay{position:static!important;background:#fff!important;overflow:visible!important}
+  .card{border:none!important;margin:0!important;box-shadow:none!important}
+  .card-header{padding:4px 0!important;border-bottom:1px solid #333!important}
+  .card-body{padding:4px 0!important}
+  body{background:#fff!important;font-size:11px!important}
+  table{font-size:10px!important}
+  th,td{padding:4px 5px!important}
+  .amount{color:#000!important;font-weight:600!important}
+  .tag{border:1px solid #999!important;background:#fff!important;color:#333!important}
+  .info-grid{grid-template-columns:repeat(3,1fr)!important}
+  .approval-flow{page-break-inside:avoid}
+  .section-title{border-left:2px solid #333!important;color:#000!important}
+}
 </style>
 </head>
 <body>
@@ -435,10 +454,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="filter-item">
                     <label>结算状态</label>
                     <select class="sel" @change="filterChanged=true">
-                      <option>全部</option><option>待提交</option><option>待审批</option><option>待支付</option><option>已驳回</option><option>已废弃</option>
+                      <option>全部</option><option>待提交</option><option>待审批</option><option>待支付</option><option>已结算</option><option>已驳回</option><option>已废弃</option>
                     </select>
                   </div>
-                  <button class="btn btn-primary btn-sm">🔍 查询</button>
+                  <button class="btn btn-primary btn-sm" @click="filterChanged=true">🔍 查询</button>
                   <button class="btn btn-default btn-sm" @click="filterChanged=false">重置</button>
                 </div>
                 <div v-if="filterChanged" class="alert alert-info" style="margin-bottom:10px">🔍 已根据筛选条件过滤，当前显示匹配结果。</div>
@@ -474,7 +493,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <button class="btn-link" @click="openDetail(r)">查看</button>
                           <span v-if="r.status==='approval'"> | <button class="btn-link" style="color:#1890ff" @click="showApproveDialog=true">审批通过</button> | <button class="btn-link" style="color:#ff4d4f" @click="showRejectDialog=true">驳回</button></span>
                           <span v-if="r.status==='pay'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
-                          <span v-if="r.status==='rejected'"> | <button class="btn-link">修改</button> | <button class="btn-link" style="color:#ff4d4f">废弃</button></span>
+                          <span v-if="r.status==='settled'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
+                          <span v-if="r.status==='rejected'"> | <button class="btn-link" @click="bmsView='form'">修改</button> | <button class="btn-link" style="color:#ff4d4f" @click="showDiscardConfirm=true">废弃</button></span>
                         </td>
                       </tr>
                       <!-- 已驳回：展示驳回理由 -->
@@ -607,6 +627,20 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
           </div>
 
+          <!-- 废弃确认 Dialog -->
+          <div class="modal-mask" v-if="showDiscardConfirm" @click.self="showDiscardConfirm=false">
+            <div class="modal" style="max-width:420px">
+              <div class="modal-header"><span class="modal-title">废弃申请</span><span class="modal-close" @click="showDiscardConfirm=false">✕</span></div>
+              <div class="modal-body">
+                <div class="alert alert-warning">⚠️ 废弃后申请不可恢复，底层明细将重新释放，确认废弃？</div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="showDiscardConfirm=false">取消</button>
+                <button class="btn btn-danger" @click="showDiscardConfirm=false;showToast('申请已废弃')">确认废弃</button>
+              </div>
+            </div>
+          </div>
+
         </div><!-- /BMS list area -->
 
         <!-- ===== BMS Detail Overlay (simulates new window) ===== -->
@@ -616,7 +650,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <span style="font-size:12px;color:#999;margin-left:8px">申请详情（新窗口）</span>
             <span style="flex:1"></span>
             <button class="btn btn-default btn-sm">导出PDF</button>
-            <button class="btn btn-default btn-sm">打包下载附件ZIP</button>
+            <button class="btn btn-default btn-sm" onclick="window.print()">🖨️ 打印(A4)</button>
           </div>
           <div class="detail-overlay-content">
             <div class="card">
@@ -629,6 +663,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div v-if="bmsCurrentDetail.status==='rejected'" class="alert alert-error" style="margin-bottom:16px">
                   <b>驳回原因：</b>{{bmsCurrentDetail.rejectReason}}
                   <span style="margin-left:10px;font-size:11px;color:#999">— {{bmsCurrentDetail.rejectBy}} · {{bmsCurrentDetail.rejectTime}}</span>
+                </div>
+                <!-- 待审批：审批操作按钮 -->
+                <div v-if="bmsCurrentDetail.status==='approval'" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#f6f8fa;border-radius:4px;border:1px solid #e8e8e8">
+                  <span style="font-size:12px;color:#666;margin-right:4px">当前状态：<b style="color:#fa8c16">待审批</b>，请在下方进行审批操作：</span>
+                  <button class="btn btn-primary btn-sm" @click="showApproveDialog=true">审批通过</button>
+                  <button class="btn btn-danger btn-sm" @click="showRejectDialog=true">驳回</button>
                 </div>
 
                 <div class="info-grid">
@@ -699,37 +739,31 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <a class="file-link" @click.prevent="previewFile('invoice_002.jpg')" href="#">invoice_002.jpg（点击预览）</a>
                 </div>
                 <hr class="sep">
-                <div class="section-title" style="margin-bottom:10px">明细列表（4条）</div>
+                <div class="section-title" style="margin-bottom:10px">明细列表（4条）<span style="font-size:11px;font-weight:400;color:#999;margin-left:8px">费用类型：{{bmsCurrentDetail.feeType}} · 结算机构：{{bmsCurrentDetail.org}}</span></div>
                 <div class="table-wrap">
                   <table>
                     <tr>
-                      <th>车牌号</th><th>费用类型</th><th>结算机构</th>
-                      <th>实收金额(含税)</th><th>预计结算金额(含税)</th><th>实际结算金额(含税)</th>
-                      <th>完成时间</th><th>服务中心</th><th>过户地点</th><th>结算状态</th>
+                      <th style="background:#f0f7ff">序号</th><th style="background:#f0f7ff">车牌号</th>
+                      <th style="background:#f0f7ff">实收金额(含税)</th><th style="background:#f0f7ff">预计结算金额(含税)</th><th style="background:#f0f7ff">实际结算金额(含税)</th>
+                      <th style="background:#f0f7ff;border-left:2px solid #d0e8ff">序号</th><th style="background:#f0f7ff">车牌号</th>
+                      <th style="background:#f0f7ff">实收金额(含税)</th><th style="background:#f0f7ff">预计结算金额(含税)</th><th style="background:#f0f7ff">实际结算金额(含税)</th>
                     </tr>
                     <tr>
-                      <td>粤A·12345</td><td>服务商服务费</td><td>番禺车管分所</td>
+                      <td>1</td><td><b>粤A·12345</b></td>
                       <td class="amount">360.00</td><td class="amount">360.00</td><td class="amount">360.00</td>
-                      <td style="color:#999">—</td><td style="color:#999">—</td><td style="color:#999">—</td>
-                      <td><span class="tag tag-blue">已提交结算</span></td>
-                    </tr>
-                    <tr>
-                      <td>粤B·67890</td><td>服务商服务费</td><td>番禺车管分所</td>
+                      <td style="border-left:2px solid #f0f0f0">2</td><td><b>粤B·67890</b></td>
                       <td class="amount">360.00</td><td class="amount">360.00</td><td class="amount">360.00</td>
-                      <td style="color:#999">—</td><td style="color:#999">—</td><td style="color:#999">—</td>
-                      <td><span class="tag tag-blue">已提交结算</span></td>
                     </tr>
                     <tr>
-                      <td>粤C·11111</td><td>代办过户费</td><td>番禺车管分所</td>
+                      <td>3</td><td><b>粤C·11111</b></td>
                       <td class="amount">400.00</td><td class="amount">400.00</td><td class="amount">400.00</td>
-                      <td>2026-01-12</td><td>番禺服务中心</td><td>广州番禺区车辆管理所</td>
-                      <td><span class="tag tag-blue">已提交结算</span></td>
-                    </tr>
-                    <tr>
-                      <td>粤D·22222</td><td>代办过户费</td><td>番禺车管分所</td>
+                      <td style="border-left:2px solid #f0f0f0">4</td><td><b>粤D·22222</b></td>
                       <td class="amount">240.00</td><td class="amount">240.00</td><td class="amount">240.00</td>
-                      <td>2026-01-14</td><td>番禺服务中心</td><td>广州番禺区车辆管理所</td>
-                      <td><span class="tag tag-blue">已提交结算</span></td>
+                    </tr>
+                    <tr style="background:#fafafa">
+                      <td colspan="4" style="text-align:right;font-weight:600;color:#333">合计</td>
+                      <td class="amount">1,360.00</td>
+                      <td colspan="5"></td>
                     </tr>
                   </table>
                 </div>
@@ -742,99 +776,200 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <div v-if="activeMenu==='fnc-settle'">
           <div class="card">
             <div class="card-header">
-              <span class="card-title">FNC — 批量结算（待支付申请列表）</span>
+              <span class="card-title">FNC — 批量结算列表</span>
             </div>
             <div class="card-body">
-              <div class="alert alert-info">💡 此列表展示BMS三级审批已通过（状态"待支付"）的结算申请，财务可选择一笔或多笔生成凭证，或对信息有误的申请发起"打回"。</div>
+              <!-- Status tabs -->
+              <div class="status-tabs">
+                <span v-for="t in fncStatusTabs" :key="t.key" class="stab" :class="{active:fncStatusTab===t.key}" @click="fncStatusTab=t.key">
+                  {{t.label}}<span v-if="t.count" style="margin-left:3px;color:#ff4d4f">({{t.count}})</span>
+                </span>
+              </div>
+              <!-- Filter bar -->
               <div class="filter-bar">
-                <div class="filter-item"><label>费用类型</label><select class="sel"><option>全部</option><option>服务商服务费</option><option>代办过户费</option><option>牌证费及邮寄费</option></select></div>
-                <div class="filter-item"><label>结算年月</label><input class="inp" type="month" value="2026-01"></div>
-                <div class="filter-item"><label>收款方</label><input class="inp" placeholder="搜索收款方..."></div>
-                <button class="btn btn-primary btn-sm">🔍 查询</button>
-              </div>
-              <table>
-                <tr><th class="check-col"><input type="checkbox"></th><th>申请编号</th><th>结算机构</th><th>费用类型</th><th>收款方名称</th><th>含税合计（元）</th><th>明细数</th><th>申请时间</th><th>凭证状态</th><th>操作</th></tr>
-                <tr><td class="check-col"><input type="checkbox" checked></td><td>BS202601001</td><td>番禺车管分所</td><td>服务商服务费</td><td>常有（天津）信息技术有限公司</td><td class="amount">1,060.00</td><td>3条</td><td>2026-01-15</td><td><span class="tag tag-gray">未生成</span></td><td><button class="btn-link" @click="showReturnFnc=true">打回</button></td></tr>
-                <tr><td class="check-col"><input type="checkbox" checked></td><td>BS202601002</td><td>天河车管</td><td>服务商服务费</td><td>常有（天津）信息技术有限公司</td><td class="amount">2,400.00</td><td>6条</td><td>2026-01-16</td><td><span class="tag tag-gray">未生成</span></td><td><button class="btn-link" @click="showReturnFnc=true">打回</button></td></tr>
-                <tr><td class="check-col"><input type="checkbox"></td><td>BS202601003</td><td>越秀车管</td><td>代办过户费</td><td>好快帮（广州）科技有限公司</td><td class="amount">3,800.00</td><td>9条</td><td>2026-01-17</td><td><span class="tag tag-blue">已关联凭证</span></td><td></td></tr>
-                <tr><td class="check-col"><input type="checkbox"></td><td>BS202601005</td><td>天河车管</td><td>服务商服务费</td><td>好快帮（广州）科技有限公司</td><td class="amount">4,200.00</td><td>12条</td><td>2026-01-18</td><td><span class="tag tag-gray">未生成</span></td><td><button class="btn-link" @click="showReturnFnc=true">打回</button></td></tr>
-              </table>
-              <div class="alert alert-warning" style="margin-top:12px">⚠️ 多选时系统将校验收款方是否一致，不同收款方的申请不允许合并为同一张凭证。</div>
-            </div>
-          </div>
-
-          <!-- Voucher New Step 1 -->
-          <div class="modal-mask" v-if="voucherNewStep===1" @click.self="voucherNewStep=0">
-            <div class="modal" style="max-width:700px">
-              <div class="modal-header"><span class="modal-title">从批量结算新增凭证 — 第1步：选择来源记录</span><span class="modal-close" @click="voucherNewStep=0">✕</span></div>
-              <div class="modal-body">
-                <div class="filter-bar">
-                  <div class="filter-item"><label>费用项类型 <span style="color:#ff4d4f">*</span></label><select class="sel"><option>服务商服务费</option><option>代办过户费</option></select></div>
-                  <div class="filter-item"><label>结算年月 <span style="color:#ff4d4f">*</span></label><input class="inp" type="month" value="2026-01"></div>
+                <div class="filter-item"><label>申请编号</label><input class="inp" placeholder="请输入申请编号" style="width:140px"></div>
+                <div class="filter-item"><label>结算年月</label><input class="inp" type="month" style="width:120px"></div>
+                <div class="filter-item">
+                  <label>费用类型</label>
+                  <select class="sel"><option>全部</option><option>服务商服务费</option><option>代办过户费</option><option>牌证费及邮寄费</option></select>
                 </div>
-                <div class="alert alert-warning">⚠️ 多选时所选申请必须属于同一收款方，否则系统将阻断。</div>
+                <div class="filter-item"><label>收款方</label><input class="inp" placeholder="搜索收款方..." style="width:140px"></div>
+                <button class="btn btn-primary btn-sm" @click="fncFilterChanged=true">🔍 查询</button>
+                <button class="btn btn-default btn-sm" @click="fncFilterChanged=false">重置</button>
+              </div>
+              <div v-if="fncFilterChanged" class="alert alert-info" style="margin-bottom:10px">🔍 已根据筛选条件过滤，当前显示匹配结果。</div>
+              <!-- Table -->
+              <div class="table-wrap">
                 <table>
-                  <tr><th class="check-col"><input type="checkbox"></th><th>申请编号</th><th>结算机构</th><th>收款方名称</th><th>含税合计（元）</th><th>明细条数</th><th>申请时间</th></tr>
-                  <tr><td class="check-col"><input type="checkbox" checked></td><td>BS202601001</td><td>番禺车管分所</td><td>常有（天津）信息技术有限公司</td><td class="amount">1,060.00</td><td>3</td><td>2026-01-15</td></tr>
-                  <tr><td class="check-col"><input type="checkbox" checked></td><td>BS202601002</td><td>天河车管</td><td>常有（天津）信息技术有限公司</td><td class="amount">2,400.00</td><td>6</td><td>2026-01-16</td></tr>
+                  <tr>
+                    <th>申请编号</th><th>标题</th><th>结算机构</th><th>费用类型</th>
+                    <th>收款方名称</th><th>含税合计（元）</th><th>明细数</th>
+                    <th>申请时间</th><th>状态</th><th>操作</th>
+                  </tr>
+                  <tr v-for="r in filteredFncList" :key="r.id">
+                    <td>{{r.id}}</td>
+                    <td style="max-width:160px;white-space:normal;font-size:11px">{{r.title}}</td>
+                    <td>{{r.org}}</td>
+                    <td>{{r.feeType}}</td>
+                    <td style="max-width:120px;white-space:normal;font-size:11px">{{r.payee}}</td>
+                    <td class="amount">{{r.amount}}</td>
+                    <td>{{r.count}}条</td>
+                    <td>{{r.time}}</td>
+                    <td><span class="tag" :class="r.tagClass">{{r.statusLabel}}</span></td>
+                    <td style="white-space:nowrap">
+                      <button class="btn-link" @click="openDetail(r)">查看</button>
+                      <!-- 待审批 -->
+                      <span v-if="r.status==='fnc-approval'">
+                        | <button class="btn-link" style="color:#1890ff" @click="showFncApproveDialog=true">审批通过</button>
+                        | <button class="btn-link" style="color:#ff4d4f" @click="showFncRejectDialog=true">驳回</button>
+                      </span>
+                      <!-- 待支付 -->
+                      <span v-if="r.status==='fnc-pay'">
+                        | <button class="btn-link" style="color:#52c41a" @click="fncCurrentRecord=r;showFncSettleConfirm1=true">已结算</button>
+                        | <button class="btn-link" @click="showFncUploadInvoice=true">上传发票</button>
+                      </span>
+                      <!-- 已结算 -->
+                      <span v-if="r.status==='fnc-settled'">
+                        | <button class="btn-link" @click="showFncUploadInvoice=true">上传发票</button>
+                        | <button class="btn-link" style="color:#ff4d4f" @click="showFncDeleteInvoice=true">删除发票</button>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr v-if="filteredFncList.length===0">
+                    <td colspan="10" style="text-align:center;color:#999;padding:30px">暂无数据</td>
+                  </tr>
                 </table>
-                <div class="summary-bar" style="margin-top:12px">已选 <b>2笔</b>，合计 <b class="amount">¥ 3,460.00</b>，收款方：<b>常有（天津）信息技术有限公司</b> <span class="tag tag-green" style="margin-left:8px">✓ 同一收款方</span></div>
               </div>
-              <div class="modal-footer">
-                <button class="btn btn-default" @click="voucherNewStep=0">取消</button>
-                <button class="btn btn-primary" @click="voucherNewStep=2">下一步：预览凭证 →</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Voucher New Step 2 -->
-          <div class="modal-mask" v-if="voucherNewStep===2" @click.self="voucherNewStep=0">
-            <div class="modal" style="max-width:920px">
-              <div class="modal-header"><span class="modal-title">从批量结算新增凭证 — 第2步：凭证分录预览</span><span class="modal-close" @click="voucherNewStep=0">✕</span></div>
-              <div class="modal-body">
-                <div class="form-row">
-                  <div class="form-item"><label class="form-label req">账套</label><div class="form-control"><select class="sel"><option>唯普WP</option><option>唯普云WPY</option><option>机拍JP</option></select></div></div>
-                  <div class="form-item"><label class="form-label req">进项税率</label><div class="form-control"><select class="sel"><option>6%</option><option>9%</option><option>3%</option><option>0%</option></select><div class="form-note">选择税率后自动重算</div></div></div>
-                  <div class="form-item"><label class="form-label">制单日期</label><div class="form-control"><input class="inp" type="date" value="2026-01-20"></div></div>
-                </div>
-                <div class="alert alert-info">📊 含税金额和进项税额仅供核对，不推送U8；借方金额（不含税）才是推送字段。</div>
-                <div class="table-wrap">
-                  <table>
-                    <tr style="background:#f0f7ff"><th>序号</th><th>借/贷</th><th>摘要</th><th>科目编码</th><th>科目名称</th><th>含税金额</th><th>进项税额</th><th>借方（不含税）</th><th>贷方</th><th>车牌号</th><th>部门编码</th></tr>
-                    <tr><td>1</td><td>借</td><td>付1月服务费，常有（天津）...</td><td>64010102</td><td>服务费</td><td>360.00</td><td>20.38</td><td class="amount">339.62</td><td>—</td><td>粤A·12345</td><td style="color:#999">—</td></tr>
-                    <tr><td>2</td><td>借</td><td>付1月服务费，常有（天津）...</td><td>64010102</td><td>服务费</td><td>360.00</td><td>20.38</td><td class="amount">339.62</td><td>—</td><td>粤B·67890</td><td style="color:#999">—</td></tr>
-                    <tr><td>3</td><td>借</td><td>付1月服务费，常有（天津）...</td><td>64010102</td><td>服务费</td><td>340.00</td><td>19.25</td><td class="amount">320.75</td><td>—</td><td>粤C·11111</td><td style="color:#999">—</td></tr>
-                    <tr><td>4-9</td><td>借</td><td>付1月服务费，常有（天津）...</td><td>64010102</td><td>服务费</td><td>—</td><td colspan="2" style="text-align:center">…（共6条）</td><td>—</td><td>…</td><td style="color:#999">—</td></tr>
-                    <tr style="background:#fffbe6"><td>N+1</td><td>借</td><td>付1月服务费，常有（天津）...</td><td>2221010101</td><td>进项税额</td><td>—</td><td>—</td><td class="amount">195.77</td><td>—</td><td>—</td><td style="color:#999">—</td></tr>
-                    <tr style="background:#fff0f6"><td>N+2</td><td>贷</td><td>付1月服务费，常有（天津）...</td><td>10020101</td><td>银行存款</td><td>—</td><td>—</td><td>—</td><td class="amount">3,460.00</td><td>—</td><td style="color:#999">—</td></tr>
-                  </table>
-                </div>
-                <div class="summary-bar" style="margin-top:10px">借方合计：<b class="amount">¥ 3,460.00</b> &nbsp;|&nbsp; 贷方合计：<b class="amount">¥ 3,460.00</b> &nbsp;|&nbsp; <span class="tag tag-green">✓ 借贷平衡</span></div>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-default" @click="voucherNewStep=1">← 上一步</button>
-                <button class="btn btn-primary" @click="voucherNewStep=0">确认创建凭证</button>
+              <div class="pagination">
+                <span>共 {{filteredFncList.length}} 条</span>
+                <div class="page-btn">‹</div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">›</div>
               </div>
             </div>
           </div>
 
-          <!-- FNC Return dialog -->
-          <div class="modal-mask" v-if="showReturnFnc" @click.self="showReturnFnc=false">
+          <!-- FNC 审批通过 Dialog -->
+          <div class="modal-mask" v-if="showFncApproveDialog" @click.self="showFncApproveDialog=false">
             <div class="modal" style="max-width:440px">
-              <div class="modal-header"><span class="modal-title">财务打回申请</span><span class="modal-close" @click="showReturnFnc=false">✕</span></div>
+              <div class="modal-header"><span class="modal-title">审批通过</span><span class="modal-close" @click="showFncApproveDialog=false">✕</span></div>
               <div class="modal-body">
-                <div class="alert alert-warning">打回后BMS申请退回"已驳回"，底层明细释放，申请人收到通知。</div>
+                <div class="alert alert-info">审批通过后，申请进入"待支付"状态，等待财务付款操作。</div>
                 <div class="form-item full" style="margin-top:8px">
-                  <label class="form-label req">打回原因</label>
-                  <div class="form-control"><textarea class="inp" rows="3" style="width:100%;resize:none" placeholder="请填写打回原因（必填）"></textarea></div>
+                  <label class="form-label">审批意见</label>
+                  <div class="form-control"><textarea class="inp" rows="3" style="width:100%;resize:none" placeholder="选填，不超过200字"></textarea></div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-default" @click="showReturnFnc=false">取消</button>
-                <button class="btn btn-danger" @click="showReturnFnc=false">确认打回</button>
+                <button class="btn btn-default" @click="showFncApproveDialog=false">取消</button>
+                <button class="btn btn-primary" @click="showFncApproveDialog=false;showToast('审批通过，申请已进入待支付状态')">确认通过</button>
               </div>
             </div>
           </div>
+
+          <!-- FNC 驳回 Dialog -->
+          <div class="modal-mask" v-if="showFncRejectDialog" @click.self="showFncRejectDialog=false">
+            <div class="modal" style="max-width:440px">
+              <div class="modal-header"><span class="modal-title">驳回申请</span><span class="modal-close" @click="showFncRejectDialog=false">✕</span></div>
+              <div class="modal-body">
+                <div class="alert alert-warning">驳回后申请退回"已驳回"状态，申请人将收到通知，底层明细重新释放。</div>
+                <div class="form-item full" style="margin-top:8px">
+                  <label class="form-label req">驳回原因</label>
+                  <div class="form-control"><textarea class="inp" rows="3" style="width:100%;resize:none" placeholder="请填写驳回原因（必填，不超过200字）"></textarea></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="showFncRejectDialog=false">取消</button>
+                <button class="btn btn-danger" @click="showFncRejectDialog=false;showToast('已驳回，申请人将收到通知')">确认驳回</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FNC 已结算 第1次确认弹框 -->
+          <div class="modal-mask" v-if="showFncSettleConfirm1" @click.self="showFncSettleConfirm1=false">
+            <div class="modal" style="max-width:460px">
+              <div class="modal-header"><span class="modal-title">确认已结算 — 第1步</span><span class="modal-close" @click="showFncSettleConfirm1=false">✕</span></div>
+              <div class="modal-body">
+                <div class="alert alert-warning">⚠️ 请确认已在银行系统完成付款操作后，再点击"下一步"进行二次确认。</div>
+                <div class="info-grid" style="margin-top:10px">
+                  <div class="info-item"><div class="info-label">申请编号</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.id:'—'}}</div></div>
+                  <div class="info-item"><div class="info-label">含税合计</div><div class="info-value amount">¥ {{fncCurrentRecord?fncCurrentRecord.amount:'—'}}</div></div>
+                  <div class="info-item"><div class="info-label">收款方</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.payee:'—'}}</div></div>
+                  <div class="info-item"><div class="info-label">结算机构</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.org:'—'}}</div></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="showFncSettleConfirm1=false">取消</button>
+                <button class="btn btn-primary" @click="showFncSettleConfirm1=false;showFncSettleConfirm2=true">下一步（二次确认）→</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FNC 已结算 第2次确认弹框 -->
+          <div class="modal-mask" v-if="showFncSettleConfirm2" @click.self="showFncSettleConfirm2=false">
+            <div class="modal" style="max-width:460px">
+              <div class="modal-header"><span class="modal-title">确认已结算 — 第2步（最终确认）</span><span class="modal-close" @click="showFncSettleConfirm2=false">✕</span></div>
+              <div class="modal-body">
+                <div class="alert alert-error">⚠️ <b>高风险操作：</b>确认后申请状态将变更为"已结算"，此操作<b>不可撤销</b>。请再次确认付款已完成。</div>
+                <div class="info-grid" style="margin-top:10px">
+                  <div class="info-item"><div class="info-label">申请编号</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.id:'—'}}</div></div>
+                  <div class="info-item"><div class="info-label">含税合计</div><div class="info-value amount">¥ {{fncCurrentRecord?fncCurrentRecord.amount:'—'}}</div></div>
+                  <div class="info-item"><div class="info-label">收款方</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.payee:'—'}}</div></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="showFncSettleConfirm2=false">取消</button>
+                <button class="btn btn-danger" @click="showFncSettleConfirm2=false;fncCurrentRecord=null;showToast('已结算确认成功，状态已更新为「已结算」')">确认已结算（不可撤销）</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FNC 上传发票 Dialog -->
+          <div class="modal-mask" v-if="showFncUploadInvoice" @click.self="showFncUploadInvoice=false">
+            <div class="modal" style="max-width:520px">
+              <div class="modal-header"><span class="modal-title">上传发票</span><span class="modal-close" @click="showFncUploadInvoice=false">✕</span></div>
+              <div class="modal-body">
+                <div class="upload-area" style="margin-bottom:8px;cursor:pointer" @click="$refs.fncFileInput.click()" @dragover.prevent @drop.prevent="handleFncDrop">
+                  <div class="upload-icon">📁</div>
+                  <div>点击或拖拽上传发票（JPG / PNG / PDF，单文件≤10MB，最多20张）</div>
+                  <div class="upload-hint">已上传 {{fncUploadedFiles.length}} 张</div>
+                  <input type="file" ref="fncFileInput" style="display:none" multiple accept=".jpg,.jpeg,.png,.pdf" @change="handleFncFileSelect">
+                </div>
+                <div class="file-list">
+                  <span v-for="(f,i) in fncUploadedFiles" :key="i" class="file-link" style="cursor:pointer">
+                    <a @click.prevent="previewFile(f)" style="color:inherit;text-decoration:none">{{f}}</a>
+                    <span style="color:#ff4d4f;margin-left:4px;cursor:pointer" @click.stop="fncUploadedFiles.splice(i,1)" title="删除">✕</span>
+                  </span>
+                  <span v-if="fncUploadedFiles.length===0" style="color:#bbb;font-size:12px">暂无已上传发票</span>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="showFncUploadInvoice=false">关闭</button>
+                <button class="btn btn-primary" @click="showFncUploadInvoice=false;showToast('发票上传成功')">确认上传</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FNC 删除发票 Dialog -->
+          <div class="modal-mask" v-if="showFncDeleteInvoice" @click.self="showFncDeleteInvoice=false">
+            <div class="modal" style="max-width:520px">
+              <div class="modal-header"><span class="modal-title">删除发票</span><span class="modal-close" @click="showFncDeleteInvoice=false">✕</span></div>
+              <div class="modal-body">
+                <div class="alert alert-warning">请选择需要删除的发票文件，删除后不可恢复。</div>
+                <div style="margin-top:12px">
+                  <div v-for="(f,i) in fncUploadedFiles" :key="i" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 10px;background:#f5f5f5;border-radius:3px">
+                    <span class="file-link" @click.prevent="previewFile(f)" style="cursor:pointer;flex:1;border:none;background:transparent;padding:0">📄 {{f}}</span>
+                    <button class="btn btn-danger btn-sm" @click="fncUploadedFiles.splice(i,1);showToast('发票已删除')">删除</button>
+                  </div>
+                  <div v-if="fncUploadedFiles.length===0" style="color:#bbb;font-size:12px;padding:12px 0">暂无发票文件</div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="showFncDeleteInvoice=false">关闭</button>
+              </div>
+            </div>
+          </div>
+
         </div><!-- /FNC-settle -->
 
         <!-- ==================== FNC-凭证管理 ==================== -->
@@ -1497,6 +1632,7 @@ new Vue({
         {key:'draft',  label:'待提交', count:2},
         {key:'approval',label:'待审批',count:3},
         {key:'pay',    label:'待支付', count:2},
+        {key:'settled',label:'已结算', count:2},
         {key:'rejected',label:'已驳回',count:2},
         {key:'discarded',label:'已废弃',count:1},
       ],
@@ -1511,6 +1647,9 @@ new Vue({
         // 待支付
         {id:'BS202601002',title:'2026年1月服务费结算申请',org:'天河车管',feeType:'服务商服务费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:6,amount:'2,400.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'张三',time:'2026-01-16',settleDesc:'付2026年1月，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         {id:'BS202601005',title:'2026年1月服务费结算申请',org:'天河车管',feeType:'服务商服务费',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:12,amount:'4,200.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'李明',time:'2026-01-18',settleDesc:'付2026年1月，好快帮（广州）科技有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
+        // 已结算
+        {id:'BS202601004',title:'2026年1月过户费结算申请',org:'番禺车管分所',feeType:'代办过户费',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:4,amount:'1,200.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'张三',time:'2026-01-20',settleDesc:'付2026年1月，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
+        {id:'BS202601006',title:'2026年1月牌证费结算申请',org:'越秀车管',feeType:'牌证费及邮寄费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:8,amount:'1,600.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'李明',time:'2026-01-22',settleDesc:'付2026年1月，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         // 已驳回
         {id:'BS202512004',title:'2025年12月牌证费结算申请',org:'番禺车管分所',feeType:'牌证费及邮寄费',settleMonth:'2025-12',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'张三',time:'2026-01-08',rejectReason:'发票与明细不符，请重新上传正确发票后再次提交。',rejectBy:'王财务',rejectTime:'2026-01-09 11:24',settleDesc:'付2025年12月，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'驳回',approvalTagClass:'tag-red'},
         {id:'BS202601009',title:'2026年1月整理费结算申请',org:'南沙车管',feeType:'服务商服务费',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:7,amount:'2,100.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'赵华',time:'2026-01-19',rejectReason:'付款信息有误，收款方与合同约定不符，请核实后重新提交。',rejectBy:'李四（部门负责人）',rejectTime:'2026-01-20 09:05',settleDesc:'付2026年1月，好快帮（广州）科技有限公司',handler:'李四',approvalStatus:'驳回',approvalTagClass:'tag-red'},
@@ -1522,10 +1661,40 @@ new Vue({
       showRejectDialog: false,
       showApproveDialog: false,
       showUploadInvoice: false,
-      showReturnFnc: false,
+      showDiscardConfirm: false,
       showReturnVoucher: false,
       showBackfill: false,
       deptMappingDialog: false,
+      // FNC settle
+      fncStatusTab: 'all',
+      fncStatusTabs: [
+        {key:'all',         label:'全部',   count:0},
+        {key:'fnc-approval',label:'待审批', count:2},
+        {key:'fnc-pay',     label:'待支付', count:2},
+        {key:'fnc-settled', label:'已结算', count:1},
+        {key:'fnc-rejected',label:'已驳回', count:1},
+      ],
+      fncFilterChanged: false,
+      fncCurrentRecord: null,
+      showFncApproveDialog: false,
+      showFncRejectDialog: false,
+      showFncSettleConfirm1: false,
+      showFncSettleConfirm2: false,
+      showFncUploadInvoice: false,
+      showFncDeleteInvoice: false,
+      fncUploadedFiles: ['invoice_fnc_001.pdf', 'invoice_fnc_002.jpg'],
+      fncAllData: [
+        // 待审批
+        {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',feeType:'服务商服务费',settleMonth:'2026-01',payee:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'fnc-approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15'},
+        {id:'BS202512003',title:'2025年12月过户费结算申请',org:'越秀车管',feeType:'代办过户费',settleMonth:'2025-12',payee:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'fnc-approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10'},
+        // 待支付
+        {id:'BS202601002',title:'2026年1月服务费结算申请（天河）',org:'天河车管',feeType:'服务商服务费',settleMonth:'2026-01',payee:'常有（天津）信息技术有限公司',count:6,amount:'2,400.00',status:'fnc-pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'张三',time:'2026-01-16'},
+        {id:'BS202601005',title:'2026年1月服务费结算申请',org:'天河车管',feeType:'服务商服务费',settleMonth:'2026-01',payee:'好快帮（广州）科技有限公司',count:12,amount:'4,200.00',status:'fnc-pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'李明',time:'2026-01-18'},
+        // 已结算
+        {id:'BS202601004',title:'2026年1月过户费结算申请',org:'番禺车管分所',feeType:'代办过户费',settleMonth:'2026-01',payee:'好快帮（广州）科技有限公司',count:4,amount:'1,200.00',status:'fnc-settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'张三',time:'2026-01-20'},
+        // 已驳回
+        {id:'BS202512004',title:'2025年12月牌证费结算申请',org:'番禺车管分所',feeType:'牌证费及邮寄费',settleMonth:'2025-12',payee:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'fnc-rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'张三',time:'2026-01-08'},
+      ],
       // FNC Voucher Detail
       voucherDetailVisible: false,
       voucherCurrentDetail: null,
@@ -1654,6 +1823,10 @@ new Vue({
       if (this.bmsStatusTab === 'all') return this.bmsAllData
       return this.bmsAllData.filter(r => r.status === this.bmsStatusTab)
     },
+    filteredFncList() {
+      if (this.fncStatusTab === 'all') return this.fncAllData
+      return this.fncAllData.filter(r => r.status === this.fncStatusTab)
+    },
     filteredVoucherList() {
       if (this.voucherTab === 'all' || this.voucherTab === 'mapping') return this.voucherAllData
       return this.voucherAllData.filter(v => v.statusKey === this.voucherTab)
@@ -1716,8 +1889,24 @@ new Vue({
       this.approvalDetailVisible = false
       this.importDialog = false
       this.showRejectDialog = false
-      this.showReturnFnc = false
       this.showReturnVoucher = false
+      this.showFncApproveDialog = false
+      this.showFncRejectDialog = false
+      this.showFncSettleConfirm1 = false
+      this.showFncSettleConfirm2 = false
+      this.showFncUploadInvoice = false
+      this.showFncDeleteInvoice = false
+    },
+    handleFncFileSelect(e) {
+      Array.from(e.target.files).forEach(f => {
+        if (this.fncUploadedFiles.length < 20) this.fncUploadedFiles.push(f.name)
+      })
+      e.target.value = ''
+    },
+    handleFncDrop(e) {
+      Array.from(e.dataTransfer.files).forEach(f => {
+        if (this.fncUploadedFiles.length < 20) this.fncUploadedFiles.push(f.name)
+      })
     },
     openDetail(record) {
       this.bmsCurrentDetail = record
