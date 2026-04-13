@@ -445,9 +445,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="card">
               <div class="card-header">
                 <span class="card-title">BMS — 批量结算列表</span>
-                <div style="display:flex;gap:8px">
+                <!-- 非待提交 tab：显示"导入"和"申请结算" -->
+                <div v-if="bmsStatusTab!=='draft'" style="display:flex;gap:8px">
                   <button class="btn btn-default" @click="importDialog=true">📥 导入对账明细</button>
-                  <button class="btn btn-primary" @click="bmsCheckedCount > 0 ? bmsView='form' : showToast('请先勾选需要申请结算的明细记录')">＋ 申请结算</button>
+                  <button class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
+                </div>
+                <!-- 待提交 tab：仅显示"马上申请结算" -->
+                <div v-if="bmsStatusTab==='draft'" style="display:flex;gap:8px">
+                  <button class="btn btn-primary" @click="bmsView='form'">马上申请结算</button>
                 </div>
               </div>
               <div class="card-body">
@@ -481,65 +486,102 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </select>
                   </div>
                   <button class="btn btn-primary btn-sm" @click="filterChanged=false;$nextTick(()=>{filterChanged=true;showToast('查询成功，显示匹配结果')})">🔍 查询</button>
-                  <button class="btn btn-default btn-sm" @click="filterChanged=false">重置</button>
                 </div>
                 <div v-if="filterChanged" class="alert alert-info" style="margin-bottom:10px">🔍 已根据筛选条件过滤，当前显示匹配结果。</div>
 
-                <!-- List table -->
-                <div class="table-wrap">
-                  <table>
-                    <tr>
-                      <th class="check-col"><input type="checkbox" @change="bmsCheckedCount = $event.target.checked ? filteredBmsList.length : 0"></th>
-                      <th>标题</th><th>结算机构</th><th>费用类型</th><th>结算年月</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
-                    </tr>
-                    <template v-for="r in filteredBmsList" :key="r.id">
+                <!-- 待提交 tab：车辆列表（可勾选） -->
+                <div v-if="bmsStatusTab==='draft'">
+                  <div class="alert alert-info" style="margin-bottom:10px">📋 以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。</div>
+                  <div class="table-wrap">
+                    <table>
                       <tr>
-                        <td class="check-col"><input type="checkbox" @change="bmsCheckedCount = Math.max(0, bmsCheckedCount + ($event.target.checked ? 1 : -1))"></td>
-                        <td style="max-width:140px;white-space:normal">{{r.title}}</td>
-                        <td>{{r.org}}</td>
-                        <td>{{r.feeType}}</td>
-                        <td>{{r.settleMonth}}</td>
-                        <td style="max-width:120px;white-space:normal;font-size:11px">{{r.payee}}</td>
-                        <td class="amount">{{r.amount}}</td>
-                        <td style="max-width:140px;white-space:normal;font-size:11px;color:#555">{{r.settleDesc||'—'}}</td>
-                        <td style="font-size:11px">{{r.handler||'—'}}</td>
-                        <td>
-                          <span v-if="r.approvalStatus" class="tag" :class="r.approvalTagClass">{{r.approvalStatus}}</span>
-                          <span v-else style="color:#999">—</span>
-                        </td>
-                        <td>
-                          <span class="tag" :class="r.tagClass">{{r.statusLabel}}</span>
-                        </td>
-                        <td>{{r.applicant}}</td>
-                        <td>{{r.time}}</td>
-                        <td style="white-space:nowrap">
-                          <button class="btn-link" @click="openDetail(r)">查看</button>
-                          <span v-if="r.status==='approval'"> | <button class="btn-link" style="color:#1890ff" @click="showApproveDialog=true">审批通过</button> | <button class="btn-link" style="color:#ff4d4f" @click="showRejectDialog=true">驳回</button></span>
-                          <span v-if="r.status==='pay'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
-                          <span v-if="r.status==='settled'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
-                          <span v-if="r.status==='rejected'"> | <button class="btn-link" @click="bmsView='form'">修改</button> | <button class="btn-link" style="color:#ff4d4f" @click="showDiscardConfirm=true">废弃</button></span>
-                        </td>
+                        <th class="check-col"><input type="checkbox" @change="bmsVehicleChecked=$event.target.checked?bmsVehicleData.map((_,i)=>i):[]"></th>
+                        <th>车牌号</th><th>费用类型</th><th>结算机构</th><th>BIP部门编码</th>
+                        <th>实收金额(含税)</th><th>预估结算金额(含税)</th><th>实际结算金额(含税)</th>
+                        <th>操作</th>
                       </tr>
-                      <!-- 已驳回：展示驳回理由 -->
-                      <tr v-if="r.status==='rejected' && r.rejectReason" class="reject-reason-row">
-                        <td></td>
-                        <td colspan="13">
-                          <span style="color:#999;margin-right:6px">驳回原因：</span>
-                          <span class="reject-reason-cell">{{r.rejectReason}}</span>
-                          <span style="color:#999;margin-left:12px;font-size:11px">— {{r.rejectBy}} · {{r.rejectTime}}</span>
-                        </td>
+                      <tr v-for="(v,i) in bmsVehicleData" :key="v.plate" :style="bmsVehicleChecked.includes(i)?'background:#e6f7ff':''">
+                        <td class="check-col"><input type="checkbox" :checked="bmsVehicleChecked.includes(i)" @change="$event.target.checked?bmsVehicleChecked.push(i):bmsVehicleChecked.splice(bmsVehicleChecked.indexOf(i),1)"></td>
+                        <td><b>{{v.plate}}</b></td>
+                        <td>{{v.feeType}}</td>
+                        <td>{{v.org}}</td>
+                        <td style="font-size:11px;color:#555">{{v.bipCode||'—'}}</td>
+                        <td class="amount">{{v.receivedAmt}}</td>
+                        <td class="amount">{{v.estAmt}}</td>
+                        <td class="amount">{{v.actualAmt}}</td>
+                        <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(i,1);showToast('已移除')">移除</button></td>
                       </tr>
-                    </template>
-                    <tr v-if="filteredBmsList.length===0">
-                      <td colspan="14" style="text-align:center;color:#999;padding:30px">暂无数据</td>
-                    </tr>
-                  </table>
+                      <tr v-if="bmsVehicleData.length===0">
+                        <td colspan="9" style="text-align:center;color:#999;padding:30px">暂无待结算车辆，请先导入对账明细</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+                    <span style="font-size:12px;color:#666">共 {{bmsVehicleData.length}} 条，已勾选 {{bmsVehicleChecked.length}} 条</span>
+                    <div class="pagination" style="margin-top:0">
+                      <div class="page-btn">‹</div>
+                      <div class="page-btn active">1</div>
+                      <div class="page-btn">›</div>
+                    </div>
+                  </div>
                 </div>
-                <div class="pagination">
-                  <span>共 {{filteredBmsList.length}} 条</span>
-                  <div class="page-btn">‹</div>
-                  <div class="page-btn active">1</div>
-                  <div class="page-btn">›</div>
+
+                <!-- 其他 tab：申请单列表 -->
+                <div v-if="bmsStatusTab!=='draft'">
+                  <div class="table-wrap">
+                    <table>
+                      <tr>
+                        <th class="check-col"><input type="checkbox" @change="bmsCheckedCount = $event.target.checked ? filteredBmsList.length : 0"></th>
+                        <th>标题</th><th>BIP部门编码</th><th>结算机构</th><th>费用类型</th><th>结算年月</th><th>门店名称</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
+                      </tr>
+                      <template v-for="r in filteredBmsList" :key="r.id">
+                        <tr>
+                          <td class="check-col"><input type="checkbox" @change="bmsCheckedCount = Math.max(0, bmsCheckedCount + ($event.target.checked ? 1 : -1))"></td>
+                          <td style="max-width:140px;white-space:normal">{{r.title}}</td>
+                          <td style="font-size:11px;color:#555">{{r.bipCode||'—'}}</td>
+                          <td>{{r.org}}</td>
+                          <td>{{r.feeType}}</td>
+                          <td>{{r.settleMonth}}</td>
+                          <td style="font-size:11px;color:#555">{{r.storeName||'—'}}</td>
+                          <td style="max-width:120px;white-space:normal;font-size:11px">{{r.payee}}</td>
+                          <td class="amount">{{r.amount}}</td>
+                          <td style="max-width:140px;white-space:normal;font-size:11px;color:#555">{{r.settleDesc||'—'}}</td>
+                          <td style="font-size:11px">{{r.handler||'—'}}</td>
+                          <td>
+                            <span v-if="r.approvalStatus" class="tag" :class="r.approvalTagClass">{{r.approvalStatus}}</span>
+                            <span v-else style="color:#999">—</span>
+                          </td>
+                          <td><span class="tag" :class="r.tagClass">{{r.statusLabel}}</span></td>
+                          <td>{{r.applicant}}</td>
+                          <td>{{r.time}}</td>
+                          <td style="white-space:nowrap">
+                            <button class="btn-link" @click="openDetail(r)">查看</button>
+                            <span v-if="r.status==='approval'"> | <button class="btn-link" style="color:#1890ff" @click="showApproveDialog=true">审批通过</button> | <button class="btn-link" style="color:#ff4d4f" @click="showRejectDialog=true">驳回</button></span>
+                            <span v-if="r.status==='pay'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
+                            <span v-if="r.status==='settled'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
+                            <span v-if="r.status==='rejected'"> | <button class="btn-link" @click="bmsView='form'">修改</button> | <button class="btn-link" style="color:#ff4d4f" @click="showDiscardConfirm=true">废弃</button></span>
+                          </td>
+                        </tr>
+                        <tr v-if="r.status==='rejected' && r.rejectReason" class="reject-reason-row">
+                          <td></td>
+                          <td colspan="15">
+                            <span style="color:#999;margin-right:6px">驳回原因：</span>
+                            <span class="reject-reason-cell">{{r.rejectReason}}</span>
+                            <span style="color:#999;margin-left:12px;font-size:11px">— {{r.rejectBy}} · {{r.rejectTime}}</span>
+                          </td>
+                        </tr>
+                      </template>
+                      <tr v-if="filteredBmsList.length===0">
+                        <td colspan="16" style="text-align:center;color:#999;padding:30px">暂无数据</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="pagination">
+                    <span>共 {{filteredBmsList.length}} 条</span>
+                    <div class="page-btn">‹</div>
+                    <div class="page-btn active">1</div>
+                    <div class="page-btn">›</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -548,44 +590,46 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <!-- Import Dialog -->
           <div class="modal-mask" v-if="importDialog" @click.self="importDialog=false">
             <div class="modal" style="max-width:640px">
-              <div class="modal-header"><span class="modal-title">📥 导入对账明细</span><span class="modal-close" @click="importDialog=false">✕</span></div>
+              <div class="modal-header"><span class="modal-title">📥 导入对账明细</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
               <div class="modal-body">
+                <!-- Step 1: 上传文件 -->
                 <div v-if="importStep===1">
-                  <div class="form-row">
-                    <div class="form-item">
-                      <label class="form-label req">合作方</label>
-                      <div class="form-control">
-                        <select class="sel" style="width:100%"><option>常有（天津）信息技术有限公司</option><option>好快帮（广州）科技有限公司</option></select>
-                      </div>
+                  <div class="alert alert-info" style="align-items:flex-start">
+                    <div style="flex:1">
+                      <b>标准模板字段：</b>车牌号 / VIN码（非必填）/ 门店 / 费用项目 / 实际结算金额(含税)<br>
+                      <span style="font-size:11px;color:#888;margin-top:4px;display:block">费用项目下拉值：服务费(合作商返利)、过户费(代办过户费)、整理费(牌证费及邮寄费)</span>
                     </div>
-                    <div class="form-item">
-                      <label class="form-label req">结算年月</label>
-                      <div class="form-control"><input class="inp" type="month" style="width:100%" value="2026-01"></div>
-                    </div>
+                    <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
                   </div>
-                  <div class="alert alert-info">📋 请使用系统标准模板导入（含"费用项目"必填字段）。<button class="btn-link" style="margin-left:4px">下载标准模板</button></div>
-                  <div class="upload-area" @click="importStep=2">
+                  <div class="upload-area" style="margin-top:4px" @click="importStep=2">
                     <div class="upload-icon">📊</div>
-                    <div>点击上传Excel文件（仅支持系统标准模板格式）</div>
+                    <div>点击上传 Excel 文件（仅支持系统标准模板格式）</div>
                     <div class="upload-hint">点击此处模拟上传并预览</div>
                   </div>
                 </div>
+                <!-- Step 2: 预览 -->
                 <div v-if="importStep===2">
-                  <div class="summary-bar">预览：<b>5条明细</b> &nbsp;|&nbsp; 合计：<b class="amount">¥ 2,860.00</b> &nbsp;|&nbsp; 合作方：常有（天津）信息技术有限公司</div>
-                  <table>
-                    <tr><th>车牌号</th><th>VIN码</th><th>费用项目</th><th>门店名称</th><th>结算金额（元）</th></tr>
-                    <tr><td>粤D·22222</td><td>LFVBBAKJ5N5xxxxxx</td><td>服务费</td><td>广州越秀门店</td><td class="amount">560.00</td></tr>
-                    <tr><td>粤E·33333</td><td>LFVBBAKJ5N5xxxxxy</td><td>服务费</td><td>广州越秀门店</td><td class="amount">600.00</td></tr>
-                    <tr><td>粤F·44444</td><td>LFVBBAKJ5N5xxxxxz</td><td>过户费</td><td>天河门店</td><td class="amount">700.00</td></tr>
-                    <tr><td>粤G·55555</td><td>LFVBBAKJ5N5xxxxxa</td><td>服务费</td><td>天河门店</td><td class="amount">500.00</td></tr>
-                    <tr><td>粤H·66666</td><td>LFVBBAKJ5N5xxxxxb</td><td>整理费</td><td>番禺门店</td><td class="amount">500.00</td></tr>
-                  </table>
-                  <div class="alert alert-info" style="margin-top:12px">✅ 校验通过，无重复记录（查重维度：合作方+年月+VIN+费用项目）</div>
+                  <div class="summary-bar">预览：<b>5条明细</b> &nbsp;|&nbsp; 合计：<b class="amount">¥ 2,860.00</b></div>
+                  <div class="table-wrap">
+                    <table>
+                      <tr>
+                        <th>车牌号</th><th>VIN码</th><th>门店</th>
+                        <th>费用项目</th>
+                        <th>实际结算金额(含税)</th>
+                      </tr>
+                      <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td>广州越秀门店</td><td><span class="tag tag-blue">服务费(合作商返利)</span></td><td class="amount">560.00</td></tr>
+                      <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td>广州越秀门店</td><td><span class="tag tag-blue">服务费(合作商返利)</span></td><td class="amount">600.00</td></tr>
+                      <tr><td><b>粤F·44444</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td>天河门店</td><td><span class="tag tag-orange">过户费(代办过户费)</span></td><td class="amount">700.00</td></tr>
+                      <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td>天河门店</td><td><span class="tag tag-blue">服务费(合作商返利)</span></td><td class="amount">500.00</td></tr>
+                      <tr><td><b>粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td>番禺门店</td><td><span class="tag tag-green">整理费(牌证费及邮寄费)</span></td><td class="amount">500.00</td></tr>
+                    </table>
+                  </div>
+                  <div class="alert alert-success" style="margin-top:12px">✅ 校验通过，无重复记录（查重维度：VIN+费用项目）</div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-default" @click="importStep===1?importDialog=false:importStep=1">{{importStep===1?'取消':'上一步'}}</button>
-                <button class="btn btn-primary" @click="importStep===1?importStep=2:(importDialog=false,importStep=1)">{{importStep===1?'下一步（预览）':'确认导入'}}</button>
+                <button class="btn btn-default" @click="importStep===1?(importDialog=false):(importStep=1)">{{importStep===1?'取消':'上一步'}}</button>
+                <button class="btn btn-primary" @click="importStep===1?importStep=2:confirmImport()">{{importStep===1?'下一步（预览）':'确认导入'}}</button>
               </div>
             </div>
           </div>
@@ -1825,16 +1869,22 @@ new Vue({
       bmsCheckedCount: 0,
       bmsStatusTabs: [
         {key:'all',    label:'全部',  count:0},
-        {key:'draft',  label:'待提交', count:2},
+        {key:'draft',  label:'待提交', count:5},
         {key:'approval',label:'待审批',count:3},
         {key:'pay',    label:'待支付', count:2},
         {key:'settled',label:'已结算', count:2},
         {key:'rejected',label:'已驳回',count:2},
       ],
+      // 待提交：车辆级别数据（独立于申请单列表）
+      bmsVehicleData: [
+        {plate:'粤A·12345',feeType:'服务费(合作商返利)',org:'番禺车管分所',bipCode:'7401',receivedAmt:'360.00',estAmt:'360.00',actualAmt:'360.00'},
+        {plate:'粤B·67890',feeType:'服务费(合作商返利)',org:'番禺车管分所',bipCode:'7401',receivedAmt:'360.00',estAmt:'360.00',actualAmt:'360.00'},
+        {plate:'粤C·11111',feeType:'过户费(代办过户费)',org:'天河车管',bipCode:'70',receivedAmt:'400.00',estAmt:'400.00',actualAmt:'400.00'},
+        {plate:'粤D·22222',feeType:'服务费(合作商返利)',org:'番禺车管分所',bipCode:'7401',receivedAmt:'240.00',estAmt:'240.00',actualAmt:'240.00'},
+        {plate:'粤E·33333',feeType:'整理费(牌证费及邮寄费)',org:'越秀车管',bipCode:'7402',receivedAmt:'500.00',estAmt:'500.00',actualAmt:'500.00'},
+      ],
+      bmsVehicleChecked: [],
       bmsAllData: [
-        // 待提交
-        {id:'BS202602001',title:'2026年2月服务费结算申请',org:'番禺车管分所',feeType:'服务费(合作商返利)',settleMonth:'2026-02',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:5,amount:'1,800.00',status:'draft',statusLabel:'待提交',tagClass:'tag-gray',applicant:'张三',time:'2026-02-10',settleDesc:'',handler:'',approvalStatus:'',approvalTagClass:''},
-        {id:'BS202602002',title:'2026年2月过户费结算申请',org:'天河车管',feeType:'过户费(代办过户费)',settleMonth:'2026-02',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:3,amount:'900.00',status:'draft',statusLabel:'待提交',tagClass:'tag-gray',applicant:'李明',time:'2026-02-11',settleDesc:'',handler:'',approvalStatus:'',approvalTagClass:''},
         // 待审批
         {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付2026年1月，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批'},
         {id:'BS202512003',title:'2025年12月过户费结算申请',org:'越秀车管',feeType:'过户费(代办过户费)',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10',settleDesc:'付2025年12月，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
@@ -2016,8 +2066,11 @@ new Vue({
       return map[this.activeMenu] || {}
     },
     filteredBmsList() {
-      if (this.bmsStatusTab === 'all') return this.bmsAllData
-      return this.bmsAllData.filter(r => r.status === this.bmsStatusTab)
+      // 待提交 tab 用独立的 bmsVehicleData，此处只处理申请单
+      const list = this.bmsAllData // bmsAllData no longer contains 'draft' records
+      if (this.bmsStatusTab === 'all') return list
+      if (this.bmsStatusTab === 'draft') return [] // handled separately via bmsVehicleData
+      return list.filter(r => r.status === this.bmsStatusTab)
     },
     filteredFncList() {
       if (this.fncStatusTab === 'all') return this.fncAllData
@@ -2060,6 +2113,42 @@ new Vue({
         if (this.formUploadedFiles.length < 5) this.formUploadedFiles.push(f.name)
       })
       e.target.value = ''
+    },
+    downloadImportTemplate() {
+      const BOM = '\ufeff'
+      const headers = ['车牌号', 'VIN码(非必填)', '门店', '费用项目', '实际结算金额(含税)']
+      const note = ['', '', '', '可选值：服务费(合作商返利) / 过户费(代办过户费) / 整理费(牌证费及邮寄费)', '']
+      const example = ['粤A·12345', 'LFV3A2BM2N3xxxxx1', '广州番禺门店', '服务费(合作商返利)', '360.00']
+      const csv = [headers, note, example].map(r => r.join(',')).join('\r\n')
+      const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = '批量结算对账明细标准模板.csv'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      this.showToast('标准模板下载成功')
+    },
+    confirmImport() {
+      // 模拟将预览数据追加进待提交车辆列表
+      const imported = [
+        {plate:'粤D·22222',feeType:'服务费(合作商返利)',org:'越秀车管',bipCode:'',receivedAmt:'560.00',estAmt:'560.00',actualAmt:'560.00'},
+        {plate:'粤E·33333',feeType:'服务费(合作商返利)',org:'越秀车管',bipCode:'',receivedAmt:'600.00',estAmt:'600.00',actualAmt:'600.00'},
+        {plate:'粤F·44444',feeType:'过户费(代办过户费)',org:'天河车管',bipCode:'',receivedAmt:'700.00',estAmt:'700.00',actualAmt:'700.00'},
+        {plate:'粤G·55555',feeType:'服务费(合作商返利)',org:'天河车管',bipCode:'',receivedAmt:'500.00',estAmt:'500.00',actualAmt:'500.00'},
+        {plate:'粤H·66666',feeType:'整理费(牌证费及邮寄费)',org:'番禺车管分所',bipCode:'',receivedAmt:'500.00',estAmt:'500.00',actualAmt:'500.00'},
+      ]
+      imported.forEach(v => {
+        if (!this.bmsVehicleData.find(x => x.plate === v.plate)) {
+          this.bmsVehicleData.push(v)
+        }
+      })
+      this.importDialog = false
+      this.importStep = 1
+      this.bmsStatusTab = 'draft'
+      this.showToast('导入成功，已自动定位至「待提交」tab')
     },
     handleFormDrop(e) {
       Array.from(e.dataTransfer.files).forEach(f => {
