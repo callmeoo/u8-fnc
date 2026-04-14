@@ -453,15 +453,16 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="card-body">
                 <div class="alert alert-info" style="margin-bottom:12px">⚙️ U8部门编码与部门名称映射关系，供填写申请表单时选择BIP部门使用。</div>
                 <div class="filter-bar" style="margin-bottom:12px">
-                  <div class="filter-item"><label>部门编码</label><input class="inp" placeholder="编码" style="width:80px"></div>
-                  <div class="filter-item"><label>部门名称</label><input class="inp" placeholder="名称" style="width:140px"></div>
-                  <div class="filter-item"><label>状态</label><select class="sel"><option>全部</option><option>启用</option><option>停用</option></select></div>
-                  <button class="btn btn-primary btn-sm">查询</button>
+                  <div class="filter-item"><label>部门编码</label><input class="inp" placeholder="编码" style="width:80px" v-model="deptMapFilter.code"></div>
+                  <div class="filter-item"><label>部门名称</label><input class="inp" placeholder="名称" style="width:140px" v-model="deptMapFilter.name"></div>
+                  <div class="filter-item"><label>状态</label><select class="sel" v-model="deptMapFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredDeptMapping.length + ' 条')">查询</button>
+                  <button class="btn btn-default btn-sm" @click="deptMapFilter={code:'',name:'',active:'全部'}">重置</button>
                 </div>
                 <div class="table-wrap">
                   <table>
                     <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th></tr>
-                    <tr v-for="d in deptMappingData" :key="d.code">
+                    <tr v-for="d in filteredDeptMapping" :key="d.code">
                       <td><b>{{d.code}}</b></td>
                       <td>{{d.name}}</td>
                       <td style="color:#999">{{d.remark||'—'}}</td>
@@ -470,7 +471,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </tr>
                   </table>
                 </div>
-                <div class="pagination"><span>共 {{deptMappingData.length}} 条</span><div class="page-btn active">1</div></div>
+                <div class="pagination"><span>共 {{filteredDeptMapping.length}} 条</span><div class="page-btn active">1</div></div>
               </div>
             </div>
 
@@ -497,45 +498,45 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
                 <!-- Filter bar -->
                 <div class="filter-bar">
-                  <div class="filter-item"><label>申请时间</label><input class="inp" type="date" style="width:120px" @change="filterChanged=true"><span>至</span><input class="inp" type="date" style="width:120px" @change="filterChanged=true"></div>
-                  <div class="filter-item" v-if="bmsStatusTab!=='draft'"><label>结算年月</label><input class="inp" type="month" style="width:120px" @change="filterChanged=true"></div>
+                  <div class="filter-item"><label>申请时间</label><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateFrom"><span>至</span><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateTo"></div>
+                  <div class="filter-item" v-if="bmsStatusTab!=='draft'"><label>结算年月</label><input class="inp" type="month" style="width:120px" v-model="bmsFilter.settleMonth"></div>
                   <div class="filter-item">
                     <label>BIP部门名称</label>
-                    <select class="sel" @change="filterChanged=true">
+                    <select class="sel" v-model="bmsFilter.dept">
                       <option>全部</option><option>番禺车管分所</option><option>天河车管</option><option>越秀车管</option><option>花都车管</option>
                     </select>
                   </div>
                   <div class="filter-item">
                     <label>费用类型</label>
-                    <select class="sel" @change="filterChanged=true">
+                    <select class="sel" v-model="bmsFilter.feeType">
                       <option>全部</option><option>服务费(合作商返利)</option><option>过户费(代办过户费)</option><option>整理费(牌证费及邮寄费)</option>
                     </select>
                   </div>
                   <div class="filter-item">
                     <label>集团</label>
-                    <input class="inp" style="width:110px" placeholder="搜索集团..." list="bms-group-list" @input="filterChanged=true">
+                    <input class="inp" style="width:110px" placeholder="搜索集团..." list="bms-group-list" v-model="bmsFilter.group">
                     <datalist id="bms-group-list"><option>广州区域</option><option>深圳区域</option><option>佛山区域</option></datalist>
                   </div>
                   <div class="filter-item">
                     <label>门店</label>
-                    <input class="inp" style="width:120px" placeholder="搜索门店..." list="bms-store-list" @input="filterChanged=true">
+                    <input class="inp" style="width:120px" placeholder="搜索门店..." list="bms-store-list" v-model="bmsFilter.store">
                     <datalist id="bms-store-list"><option>广州番禺门店</option><option>广州天河门店</option><option>广州越秀门店</option><option>广州花都门店</option></datalist>
                   </div>
                   <div class="filter-item">
                     <label>服务中心</label>
-                    <input class="inp" style="width:130px" placeholder="搜索服务中心..." list="bms-sc-list" @input="filterChanged=true">
+                    <input class="inp" style="width:130px" placeholder="搜索服务中心..." list="bms-sc-list" v-model="bmsFilter.serviceCenter">
                     <datalist id="bms-sc-list"><option>广州番禺服务中心</option><option>广州天河服务中心</option><option>广州越秀服务中心</option><option>广州花都服务中心</option></datalist>
                   </div>
-                  <div class="filter-item"><label>申请人</label><input class="inp" placeholder="申请人" style="width:100px" @input="filterChanged=true"></div>
+                  <div class="filter-item"><label>申请人</label><input class="inp" placeholder="申请人" style="width:100px" v-model="bmsFilter.applicant"></div>
                   <div class="filter-item">
                     <label>结算状态</label>
-                    <select class="sel" @change="filterChanged=true">
+                    <select class="sel" v-model="bmsFilter.status">
                       <option>全部</option><option>待提交</option><option>待审批</option><option>待支付</option><option>已结算</option><option>已驳回</option>
                     </select>
                   </div>
-                  <button class="btn btn-primary btn-sm" @click="filterChanged=false;$nextTick(()=>{filterChanged=true;showToast('查询成功，显示匹配结果')})">🔍 查询</button>
+                  <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredBmsList.length + ' 条')">🔍 查询</button>
+                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',group:'',store:'',serviceCenter:'',applicant:'',status:'全部'}">重置</button>
                 </div>
-                <div v-if="filterChanged" class="alert alert-info" style="margin-bottom:10px">🔍 已根据筛选条件过滤，当前显示匹配结果。</div>
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
                 <div v-if="bmsStatusTab==='draft'">
@@ -579,12 +580,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th class="check-col"><input type="checkbox" @change="bmsCheckedCount = $event.target.checked ? filteredBmsList.length : 0"></th>
+                        <th class="check-col"><input type="checkbox" :checked="filteredBmsList.length>0 && bmsCheckedIds.length===filteredBmsList.length" @change="bmsCheckedIds=$event.target.checked?filteredBmsList.map(r=>r.id):[]"></th>
                         <th>标题</th><th>BIP部门编码</th><th>服务中心</th><th>费用类型</th><th>结算年月</th><th>集团</th><th>门店名称</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
                       </tr>
                       <template v-for="r in filteredBmsList" :key="r.id">
-                        <tr>
-                          <td class="check-col"><input type="checkbox" @change="bmsCheckedCount = Math.max(0, bmsCheckedCount + ($event.target.checked ? 1 : -1))"></td>
+                        <tr :style="bmsCheckedIds.includes(r.id)?'background:#e6f7ff':''">
+                          <td class="check-col"><input type="checkbox" :checked="bmsCheckedIds.includes(r.id)" @change="$event.target.checked?bmsCheckedIds.push(r.id):bmsCheckedIds.splice(bmsCheckedIds.indexOf(r.id),1)"></td>
                           <td style="max-width:140px;white-space:normal">{{r.title}}</td>
                           <td style="font-size:11px;color:#555">{{r.bipCode||'—'}}</td>
                           <td style="font-size:11px;color:#555">{{r.serviceCenter||'—'}}</td>
@@ -626,7 +627,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </table>
                   </div>
                   <div class="pagination">
-                    <span>共 {{filteredBmsList.length}} 条</span>
+                    <span>共 {{filteredBmsList.length}} 条<span v-if="bmsCheckedIds.length">，已选 {{bmsCheckedIds.length}} 条</span></span>
                     <div class="page-btn">‹</div>
                     <div class="page-btn active">1</div>
                     <div class="page-btn">›</div>
@@ -2187,7 +2188,8 @@ new Vue({
   data() {
     return {
       activeMenu: 'bms',
-      filterChanged: false,
+      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', group:'', store:'', serviceCenter:'', applicant:'', status:'全部' },
+      deptMapFilter: { code:'', name:'', active:'全部' },
       toastMsg: '',
       // 填写申请表单 — 表单数据
       formPayer: 'weipu',
@@ -2207,7 +2209,7 @@ new Vue({
       bmsListTab: 'settle',
       bmsStatusTab: 'all',
       bmsCurrentDetail: null,
-      bmsCheckedCount: 0,
+      bmsCheckedIds: [],
       bmsStatusTabs: [
         {key:'all',    label:'全部',  count:0},
         {key:'draft',  label:'待提交', count:5},
@@ -2416,11 +2418,26 @@ new Vue({
       return map[this.activeMenu] || {}
     },
     filteredBmsList() {
-      // 待提交 tab 用独立的 bmsVehicleData，此处只处理申请单
-      const list = this.bmsAllData // bmsAllData no longer contains 'draft' records
-      if (this.bmsStatusTab === 'all') return list
-      if (this.bmsStatusTab === 'draft') return [] // handled separately via bmsVehicleData
-      return list.filter(r => r.status === this.bmsStatusTab)
+      if (this.bmsStatusTab === 'draft') return []
+      let list = this.bmsAllData
+      if (this.bmsStatusTab !== 'all') list = list.filter(r => r.status === this.bmsStatusTab)
+      const f = this.bmsFilter
+      if (f.dept && f.dept !== '全部') list = list.filter(r => r.org === f.dept)
+      if (f.feeType && f.feeType !== '全部') list = list.filter(r => r.feeType === f.feeType)
+      if (f.group) list = list.filter(r => (r.group||'').includes(f.group))
+      if (f.store) list = list.filter(r => (r.storeName||'').includes(f.store))
+      if (f.serviceCenter) list = list.filter(r => (r.serviceCenter||'').includes(f.serviceCenter))
+      if (f.applicant) list = list.filter(r => r.applicant.includes(f.applicant))
+      if (f.status && f.status !== '全部') list = list.filter(r => r.statusLabel === f.status)
+      return list
+    },
+    filteredDeptMapping() {
+      let list = this.deptMappingData
+      const f = this.deptMapFilter
+      if (f.code) list = list.filter(d => d.code.includes(f.code))
+      if (f.name) list = list.filter(d => d.name.includes(f.name))
+      if (f.active !== '全部') list = list.filter(d => d.active === (f.active === '启用'))
+      return list
     },
     filteredFncList() {
       if (this.fncStatusTab === 'all') return this.fncAllData
