@@ -401,6 +401,15 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </span>
                 <span v-if="formUploadedFiles.length===0" style="color:#bbb;font-size:12px">暂无已上传发票</span>
               </div>
+              <div class="form-row" style="margin-top:8px">
+                <div class="form-item full">
+                  <label class="form-label">备注</label>
+                  <div class="form-control">
+                    <textarea class="inp" rows="3" style="width:100%;resize:vertical" placeholder="选填，不超过200字，如实际存在已结算车辆的补充说明请在此注明" maxlength="200" v-model="formRemark"></textarea>
+                    <div class="form-note">{{formRemark.length}}/200字</div>
+                  </div>
+                </div>
+              </div>
               <div class="section-title" style="margin-bottom:10px;margin-top:20px">已选明细（4条）</div>
               <div class="table-wrap">
                 <table>
@@ -871,6 +880,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       </div>
                     </div>
                   </div>
+                </div>
+                <!-- 备注 -->
+                <div v-if="bmsCurrentDetail.remark" style="margin-top:4px;margin-bottom:4px">
+                  <hr class="sep">
+                  <div class="section-title" style="margin-bottom:6px">备注</div>
+                  <div style="font-size:12px;color:#555;line-height:1.8;padding:8px 12px;background:#fafafa;border-radius:4px;border:1px solid #f0f0f0">{{bmsCurrentDetail.remark}}</div>
                 </div>
                 <hr class="sep">
                 <div class="section-title" style="margin-bottom:10px">发票附件（2张）<button class="btn btn-default btn-sm" style="margin-left:10px;font-size:11px" @click="showUploadInvoice=true">＋ 上传发票</button></div>
@@ -1757,53 +1772,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <!-- ==================== 审批流 ==================== -->
         <div v-if="activeMenu==='approval'">
 
-          <!-- 需求点1：批量结算审批流（3种费用类型，配置不同） -->
+          <!-- 需求点1：付款审批配置 -->
           <div class="card" style="margin-bottom:12px">
             <div class="card-header"><span class="card-title">需求点1：付款审批配置</span></div>
             <div class="card-body">
               <div class="alert alert-info" style="margin-bottom:14px">💡 三种费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
-              <div class="tabs">
-                <span class="tab" :class="{active:approvalFeeTab==='service'}" @click="approvalFeeTab='service'">服务费(合作商返利)</span>
-                <span class="tab" :class="{active:approvalFeeTab==='transfer'}" @click="approvalFeeTab='transfer'">过户费(代办过户费)</span>
-                <span class="tab" :class="{active:approvalFeeTab==='organize'}" @click="approvalFeeTab='organize'">整理费(牌证费及邮寄费)</span>
-              </div>
-
-              <!-- 服务费 审批流 -->
-              <div v-if="approvalFeeTab==='service'" style="display:flex;gap:40px;padding:16px 0">
+              <div style="display:flex;gap:40px;padding:8px 0">
                 <div style="flex:1">
-                  <div class="info-block" style="margin-bottom:12px"><b>费用类型：</b>服务费(合作商返利)&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
-                  <div class="approval-flow">
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">申请人</div><div class="flow-role">BMS侧发起申请</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理</div><div class="flow-role">第1级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务人员（麦经理）</div><div class="flow-role">第2级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域总监</div><div class="flow-role">第3级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务负责人</div><div class="flow-role">第4级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">总经理</div><div class="flow-role">第5级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div></div><div class="flow-content"><div class="flow-name">进入「待支付」</div><div class="flow-role">等待FNC财务付款</div></div></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 过户费 审批流 -->
-              <div v-if="approvalFeeTab==='transfer'" style="display:flex;gap:40px;padding:16px 0">
-                <div style="flex:1">
-                  <div class="info-block" style="margin-bottom:12px"><b>费用类型：</b>过户费(代办过户费)&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
-                  <div class="approval-flow">
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">申请人</div><div class="flow-role">BMS侧发起申请</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理</div><div class="flow-role">第1级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务人员（麦经理）</div><div class="flow-role">第2级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域总监</div><div class="flow-role">第3级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务负责人</div><div class="flow-role">第4级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">总经理</div><div class="flow-role">第5级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div></div><div class="flow-content"><div class="flow-name">进入「待支付」</div><div class="flow-role">等待FNC财务付款</div></div></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 整理费 审批流 -->
-              <div v-if="approvalFeeTab==='organize'" style="display:flex;gap:40px;padding:16px 0">
-                <div style="flex:1">
-                  <div class="info-block" style="margin-bottom:12px"><b>费用类型：</b>整理费(牌证费及邮寄费)&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
+                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费(合作商返利)、过户费(代办过户费)、整理费(牌证费及邮寄费)&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
                   <div class="approval-flow">
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">申请人</div><div class="flow-role">BMS侧发起申请</div></div></div>
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理</div><div class="flow-role">第1级审批</div></div></div>
@@ -1818,12 +1794,23 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
           </div>
 
-          <!-- 需求点2：视图切换 -->
+          <!-- 需求点2：附件上传说明 + 视图切换 -->
           <div class="card" style="margin-bottom:12px">
-            <div class="card-body" style="display:flex;align-items:center;gap:12px;padding:12px 16px">
-              <span style="font-size:13px;color:#666;font-weight:500">需求点2 — 付款审批 视图切换：</span>
-              <button class="btn" :class="approvalMode==='pc'?'btn-primary':'btn-default'" @click="approvalMode='pc'">📄 需求说明</button>
-              <button class="btn" :class="approvalMode==='h5'?'btn-primary':'btn-default'" @click="approvalMode='h5'">📱 H5（企微移动端）</button>
+            <div class="card-header"><span class="card-title">需求点2：发票凭证上传</span></div>
+            <div class="card-body">
+              <div class="alert alert-info" style="margin-bottom:12px">
+                📎 <b>财务诉求：</b>在审批流各节点支持业务人员新增发票凭证上传。上传后系统同步至审批详情页「发票附件」。
+              </div>
+              <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px;margin-bottom:14px">
+                <li>申请人提交申请时可上传发票（填写申请表单 → 发票信息）</li>
+                <li>各审批节点审批人可在H5端（企微）补充上传发票附件</li>
+                <li>所有节点上传的附件汇总展示在申请详情页「发票附件」区域</li>
+              </ul>
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="font-size:12px;color:#666">查看视图：</span>
+                <button class="btn" :class="approvalMode==='pc'?'btn-primary':'btn-default'" @click="approvalMode='pc'">📄 需求说明</button>
+                <button class="btn" :class="approvalMode==='h5'?'btn-primary':'btn-default'" @click="approvalMode='h5'">📱 H5（企微移动端）</button>
+              </div>
             </div>
           </div>
 
@@ -1889,6 +1876,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         </div>
                       </div>
                     </div>
+                    <!-- 审批类型分类入口（横向滚动） -->
+                    <div style="background:#fff;display:flex;gap:8px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid #f0f0f0;flex-shrink:0;-webkit-overflow-scrolling:touch">
+                      <span style="white-space:nowrap;font-size:11px;padding:3px 10px;background:#f5f5f5;border-radius:12px;color:#666;cursor:pointer">采购车款提现</span>
+                      <span style="white-space:nowrap;font-size:11px;padding:3px 10px;background:#1890ff;border-radius:12px;color:#fff;font-weight:500;cursor:pointer">付款审批</span>
+                      <span style="white-space:nowrap;font-size:11px;padding:3px 10px;background:#f5f5f5;border-radius:12px;color:#666;cursor:pointer">调账申请</span>
+                      <span style="white-space:nowrap;font-size:11px;padding:3px 10px;background:#f5f5f5;border-radius:12px;color:#666;cursor:pointer">费用报销</span>
+                    </div>
 
                     <!-- 待审批 列表 -->
                     <div v-if="h5ApprovalTab==='pending'" style="flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:8px">
@@ -1941,7 +1935,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                     <!-- 已审批 列表 -->
                     <div v-if="h5ApprovalTab==='done'" style="flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:8px">
-                      <div style="background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)">
+                      <div style="background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);cursor:pointer" @click="h5ApprovalDetail=true">
                         <div style="padding:14px">
                           <div style="display:flex;align-items:flex-start;gap:10px">
                             <div style="width:36px;height:36px;background:#52c41a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📊</div>
@@ -1995,30 +1989,22 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">开户行</span><span style="font-weight:500;max-width:60%;text-align:right">工商银行天津滨海新区支行</span></div>
                         <div style="display:flex;justify-content:space-between"><span style="color:#999">银行账号</span><span style="font-family:monospace;font-size:11px">0200004209200xxxxxx</span></div>
                       </div>
-                      <!-- 审批流程 -->
-                      <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
-                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">审批流程</div>
-                        <div class="approval-flow" style="padding-left:4px">
-                          <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line done"></div></div><div class="flow-content"><div class="flow-name">张三</div><div class="flow-role">发起申请</div><div class="flow-time">2026-01-15 10:23</div></div></div>
-                          <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line done"></div></div><div class="flow-content"><div class="flow-name">李四</div><div class="flow-role">部门负责人</div><div class="flow-time">2026-01-15 14:05</div><div class="flow-result"><span class="tag tag-green">通过</span></div></div></div>
-                          <div class="flow-node"><div class="flow-left"><div class="flow-dot current"></div></div><div class="flow-content"><div class="flow-name">王财务</div><div class="flow-role">财务人员（当前）</div><div class="flow-result"><span class="tag tag-blue">待审批</span></div></div></div>
-                        </div>
-                      </div>
                       <!-- 明细列表 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
-                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">明细列表（3条）</div>
+                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">明细列表（3条）</div>
+                        <div class="alert alert-warning" style="margin-bottom:8px;font-size:11px;padding:7px 10px">⚠️ <b>存在已结算车辆，请留意核实：</b>粤A·12345、粤C·11111</div>
                         <div style="font-size:11px">
                           <div style="display:flex;color:#999;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid #f5f5f5">
                             <span style="flex:2">车牌号</span><span style="flex:2">费用项目</span><span style="flex:1;text-align:right">金额(含税)</span>
                           </div>
-                          <div style="display:flex;padding:5px 0;border-bottom:1px solid #f5f5f5">
-                            <span style="flex:2;color:#333">粤A·12345</span><span style="flex:2;color:#666">服务费</span><span style="flex:1;text-align:right;font-weight:500">360.00</span>
+                          <div style="display:flex;padding:5px 0;border-bottom:1px solid #f5f5f5;background:#fff7e6;border-radius:3px">
+                            <span style="flex:2;color:#d46b08;font-weight:500">粤A·12345 ⚠️</span><span style="flex:2;color:#666">服务费</span><span style="flex:1;text-align:right;font-weight:500">360.00</span>
                           </div>
                           <div style="display:flex;padding:5px 0;border-bottom:1px solid #f5f5f5">
                             <span style="flex:2;color:#333">粤B·67890</span><span style="flex:2;color:#666">服务费</span><span style="flex:1;text-align:right;font-weight:500">360.00</span>
                           </div>
-                          <div style="display:flex;padding:5px 0">
-                            <span style="flex:2;color:#333">粤C·11111</span><span style="flex:2;color:#666">服务费</span><span style="flex:1;text-align:right;font-weight:500">340.00</span>
+                          <div style="display:flex;padding:5px 0;background:#fff7e6;border-radius:3px">
+                            <span style="flex:2;color:#d46b08;font-weight:500">粤C·11111 ⚠️</span><span style="flex:2;color:#666">服务费</span><span style="flex:1;text-align:right;font-weight:500">340.00</span>
                           </div>
                           <div style="display:flex;justify-content:flex-end;margin-top:8px;padding-top:7px;border-top:1px solid #f0f0f0">
                             <span style="color:#999;margin-right:8px">合计：</span>
@@ -2026,20 +2012,37 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           </div>
                         </div>
                       </div>
+                      <!-- 备注 -->
+                      <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;font-size:12px">
+                        <div style="font-weight:600;color:#333;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">备注</div>
+                        <div style="color:#555;line-height:1.7">粤C·11111 曾于上月已结算（BS202512001），本次申请为补充结算，已与财务确认可再次提交。</div>
+                      </div>
                       <!-- 发票附件 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
-                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">发票附件</div>
+                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center">
+                          <span>发票附件</span>
+                          <span style="font-size:11px;color:#1890ff;cursor:pointer;font-weight:400" @click="showToast('发票上传弹窗（待实现）')">＋ 上传发票</span>
+                        </div>
                         <div style="display:flex;flex-direction:column;gap:8px">
                           <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f6f8fa;border-radius:6px">
                             <span style="font-size:15px">📄</span>
                             <span style="flex:1;font-size:12px;color:#333">发票_BS202601001_01.pdf</span>
-                            <span style="font-size:12px;color:#1890ff;cursor:pointer">查看</span>
+                            <a style="font-size:12px;color:#1890ff;cursor:pointer;text-decoration:none" @click.prevent="previewFile('发票_BS202601001_01.pdf')">查看</a>
                           </div>
                           <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f6f8fa;border-radius:6px">
                             <span style="font-size:15px">🖼️</span>
                             <span style="flex:1;font-size:12px;color:#333">发票_BS202601001_02.jpg</span>
-                            <span style="font-size:12px;color:#1890ff;cursor:pointer">查看</span>
+                            <a style="font-size:12px;color:#1890ff;cursor:pointer;text-decoration:none" @click.prevent="previewFile('发票_BS202601001_02.jpg')">查看</a>
                           </div>
+                        </div>
+                      </div>
+                      <!-- 审批流程（在发票附件下方） -->
+                      <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
+                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">审批流程</div>
+                        <div class="approval-flow" style="padding-left:4px">
+                          <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line done"></div></div><div class="flow-content"><div class="flow-name">张三</div><div class="flow-role">发起申请</div><div class="flow-time">2026-01-15 10:23</div></div></div>
+                          <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line done"></div></div><div class="flow-content"><div class="flow-name">李四</div><div class="flow-role">部门负责人</div><div class="flow-time">2026-01-15 14:05</div><div class="flow-result"><span class="tag tag-green">通过</span></div></div></div>
+                          <div class="flow-node"><div class="flow-left"><div class="flow-dot current"></div></div><div class="flow-content"><div class="flow-name">王财务</div><div class="flow-role">财务人员（当前）</div><div class="flow-result"><span class="tag tag-blue">待审批</span></div></div></div>
                         </div>
                       </div>
                       <!-- 操作按钮 -->
@@ -2201,6 +2204,7 @@ new Vue({
       formBipDept: '',
       formPayee: '常有（天津）信息技术有限公司',
       formInvoiceType: '',
+      formRemark: '粤C·11111 曾于上月已结算（BS202512001），本次申请为补充结算，已与财务确认可再次提交。',
       formValidated: false,
       formUploadedFiles: ['invoice_001.pdf', 'invoice_002.jpg'],
       dialogUploadedFiles: ['invoice_001.pdf', 'invoice_002.jpg'],
@@ -2240,7 +2244,7 @@ new Vue({
       bmsApplyError: '',
       bmsAllData: [
         // 待审批
-        {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付1月，服务费(合作商返利)，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批',settledPlates:['粤A·12345','粤C·11111']},
+        {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付1月，服务费(合作商返利)，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批',settledPlates:['粤A·12345','粤C·11111'],remark:'粤C·11111 曾于上月已结算（BS202512001），本次申请为补充结算，已与财务确认可再次提交。'},
         {id:'BS202512003',title:'2025年12月过户费结算申请',org:'越秀车管',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'过户费(代办过户费)',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10',settleDesc:'付12月，过户费(代办过户费)，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
         {id:'BS202601007',title:'2026年1月整理费结算申请',org:'花都车管',serviceCenter:'广州花都服务中心',group:'广州区域',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:2,amount:'400.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'王芳',time:'2026-01-18',settleDesc:'付1月，整理费(牌证费及邮寄费)，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
         // 待支付
