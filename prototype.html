@@ -438,7 +438,44 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
           <!-- Main list -->
           <div v-if="bmsView==='list'">
-            <div class="card">
+            <!-- 一级 tab：批量结算 / 部门编码映射 -->
+            <div class="tabs" style="margin-bottom:0;background:#fff;padding:0 16px;border-radius:4px 4px 0 0;border:1px solid #e8e8e8;border-bottom:none">
+              <span class="tab" :class="{active:bmsListTab==='settle'}" @click="bmsListTab='settle'">批量结算</span>
+              <span class="tab" :class="{active:bmsListTab==='deptmap'}" @click="bmsListTab='deptmap'">部门编码映射</span>
+            </div>
+
+            <!-- 部门编码映射（只读） -->
+            <div v-if="bmsListTab==='deptmap'" class="card" style="border-radius:0 4px 4px 4px">
+              <div class="card-header">
+                <span class="card-title">部门编码映射</span>
+                <span style="font-size:11px;color:#999">仅支持查询，如需维护请前往 FNC后台 → 部门编码映射</span>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info" style="margin-bottom:12px">⚙️ U8部门编码与部门名称映射关系，供填写申请表单时选择BIP部门使用。</div>
+                <div class="filter-bar" style="margin-bottom:12px">
+                  <div class="filter-item"><label>部门编码</label><input class="inp" placeholder="编码" style="width:80px"></div>
+                  <div class="filter-item"><label>部门名称</label><input class="inp" placeholder="名称" style="width:140px"></div>
+                  <div class="filter-item"><label>状态</label><select class="sel"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <button class="btn btn-primary btn-sm">查询</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th></tr>
+                    <tr v-for="d in deptMappingData" :key="d.code">
+                      <td><b>{{d.code}}</b></td>
+                      <td>{{d.name}}</td>
+                      <td style="color:#999">{{d.remark||'—'}}</td>
+                      <td><span class="tag" :class="d.active?'tag-green':'tag-gray'">{{d.active?'启用':'停用'}}</span></td>
+                      <td style="color:#999;font-size:11px">{{d.updatedAt}}</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="pagination"><span>共 {{deptMappingData.length}} 条</span><div class="page-btn active">1</div></div>
+              </div>
+            </div>
+
+            <!-- 批量结算列表 -->
+            <div v-if="bmsListTab==='settle'" class="card" style="border-radius:0 4px 4px 4px">
               <div class="card-header">
                 <span class="card-title">BMS — 批量结算列表</span>
                 <!-- 非待提交 tab：显示"导入"和"申请结算" -->
@@ -606,6 +643,22 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-body">
                 <!-- Step 1: 上传文件 -->
                 <div v-if="importStep===1">
+                  <!-- Tips -->
+                  <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:2">
+                    <div style="font-weight:600;color:#d46b08;margin-bottom:4px">📌 导入说明</div>
+                    <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
+                      <span style="color:#fa8c16;flex-shrink:0">①</span>
+                      <span>适用于系统内<b>未自动创建</b>的订单，如「整理费」「过户费」等需手动录入的费用。</span>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
+                      <span style="color:#fa8c16;flex-shrink:0">②</span>
+                      <span>系统将自动与「<b>已结算单</b>」比对，存在重复项时会标记提醒；<b>允许继续添加</b>，请人工核实后决定是否保留。</span>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
+                      <span style="color:#52c41a;flex-shrink:0">③</span>
+                      <span>「服务费(合作商返利)」订单在<b>清分成功后系统自动生成</b>，无需批量导入；如手动导入，系统会提示重复。</span>
+                    </div>
+                  </div>
                   <div class="alert alert-info" style="align-items:flex-start">
                     <div style="flex:1">
                       <b>标准模板字段：</b>车牌号 / VIN码（非必填）/ 门店 / 费用项目 / 实际结算金额(含税)<br>
@@ -729,6 +782,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <span style="font-size:12px;color:#999;margin-left:8px">申请详情（新窗口）</span>
             <span style="flex:1"></span>
             <button class="btn btn-default btn-sm">导出PDF</button>
+            <button class="btn btn-default btn-sm" @click="printDetailOnly()">🖨️ 打印明细</button>
             <button class="btn btn-default btn-sm" onclick="window.print()">🖨️ 打印(A4)</button>
           </div>
           <div class="detail-overlay-content">
@@ -742,6 +796,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div v-if="bmsCurrentDetail.status==='rejected'" class="alert alert-error" style="margin-bottom:16px">
                   <b>驳回原因：</b>{{bmsCurrentDetail.rejectReason}}
                   <span style="margin-left:10px;font-size:11px;color:#999">— {{bmsCurrentDetail.rejectBy}} · {{bmsCurrentDetail.rejectTime}}</span>
+                </div>
+                <!-- 已结算车辆警示 -->
+                <div v-if="bmsCurrentDetail.settledPlates && bmsCurrentDetail.settledPlates.length" class="alert alert-warning" style="margin-bottom:12px">
+                  ⚠️ <b>存在已结算车辆，请留意核实：</b>{{bmsCurrentDetail.settledPlates.join('、')}}
                 </div>
                 <!-- 待审批：审批操作按钮 -->
                 <div v-if="bmsCurrentDetail.status==='approval'" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#f6f8fa;border-radius:4px;border:1px solid #e8e8e8">
@@ -2146,6 +2204,7 @@ new Vue({
       },
       // BMS
       bmsView: 'list',
+      bmsListTab: 'settle',
       bmsStatusTab: 'all',
       bmsCurrentDetail: null,
       bmsCheckedCount: 0,
@@ -2175,7 +2234,7 @@ new Vue({
       bmsApplyError: '',
       bmsAllData: [
         // 待审批
-        {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付1月，服务费(合作商返利)，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批'},
+        {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付1月，服务费(合作商返利)，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批',settledPlates:['粤A·12345','粤C·11111']},
         {id:'BS202512003',title:'2025年12月过户费结算申请',org:'越秀车管',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'过户费(代办过户费)',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10',settleDesc:'付12月，过户费(代办过户费)，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
         {id:'BS202601007',title:'2026年1月整理费结算申请',org:'花都车管',serviceCenter:'广州花都服务中心',group:'广州区域',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:2,amount:'400.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'王芳',time:'2026-01-18',settleDesc:'付1月，整理费(牌证费及邮寄费)，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
         // 待支付
@@ -2377,6 +2436,28 @@ new Vue({
     },
   },
   methods: {
+    printDetailOnly() {
+      const el = document.querySelector('.detail-overlay-content')
+      if (!el) return
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>明细打印</title>
+        <style>
+          body{font-family:sans-serif;font-size:12px;padding:20px}
+          table{border-collapse:collapse;width:100%}
+          th,td{border:1px solid #ccc;padding:6px 10px;text-align:left}
+          th{background:#f5f5f5}
+          .amount{text-align:right}
+          h3{margin-bottom:8px}
+        </style></head><body>`
+        + '<h3>明细列表</h3>'
+        + (el.querySelector('.table-wrap') ? el.querySelector('.table-wrap').outerHTML : '')
+        + '</body></html>'
+      const win = window.open('', '_blank')
+      win.document.write(html)
+      win.document.close()
+      win.focus()
+      win.print()
+      win.close()
+    },
     // 将结算月份格式化为"只显示月份"：'2026-01' → '1月'，'2026年1月' → '1月'
     formatMonth(settleMonth) {
       if (!settleMonth) return settleMonth
