@@ -277,11 +277,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="form-control">
                     <input class="inp" style="width:100%" placeholder="请搜索或选择费用类型..." list="feeType-list" v-model="formFeeType">
                     <datalist id="feeType-list">
-                      <option value="服务费(合作商返利)"></option>
-                      <option value="过户费(代办过户费)"></option>
-                      <option value="整理费(牌证费及邮寄费)"></option>
+                      <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
                     </datalist>
-                    <div class="form-note">支持搜索联想</div>
+                    <div class="form-note">支持搜索联想，共 {{feeTypeOptions.length}} 种费用类型</div>
                   </div>
                 </div>
                 <div class="form-item">
@@ -783,7 +781,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <span style="font-size:12px;color:#999;margin-left:8px">申请详情（新窗口）</span>
             <span style="flex:1"></span>
             <button class="btn btn-default btn-sm">导出PDF</button>
-            <button class="btn btn-default btn-sm" @click="printDetailOnly()">🖨️ 打印明细</button>
+            <button class="btn btn-default btn-sm" @click="printDetailOnly()">🖨️ 打印明细列表</button>
             <button class="btn btn-default btn-sm" onclick="window.print()">🖨️ 打印(A4)</button>
           </div>
           <div class="detail-overlay-content">
@@ -2195,6 +2193,7 @@ new Vue({
       formPayer: 'weipu',
       formSummaryMonth: '4月',
       formFeeType: '服务费(合作商返利)',
+      feeTypeOptions: ['服务费(合作商返利)', '过户费(代办过户费)', '整理费(牌证费及邮寄费)'],
       formBipDept: '',
       formPayee: '常有（天津）信息技术有限公司',
       formInvoiceType: '',
@@ -2454,26 +2453,31 @@ new Vue({
   },
   methods: {
     printDetailOnly() {
-      const el = document.querySelector('.detail-overlay-content')
-      if (!el) return
-      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>明细打印</title>
+      const tableEl = document.querySelector('.detail-overlay-content .table-wrap')
+      if (!tableEl) return
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>明细列表</title>
         <style>
-          body{font-family:sans-serif;font-size:12px;padding:20px}
+          body{font-family:sans-serif;font-size:12px;padding:24px}
+          h3{font-size:14px;margin:0 0 10px}
           table{border-collapse:collapse;width:100%}
           th,td{border:1px solid #ccc;padding:6px 10px;text-align:left}
-          th{background:#f5f5f5}
-          .amount{text-align:right}
-          h3{margin-bottom:8px}
-        </style></head><body>`
-        + '<h3>明细列表</h3>'
-        + (el.querySelector('.table-wrap') ? el.querySelector('.table-wrap').outerHTML : '')
-        + '</body></html>'
-      const win = window.open('', '_blank')
-      win.document.write(html)
-      win.document.close()
-      win.focus()
-      win.print()
-      win.close()
+          th{background:#f5f5f5;font-weight:600}
+          td.amount,th.amount{text-align:right}
+          @media print{body{padding:16px}}
+        </style></head><body>
+        <h3>明细列表</h3>${tableEl.outerHTML}
+        </body></html>`
+      const iframe = document.createElement('iframe')
+      iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;border:0'
+      document.body.appendChild(iframe)
+      iframe.contentDocument.open()
+      iframe.contentDocument.write(html)
+      iframe.contentDocument.close()
+      setTimeout(() => {
+        iframe.contentWindow.focus()
+        iframe.contentWindow.print()
+        setTimeout(() => document.body.removeChild(iframe), 1500)
+      }, 300)
     },
     // 将结算月份格式化为"只显示月份"：'2026-01' → '1月'，'2026年1月' → '1月'
     formatMonth(settleMonth) {
@@ -2487,8 +2491,8 @@ new Vue({
       return settleMonth
     },
     submitApproval() {
-      this.showToast('提交成功，申请已进入审批流程')
-      setTimeout(() => { this.bmsView = 'list' }, 800)
+      this.showToast('提交成功')
+      setTimeout(() => { this.bmsView = 'list'; this.bmsStatusTab = 'approval' }, 800)
     },
     saveDraft() {
       this.showToast('草稿已保存')
