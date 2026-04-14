@@ -461,11 +461,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <!-- Filter bar -->
                 <div class="filter-bar">
                   <div class="filter-item"><label>申请时间</label><input class="inp" type="date" style="width:120px" @change="filterChanged=true"><span>至</span><input class="inp" type="date" style="width:120px" @change="filterChanged=true"></div>
-                  <div class="filter-item"><label>结算年月</label><input class="inp" type="month" style="width:120px" @change="filterChanged=true"></div>
+                  <div class="filter-item" v-if="bmsStatusTab!=='draft'"><label>结算年月</label><input class="inp" type="month" style="width:120px" @change="filterChanged=true"></div>
                   <div class="filter-item">
                     <label>BIP部门名称</label>
                     <select class="sel" @change="filterChanged=true">
-                      <option>全部</option><option>番禺车管分所</option><option>天河车管</option><option>越秀车管</option>
+                      <option>全部</option><option>番禺车管分所</option><option>天河车管</option><option>越秀车管</option><option>花都车管</option>
                     </select>
                   </div>
                   <div class="filter-item">
@@ -473,6 +473,21 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <select class="sel" @change="filterChanged=true">
                       <option>全部</option><option>服务费(合作商返利)</option><option>过户费(代办过户费)</option><option>整理费(牌证费及邮寄费)</option>
                     </select>
+                  </div>
+                  <div class="filter-item">
+                    <label>集团</label>
+                    <input class="inp" style="width:110px" placeholder="搜索集团..." list="bms-group-list" @input="filterChanged=true">
+                    <datalist id="bms-group-list"><option>广州区域</option><option>深圳区域</option><option>佛山区域</option></datalist>
+                  </div>
+                  <div class="filter-item">
+                    <label>门店</label>
+                    <input class="inp" style="width:120px" placeholder="搜索门店..." list="bms-store-list" @input="filterChanged=true">
+                    <datalist id="bms-store-list"><option>广州番禺门店</option><option>广州天河门店</option><option>广州越秀门店</option><option>广州花都门店</option></datalist>
+                  </div>
+                  <div class="filter-item">
+                    <label>服务中心</label>
+                    <input class="inp" style="width:130px" placeholder="搜索服务中心..." list="bms-sc-list" @input="filterChanged=true">
+                    <datalist id="bms-sc-list"><option>广州番禺服务中心</option><option>广州天河服务中心</option><option>广州越秀服务中心</option><option>广州花都服务中心</option></datalist>
                   </div>
                   <div class="filter-item"><label>申请人</label><input class="inp" placeholder="申请人" style="width:100px" @input="filterChanged=true"></div>
                   <div class="filter-item">
@@ -487,28 +502,28 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
                 <div v-if="bmsStatusTab==='draft'">
-                  <div class="alert alert-info" style="margin-bottom:10px">📋 以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。须勾选<b>同一BIP部门名称</b>且<b>同一费用类型</b>的车辆。</div>
+                  <div class="alert alert-info" style="margin-bottom:10px">📋 以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。须勾选<b>同一BIP部门名称</b>且<b>同一费用类型</b>的车辆。<br><span style="font-size:11px;color:#555">💡 订单清分完毕后，系统自动将有业务合作费的门店订单（费用类型：服务费(合作商返利)）添加至本列表。</span></div>
                   <div v-if="bmsApplyError" class="alert alert-error" style="margin-bottom:10px">⚠️ {{bmsApplyError}}</div>
                   <div class="table-wrap">
                     <table>
                       <tr>
                         <th class="check-col"><input type="checkbox" @change="bmsVehicleChecked=$event.target.checked?bmsVehicleData.map((_,i)=>i):[];bmsApplyError=''"></th>
-                        <th>车牌号</th><th>费用类型</th><th>BIP部门名称</th>
-                        <th>BIP部门编码<br><span style="font-size:10px;font-weight:400;color:#aaa">（申请表单中填写）</span></th>
-                        <th>实际结算金额(含税)</th>
-                        <th>操作</th>
+                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>服务中心</th><th>BIP部门名称</th>
+                        <th>实际结算金额(含税)</th><th>操作</th>
                       </tr>
                       <tr v-for="(v,i) in bmsVehicleData" :key="v.plate" :style="bmsVehicleChecked.includes(i)?'background:#e6f7ff':''">
                         <td class="check-col"><input type="checkbox" :checked="bmsVehicleChecked.includes(i)" @change="$event.target.checked?bmsVehicleChecked.push(i):bmsVehicleChecked.splice(bmsVehicleChecked.indexOf(i),1);bmsApplyError=''"></td>
+                        <td style="font-size:11px;color:#999">{{v.clearTime||''}}</td>
                         <td><b>{{v.plate}}</b></td>
+                        <td style="font-size:11px;font-family:monospace;color:#555">{{v.vin||'—'}}</td>
                         <td>{{v.feeType}}</td>
-                        <td>{{v.org}}</td>
-                        <td style="font-size:11px;color:#555">{{v.bipCode||'—'}}</td>
+                        <td style="font-size:11px;color:#555">{{v.serviceCenter||'—'}}</td>
+                        <td style="font-size:11px;color:#555">{{v.org}}</td>
                         <td class="amount">{{v.actualAmt}}</td>
                         <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(i,1);showToast('已移除')">移除</button></td>
                       </tr>
                       <tr v-if="bmsVehicleData.length===0">
-                        <td colspan="7" style="text-align:center;color:#999;padding:30px">暂无待结算车辆，请先导入对账明细</td>
+                        <td colspan="9" style="text-align:center;color:#999;padding:30px">暂无待结算车辆，请先导入对账明细</td>
                       </tr>
                     </table>
                   </div>
@@ -528,16 +543,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <table>
                       <tr>
                         <th class="check-col"><input type="checkbox" @change="bmsCheckedCount = $event.target.checked ? filteredBmsList.length : 0"></th>
-                        <th>标题</th><th>BIP部门编码</th><th>BIP部门名称</th><th>费用类型</th><th>结算年月</th><th>门店名称</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
+                        <th>标题</th><th>BIP部门编码</th><th>服务中心</th><th>费用类型</th><th>结算年月</th><th>集团</th><th>门店名称</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
                       </tr>
                       <template v-for="r in filteredBmsList" :key="r.id">
                         <tr>
                           <td class="check-col"><input type="checkbox" @change="bmsCheckedCount = Math.max(0, bmsCheckedCount + ($event.target.checked ? 1 : -1))"></td>
                           <td style="max-width:140px;white-space:normal">{{r.title}}</td>
                           <td style="font-size:11px;color:#555">{{r.bipCode||'—'}}</td>
-                          <td>{{r.org}}</td>
+                          <td style="font-size:11px;color:#555">{{r.serviceCenter||'—'}}</td>
                           <td>{{r.feeType}}</td>
                           <td>{{r.settleMonth}}</td>
+                          <td style="font-size:11px;color:#555">{{r.group||''}}</td>
                           <td style="font-size:11px;color:#555">{{r.storeName||'—'}}</td>
                           <td style="max-width:120px;white-space:normal;font-size:11px">{{r.payee}}</td>
                           <td class="amount">{{r.amount}}</td>
@@ -2143,28 +2159,34 @@ new Vue({
       ],
       // 待提交：车辆级别数据（独立于申请单列表）
       bmsVehicleData: [
-        {plate:'粤A·12345',feeType:'服务费(合作商返利)',org:'番禺车管分所',bipCode:'7401',receivedAmt:'360.00',estAmt:'360.00',actualAmt:'360.00'},
-        {plate:'粤B·67890',feeType:'服务费(合作商返利)',org:'番禺车管分所',bipCode:'7401',receivedAmt:'360.00',estAmt:'360.00',actualAmt:'360.00'},
-        {plate:'粤C·11111',feeType:'过户费(代办过户费)',org:'天河车管',bipCode:'70',receivedAmt:'400.00',estAmt:'400.00',actualAmt:'400.00'},
-        {plate:'粤D·22222',feeType:'服务费(合作商返利)',org:'番禺车管分所',bipCode:'7401',receivedAmt:'240.00',estAmt:'240.00',actualAmt:'240.00'},
-        {plate:'粤E·33333',feeType:'整理费(牌证费及邮寄费)',org:'越秀车管',bipCode:'7402',receivedAmt:'500.00',estAmt:'500.00',actualAmt:'500.00'},
+        // 手动导入（过户费/整理费）
+        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',feeType:'过户费(代办过户费)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
+        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',feeType:'整理费(牌证费及邮寄费)',serviceCenter:'广州越秀服务中心',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
+        // 系统自动添加（订单清分后，服务费-合作商返利）
+        {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
+        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',feeType:'服务费(合作商返利)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
+        {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',feeType:'服务费(合作商返利)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
+        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',feeType:'服务费(合作商返利)',serviceCenter:'广州越秀服务中心',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
+        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',feeType:'服务费(合作商返利)',serviceCenter:'广州花都服务中心',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
       ],
       bmsVehicleChecked: [],
       bmsApplyError: '',
       bmsAllData: [
         // 待审批
-        {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付2026年1月，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批'},
-        {id:'BS202512003',title:'2025年12月过户费结算申请',org:'越秀车管',feeType:'过户费(代办过户费)',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10',settleDesc:'付2025年12月，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
-        {id:'BS202601007',title:'2026年1月整理费结算申请',org:'花都车管',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:2,amount:'400.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'王芳',time:'2026-01-18',settleDesc:'付2026年1月，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
+        {id:'BS202601001',title:'2026年1月服务费结算申请',org:'番禺车管分所',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付1月，服务费(合作商返利)，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批'},
+        {id:'BS202512003',title:'2025年12月过户费结算申请',org:'越秀车管',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'过户费(代办过户费)',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10',settleDesc:'付12月，过户费(代办过户费)，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
+        {id:'BS202601007',title:'2026年1月整理费结算申请',org:'花都车管',serviceCenter:'广州花都服务中心',group:'广州区域',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:2,amount:'400.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'王芳',time:'2026-01-18',settleDesc:'付1月，整理费(牌证费及邮寄费)，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
         // 待支付
-        {id:'BS202601002',title:'2026年1月服务费结算申请',org:'天河车管',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:6,amount:'2,400.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'张三',time:'2026-01-16',settleDesc:'付2026年1月，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
-        {id:'BS202601005',title:'2026年1月服务费结算申请',org:'天河车管',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:12,amount:'4,200.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'李明',time:'2026-01-18',settleDesc:'付2026年1月，好快帮（广州）科技有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
+        {id:'BS202601002',title:'2026年1月服务费结算申请',org:'天河车管',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:6,amount:'2,400.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'张三',time:'2026-01-16',settleDesc:'付1月，服务费(合作商返利)，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
+        {id:'BS202601005',title:'2026年1月服务费结算申请',org:'天河车管',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:12,amount:'4,200.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'李明',time:'2026-01-18',settleDesc:'付1月，服务费(合作商返利)，好快帮（广州）科技有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         // 已结算
-        {id:'BS202601004',title:'2026年1月过户费结算申请',org:'番禺车管分所',feeType:'过户费(代办过户费)',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:4,amount:'1,200.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'张三',time:'2026-01-20',settleDesc:'付2026年1月，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
-        {id:'BS202601006',title:'2026年1月整理费结算申请',org:'越秀车管',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:8,amount:'1,600.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'李明',time:'2026-01-22',settleDesc:'付2026年1月，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
+        {id:'BS202601004',title:'2026年1月过户费结算申请',org:'番禺车管分所',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'过户费(代办过户费)',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:4,amount:'1,200.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'张三',time:'2026-01-20',settleDesc:'付1月，过户费(代办过户费)，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
+        {id:'BS202601006',title:'2026年1月整理费结算申请',org:'越秀车管',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:8,amount:'1,600.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'李明',time:'2026-01-22',settleDesc:'付1月，整理费(牌证费及邮寄费)，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         // 已驳回
-        {id:'BS202512004',title:'2025年12月整理费结算申请',org:'番禺车管分所',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2025-12',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'张三',time:'2026-01-08',rejectReason:'发票与明细不符，请重新上传正确发票后再次提交。',rejectBy:'王财务',rejectTime:'2026-01-09 11:24',settleDesc:'付2025年12月，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'驳回',approvalTagClass:'tag-red'},
-        {id:'BS202601009',title:'2026年1月服务费结算申请',org:'南沙车管',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:7,amount:'2,100.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'赵华',time:'2026-01-19',rejectReason:'付款信息有误，收款方与合同约定不符，请核实后重新提交。',rejectBy:'李四（部门负责人）',rejectTime:'2026-01-20 09:05',settleDesc:'付2026年1月，好快帮（广州）科技有限公司',handler:'李四',approvalStatus:'驳回',approvalTagClass:'tag-red'},
+        {id:'BS202512004',title:'2025年12月整理费结算申请',org:'番禺车管分所',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'整理费(牌证费及邮寄费)',settleMonth:'2025-12',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'张三',time:'2026-01-08',rejectReason:'发票与明细不符，请重新上传正确发票后再次提交。',rejectBy:'王财务',rejectTime:'2026-01-09 11:24',settleDesc:'付12月，整理费(牌证费及邮寄费)，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'驳回',approvalTagClass:'tag-red'},
+        {id:'BS202601009',title:'2026年1月服务费结算申请',org:'南沙车管',serviceCenter:'广州南沙服务中心',group:'广州区域',feeType:'服务费(合作商返利)',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:7,amount:'2,100.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'赵华',time:'2026-01-19',rejectReason:'付款信息有误，收款方与合同约定不符，请核实后重新提交。',rejectBy:'李四（部门负责人）',rejectTime:'2026-01-20 09:05',settleDesc:'付1月，服务费(合作商返利)，好快帮（广州）科技有限公司',handler:'李四',approvalStatus:'驳回',approvalTagClass:'tag-red'},
       ],
       importDialog: false,
       importStep: 1,
@@ -2422,11 +2444,11 @@ new Vue({
     confirmImport() {
       // 模拟将预览数据追加进待提交车辆列表
       const imported = [
-        {plate:'粤D·22222',feeType:'服务费(合作商返利)',org:'越秀车管',bipCode:'',receivedAmt:'560.00',estAmt:'560.00',actualAmt:'560.00'},
-        {plate:'粤E·33333',feeType:'服务费(合作商返利)',org:'越秀车管',bipCode:'',receivedAmt:'600.00',estAmt:'600.00',actualAmt:'600.00'},
-        {plate:'粤F·44444',feeType:'过户费(代办过户费)',org:'天河车管',bipCode:'',receivedAmt:'700.00',estAmt:'700.00',actualAmt:'700.00'},
-        {plate:'粤G·55555',feeType:'服务费(合作商返利)',org:'天河车管',bipCode:'',receivedAmt:'500.00',estAmt:'500.00',actualAmt:'500.00'},
-        {plate:'粤H·66666',feeType:'整理费(牌证费及邮寄费)',org:'番禺车管分所',bipCode:'',receivedAmt:'500.00',estAmt:'500.00',actualAmt:'500.00'},
+        {clearTime:'2026-04-12',plate:'粤K·11223',vin:'LFVBBAKJ5N5xxxxx1',feeType:'服务费(合作商返利)',serviceCenter:'广州越秀服务中心',org:'越秀车管',group:'广州区域',bipCode:'',actualAmt:'560.00'},
+        {clearTime:'2026-04-12',plate:'粤L·33445',vin:'LFVBBAKJ5N5xxxxx2',feeType:'服务费(合作商返利)',serviceCenter:'广州越秀服务中心',org:'越秀车管',group:'广州区域',bipCode:'',actualAmt:'600.00'},
+        {clearTime:'2026-04-12',plate:'粤M·55667',vin:'LFVBBAKJ5N5xxxxx3',feeType:'过户费(代办过户费)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'',actualAmt:'700.00'},
+        {clearTime:'2026-04-12',plate:'粤N·77889',vin:'LFVBBAKJ5N5xxxxx4',feeType:'服务费(合作商返利)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'',actualAmt:'500.00'},
+        {clearTime:'2026-04-12',plate:'粤P·99001',vin:'LFVBBAKJ5N5xxxxx5',feeType:'整理费(牌证费及邮寄费)',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'',actualAmt:'500.00'},
       ]
       imported.forEach(v => {
         if (!this.bmsVehicleData.find(x => x.plate === v.plate)) {
