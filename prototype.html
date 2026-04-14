@@ -578,12 +578,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th class="check-col"><input type="checkbox" :checked="filteredBmsList.length>0 && bmsCheckedIds.length===filteredBmsList.length" @change="bmsCheckedIds=$event.target.checked?filteredBmsList.map(r=>r.id):[]"></th>
                         <th>标题</th><th>BIP部门编码</th><th>服务中心</th><th>费用类型</th><th>结算年月</th><th>集团</th><th>门店名称</th><th>收款方</th><th>总金额(含税)</th><th>结算说明</th><th>处理人</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
                       </tr>
                       <template v-for="r in filteredBmsList" :key="r.id">
-                        <tr :style="bmsCheckedIds.includes(r.id)?'background:#e6f7ff':''">
-                          <td class="check-col"><input type="checkbox" :checked="bmsCheckedIds.includes(r.id)" @change="$event.target.checked?bmsCheckedIds.push(r.id):bmsCheckedIds.splice(bmsCheckedIds.indexOf(r.id),1)"></td>
+                        <tr>
                           <td style="max-width:140px;white-space:normal">{{r.title}}</td>
                           <td style="font-size:11px;color:#555">{{r.bipCode||'—'}}</td>
                           <td style="font-size:11px;color:#555">{{r.serviceCenter||'—'}}</td>
@@ -611,8 +609,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           </td>
                         </tr>
                         <tr v-if="r.status==='rejected' && r.rejectReason" class="reject-reason-row">
-                          <td></td>
-                          <td colspan="15">
+                          <td colspan="16">
                             <span style="color:#999;margin-right:6px">驳回原因：</span>
                             <span class="reject-reason-cell">{{r.rejectReason}}</span>
                             <span style="color:#999;margin-left:12px;font-size:11px">— {{r.rejectBy}} · {{r.rejectTime}}</span>
@@ -622,10 +619,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <tr v-if="filteredBmsList.length===0">
                         <td colspan="16" style="text-align:center;color:#999;padding:30px">暂无数据</td>
                       </tr>
+
                     </table>
                   </div>
                   <div class="pagination">
-                    <span>共 {{filteredBmsList.length}} 条<span v-if="bmsCheckedIds.length">，已选 {{bmsCheckedIds.length}} 条</span></span>
+                    <span>共 {{filteredBmsList.length}} 条</span>
                     <div class="page-btn">‹</div>
                     <div class="page-btn active">1</div>
                     <div class="page-btn">›</div>
