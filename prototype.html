@@ -98,6 +98,7 @@ tr:hover td{background:#fafffe}
 .form-item.full{flex:0 0 100%}
 .form-label{width:100px;min-width:100px;text-align:right;padding-right:10px;padding-top:5px;font-size:12px;color:#666}
 .form-label.req::before{content:'*';color:#ff4d4f;margin-right:2px}
+.field-error{border-color:#ff4d4f !important;background:#fff1f0 !important}
 .form-control{flex:1}
 .form-control .inp,.form-control .sel{width:100%}
 .form-note{font-size:11px;color:#999;margin-top:3px}
@@ -275,7 +276,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="form-item">
                   <label class="form-label req">费用类型</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请搜索或选择费用类型..." list="feeType-list" v-model="formFeeType">
+                    <input class="inp" style="width:100%" placeholder="请搜索或选择费用类型..." list="feeType-list" v-model="formFeeType" :class="{'field-error':formValidated&&!formFeeType}">
                     <datalist id="feeType-list">
                       <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
                     </datalist>
@@ -285,7 +286,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="form-item">
                   <label class="form-label req">BIP部门名称</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请搜索或选择BIP部门..." list="bipDept-list" v-model="formBipDept">
+                    <input class="inp" style="width:100%" placeholder="请搜索或选择BIP部门..." list="bipDept-list" v-model="formBipDept" :class="{'field-error':formValidated&&!formBipDept}">
                     <datalist id="bipDept-list">
                       <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
                     </datalist>
@@ -298,7 +299,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="form-item">
                   <label class="form-label req">付款方名称</label>
                   <div class="form-control">
-                    <select class="sel" style="width:100%" v-model="formPayer">
+                    <select class="sel" style="width:100%" v-model="formPayer" :class="{'field-error':formValidated&&!formPayer}">
                       <option value="">请选择付款方...</option>
                       <option value="weipu">广东唯普汽车科技股份有限公司</option>
                       <option value="weipuyun">唯普云市场经营管理（广州）有限公司</option>
@@ -328,7 +329,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="form-item">
                   <label class="form-label req">收款方名称</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请输入收款方名称" v-model="formPayee">
+                    <input class="inp" style="width:100%" placeholder="请输入收款方名称" v-model="formPayee" :class="{'field-error':formValidated&&!formPayee}">
                   </div>
                 </div>
                 <div class="form-item">
@@ -376,7 +377,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="form-item">
                   <label class="form-label req">发票类型</label>
                   <div class="form-control">
-                    <select class="sel" style="width:100%" v-model="formInvoiceType">
+                    <select class="sel" style="width:100%" v-model="formInvoiceType" :class="{'field-error':formValidated&&!formInvoiceType}">
                       <option value="">请选择发票类型...</option>
                       <option value="putong">普票</option>
                       <option value="zhuan">专票</option>
@@ -425,6 +426,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </tr>
                   <tr><td colspan="4" style="text-align:right;font-weight:600">合计</td><td class="amount">1,360.00</td><td colspan="3"></td></tr>
                 </table>
+              </div>
+              <div v-if="formValidated && (!formFeeType||!formBipDept||!formPayer||!formPayee||!formInvoiceType)" class="alert alert-error" style="margin-top:12px">
+                ⚠️ 请填写所有必填字段（标有 <b style="color:#ff4d4f">*</b> 号）后再提交
               </div>
               <div style="margin-top:16px;display:flex;gap:8px">
                 <button class="btn btn-primary" @click="submitApproval">提交审批</button>
@@ -543,28 +547,30 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th class="check-col"><input type="checkbox" @change="bmsVehicleChecked=$event.target.checked?bmsVehicleData.map((_,i)=>i):[];bmsApplyError=''"></th>
-                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>服务中心</th><th>BIP部门名称</th>
+                        <th class="check-col"><input type="checkbox" :checked="filteredVehicleData.length>0&&bmsVehicleChecked.length===filteredVehicleData.length" @change="bmsVehicleChecked=$event.target.checked?filteredVehicleData.map(v=>v.plate):[];bmsApplyError=''"></th>
+                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>服务中心</th><th>BIP部门名称</th><th>集团</th><th>门店</th>
                         <th>实际结算金额(含税)</th><th>操作</th>
                       </tr>
-                      <tr v-for="(v,i) in bmsVehicleData" :key="v.plate" :style="bmsVehicleChecked.includes(i)?'background:#e6f7ff':''">
-                        <td class="check-col"><input type="checkbox" :checked="bmsVehicleChecked.includes(i)" @change="$event.target.checked?bmsVehicleChecked.push(i):bmsVehicleChecked.splice(bmsVehicleChecked.indexOf(i),1);bmsApplyError=''"></td>
+                      <tr v-for="v in filteredVehicleData" :key="v.plate" :style="bmsVehicleChecked.includes(v.plate)?'background:#e6f7ff':''">
+                        <td class="check-col"><input type="checkbox" :checked="bmsVehicleChecked.includes(v.plate)" @change="$event.target.checked?bmsVehicleChecked.push(v.plate):bmsVehicleChecked.splice(bmsVehicleChecked.indexOf(v.plate),1);bmsApplyError=''"></td>
                         <td style="font-size:11px;color:#999">{{v.clearTime||''}}</td>
                         <td><b>{{v.plate}}</b></td>
                         <td style="font-size:11px;font-family:monospace;color:#555">{{v.vin||'—'}}</td>
                         <td>{{v.feeType}}</td>
                         <td style="font-size:11px;color:#555">{{v.serviceCenter||'—'}}</td>
                         <td style="font-size:11px;color:#555">{{v.org}}</td>
+                        <td style="font-size:11px;color:#555">{{v.group||'—'}}</td>
+                        <td style="font-size:11px;color:#555">{{v.store||'—'}}</td>
                         <td class="amount">{{v.actualAmt}}</td>
-                        <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(i,1);showToast('已移除')">移除</button></td>
+                        <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(bmsVehicleData.indexOf(v),1);showToast('已移除')">移除</button></td>
                       </tr>
-                      <tr v-if="bmsVehicleData.length===0">
-                        <td colspan="9" style="text-align:center;color:#999;padding:30px">暂无待结算车辆，请先导入对账明细</td>
+                      <tr v-if="filteredVehicleData.length===0">
+                        <td colspan="11" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入对账明细'}}</td>
                       </tr>
                     </table>
                   </div>
                   <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
-                    <span style="font-size:12px;color:#666">共 {{bmsVehicleData.length}} 条，已勾选 {{bmsVehicleChecked.length}} 条</span>
+                    <span style="font-size:12px;color:#666">共 {{filteredVehicleData.length}} 条，已勾选 {{bmsVehicleChecked.length}} 条</span>
                     <div class="pagination" style="margin-top:0">
                       <div class="page-btn">‹</div>
                       <div class="page-btn active">1</div>
@@ -2195,6 +2201,7 @@ new Vue({
       formBipDept: '',
       formPayee: '常有（天津）信息技术有限公司',
       formInvoiceType: '',
+      formValidated: false,
       formUploadedFiles: ['invoice_001.pdf', 'invoice_002.jpg'],
       dialogUploadedFiles: ['invoice_001.pdf', 'invoice_002.jpg'],
       payerMap: {
@@ -2218,16 +2225,16 @@ new Vue({
       // 待提交：车辆级别数据（独立于申请单列表）
       bmsVehicleData: [
         // 手动导入（过户费/整理费）
-        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',feeType:'过户费(代办过户费)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
-        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',feeType:'整理费(牌证费及邮寄费)',serviceCenter:'广州越秀服务中心',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
+        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',feeType:'过户费(代办过户费)',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
+        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',feeType:'整理费(牌证费及邮寄费)',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
         // 系统自动添加（订单清分后，服务费-合作商返利）
-        {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
-        {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
-        {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
-        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',feeType:'服务费(合作商返利)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
-        {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',feeType:'服务费(合作商返利)',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
-        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',feeType:'服务费(合作商返利)',serviceCenter:'广州越秀服务中心',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
-        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',feeType:'服务费(合作商返利)',serviceCenter:'广州花都服务中心',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
+        {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',feeType:'服务费(合作商返利)',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
+        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',feeType:'服务费(合作商返利)',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
+        {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',feeType:'服务费(合作商返利)',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
+        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',feeType:'服务费(合作商返利)',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
+        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',feeType:'服务费(合作商返利)',serviceCenter:'广州花都服务中心',store:'广州花都门店',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
       ],
       bmsVehicleChecked: [],
       bmsApplyError: '',
@@ -2428,6 +2435,16 @@ new Vue({
       if (f.status && f.status !== '全部') list = list.filter(r => r.statusLabel === f.status)
       return list
     },
+    filteredVehicleData() {
+      let list = this.bmsVehicleData
+      const f = this.bmsFilter
+      if (f.feeType && f.feeType !== '全部') list = list.filter(v => v.feeType === f.feeType)
+      if (f.dept && f.dept !== '全部') list = list.filter(v => v.org === f.dept)
+      if (f.group) list = list.filter(v => (v.group||'').includes(f.group))
+      if (f.store) list = list.filter(v => (v.store||'').includes(f.store))
+      if (f.serviceCenter) list = list.filter(v => (v.serviceCenter||'').includes(f.serviceCenter))
+      return list
+    },
     filteredDeptMapping() {
       let list = this.deptMappingData
       const f = this.deptMapFilter
@@ -2489,8 +2506,10 @@ new Vue({
       return settleMonth
     },
     submitApproval() {
+      this.formValidated = true
+      if (!this.formFeeType || !this.formBipDept || !this.formPayer || !this.formPayee || !this.formInvoiceType) return
       this.showToast('提交成功')
-      setTimeout(() => { this.bmsView = 'list'; this.bmsStatusTab = 'approval' }, 800)
+      setTimeout(() => { this.bmsView = 'list'; this.bmsStatusTab = 'approval'; this.formValidated = false }, 800)
     },
     saveDraft() {
       this.showToast('草稿已保存')
@@ -2511,7 +2530,7 @@ new Vue({
         this.bmsApplyError = '请先勾选需要结算的车辆'
         return
       }
-      const selected = this.bmsVehicleChecked.map(i => this.bmsVehicleData[i])
+      const selected = this.bmsVehicleChecked.map(plate => this.bmsVehicleData.find(v => v.plate === plate)).filter(Boolean)
       const orgs = [...new Set(selected.map(v => v.org))]
       if (orgs.length > 1) {
         this.bmsApplyError = '所选车辆须属于同一BIP部门名称，当前已选：' + orgs.join('、')
