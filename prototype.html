@@ -1010,6 +1010,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span v-if="r.status==='fnc-pay'">
                         | <button class="btn-link" @click="showFncUploadInvoice=true">上传发票</button>
                         | <button class="btn-link" style="color:#ff4d4f" @click="showFncDeleteInvoice=true">删除发票</button>
+                        | <button class="btn-link" style="color:#52c41a" @click="fncCurrentRecord=r;showFncSettleConfirm1=true">已结算</button>
                       </span>
                       <!-- 已结算 -->
                       <span v-if="r.status==='fnc-settled'">
@@ -1103,7 +1104,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               </div>
               <div class="modal-footer">
                 <button class="btn btn-default" @click="showFncSettleConfirm2=false">取消</button>
-                <button class="btn btn-danger" @click="showFncSettleConfirm2=false;fncCurrentRecord=null;showToast('已结算确认成功，状态已更新为「已结算」')">确认已结算（不可撤销）</button>
+                <button class="btn btn-danger" @click="confirmFncSettled()">确认已结算（不可撤销）</button>
               </div>
             </div>
           </div>
@@ -3061,6 +3062,21 @@ new Vue({
       Array.from(e.dataTransfer.files).forEach(f => {
         if (this.fncUploadedFiles.length < 20) this.fncUploadedFiles.push(f.name)
       })
+    },
+    confirmFncSettled() {
+      const r = this.fncCurrentRecord
+      if (r) {
+        r.status = 'fnc-settled'
+        r.statusLabel = '已结算'
+        r.tagClass = 'tag-cyan'
+        const payTab = this.fncStatusTabs.find(t => t.key === 'fnc-pay')
+        const settledTab = this.fncStatusTabs.find(t => t.key === 'fnc-settled')
+        if (payTab && payTab.count > 0) payTab.count -= 1
+        if (settledTab) settledTab.count += 1
+      }
+      this.showFncSettleConfirm2 = false
+      this.fncCurrentRecord = null
+      this.showToast('已结算确认成功，数据已移入「已结算」')
     },
     openDetail(record) {
       this.bmsCurrentDetail = record
