@@ -1075,7 +1075,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <!-- Filter bar -->
               <div class="filter-bar">
                 <div class="filter-item"><label>申请时间</label><input class="inp" type="date" style="width:120px" @change="fncFilterChanged=true"><span>至</span><input class="inp" type="date" style="width:120px" @change="fncFilterChanged=true"></div>
-                <div class="filter-item"><label>结算年月</label><input class="inp" type="month" style="width:120px" @change="fncFilterChanged=true"></div>
+                <div class="filter-item" v-if="fncStatusTab==='fnc-settled'"><label>结算年月</label><input class="inp" type="month" style="width:120px" @change="fncFilterChanged=true"></div>
                 <div class="filter-item">
                   <label>U8部门名称</label>
                   <select class="sel" @change="fncFilterChanged=true">
@@ -1132,6 +1132,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span v-if="r.status==='fnc-pay'">
                         | <button class="btn-link" @click="showFncUploadInvoice=true">上传发票</button>
                         | <button class="btn-link" style="color:#ff4d4f" @click="showFncDeleteInvoice=true">删除发票</button>
+                        | <button class="btn-link" style="color:#52c41a" @click="openFncSettleConfirm(r)">已结算</button>
                       </span>
                       <!-- 已结算 -->
                       <span v-if="r.status==='fnc-settled'">
@@ -1225,7 +1226,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               </div>
               <div class="modal-footer">
                 <button class="btn btn-default" @click="showFncSettleConfirm2=false">取消</button>
-                <button class="btn btn-danger" @click="showFncSettleConfirm2=false;fncCurrentRecord=null;showToast('已结算确认成功，状态已更新为「已结算」')">确认已结算（不可撤销）</button>
+                <button class="btn btn-danger" @click="confirmFncSettled()">确认已结算（不可撤销）</button>
               </div>
             </div>
           </div>
@@ -3095,6 +3096,30 @@ new Vue({
         return
       }
       this.bmsView = 'form'
+    },
+    openFncSettleConfirm(record) {
+      this.fncCurrentRecord = record
+      this.showFncSettleConfirm1 = true
+    },
+    confirmFncSettled() {
+      const r = this.fncCurrentRecord
+      if (r) {
+        const now = new Date()
+        const pad = n => String(n).padStart(2, '0')
+        const settledTime = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+        r.status = 'fnc-settled'
+        r.statusLabel = '已结算'
+        r.tagClass = 'tag-cyan'
+        r.settledBy = '王财务'
+        r.settledTime = settledTime
+        const payTab = this.fncStatusTabs.find(t => t.key === 'fnc-pay')
+        const settledTab = this.fncStatusTabs.find(t => t.key === 'fnc-settled')
+        if (payTab && payTab.count > 0) payTab.count -= 1
+        if (settledTab) settledTab.count = (settledTab.count || 0) + 1
+      }
+      this.showFncSettleConfirm2 = false
+      this.fncCurrentRecord = null
+      this.showToast('已结算确认成功，状态已更新为「已结算」')
     },
     openReconcile() {
       this.reconcileStep = 1
