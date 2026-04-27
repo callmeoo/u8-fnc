@@ -2421,8 +2421,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </table>
               </div>
 
-              <!-- 旧 tab 占位（已合并/移除） -->
-              <div v-if="false">
+              <!-- ② BMS批量结算（旧 tab，保留备查；prdTab 不再匹配 'bms' 故不渲染） -->
+              <div v-if="prdTab==='bms'">
                 <div class="section-title" style="margin-bottom:12px">2.1 列表字段</div>
                 <div class="alert alert-info" style="margin-bottom:10px">原"BIP部门编码"列改为显示<b>U8部门名称</b>；移除结算年月、收款方、总金额(含税)、处理人列。<br>U8部门名称筛选项数据来自后台配置 &gt; <b>部门编码映射</b>（仅展示已启用的部门）。</div>
                 <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:8px">
@@ -2668,7 +2668,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div>④ 所有节点上传的附件，统一汇总显示在申请详情页「发票附件」区域</div>
                 </div>
               </div>
-              </div><!-- /旧 tab 占位 -->
 
               <!-- ④ 待定 -->
               <div v-if="prdTab==='pending'">
