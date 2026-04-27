@@ -516,13 +516,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="filter-item"><label>申请时间</label><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateFrom"><span>至</span><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateTo"></div>
                   <div class="filter-item" v-if="bmsStatusTab!=='draft'"><label>结算年月</label><input class="inp" type="month" style="width:120px" v-model="bmsFilter.settleMonth"></div>
                   <div class="filter-item">
-                    <label>U8部门名称</label>
-                    <select class="sel" v-model="bmsFilter.dept">
-                      <option value="全部">全部</option>
-                      <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
-                    </select>
-                  </div>
-                  <div class="filter-item">
                     <label>费用类型</label>
                     <select class="sel" v-model="bmsFilter.feeType">
                       <option>全部</option>
@@ -552,7 +545,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </select>
                   </div>
                   <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredBmsList.length + ' 条')">🔍 查询</button>
-                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',group:'',store:'',serviceCenter:'',applicant:'',status:'全部'}">重置</button>
+                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',feeType:'全部',group:'',store:'',serviceCenter:'',applicant:'',status:'全部'}">重置</button>
                 </div>
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
@@ -2611,7 +2604,7 @@ new Vue({
     return {
       activeMenu: 'prd',
       prdTab: 'bg',
-      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', group:'', store:'', serviceCenter:'', applicant:'', status:'全部' },
+      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', feeType:'全部', group:'', store:'', serviceCenter:'', applicant:'', status:'全部' },
       deptMapFilter: { code:'', name:'', active:'全部' },
       toastMsg: '',
       // 填写申请表单 — 表单数据
@@ -2857,7 +2850,6 @@ new Vue({
       let list = this.bmsAllData
       if (this.bmsStatusTab !== 'all') list = list.filter(r => r.status === this.bmsStatusTab)
       const f = this.bmsFilter
-      if (f.dept && f.dept !== '全部') list = list.filter(r => r.org === f.dept)
       if (f.feeType && f.feeType !== '全部') list = list.filter(r => r.feeType === f.feeType)
       if (f.group) list = list.filter(r => (r.group||'').includes(f.group))
       if (f.store) list = list.filter(r => (r.storeName||'').includes(f.store))
@@ -2870,7 +2862,6 @@ new Vue({
       let list = this.bmsVehicleData
       const f = this.bmsFilter
       if (f.feeType && f.feeType !== '全部') list = list.filter(v => v.feeType === f.feeType)
-      if (f.dept && f.dept !== '全部') list = list.filter(v => v.org === f.dept)
       if (f.group) list = list.filter(v => (v.group||'').includes(f.group))
       if (f.store) list = list.filter(v => (v.store||'').includes(f.store))
       if (f.serviceCenter) list = list.filter(v => (v.serviceCenter||'').includes(f.serviceCenter))
