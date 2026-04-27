@@ -641,7 +641,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
           <!-- Import Dialog -->
           <div class="modal-mask" v-if="importDialog" @click.self="importDialog=false">
-            <div class="modal" style="max-width:640px">
+            <div class="modal" style="max-width:880px">
               <div class="modal-header"><span class="modal-title">导入对账明细</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
               <div class="modal-body">
                 <!-- Step 1: 上传文件 -->
@@ -669,7 +669,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <div><b style="color:#333">基础信息：</b>车牌号 / VIN码（非必填）/ 集团 / 门店 / 服务中心（费用类型=整理费时必填）</div>
                         <div><b style="color:#333">业务信息：</b>费用类型 / 实际结算金额(含税)</div>
                       </div>
-                      <span style="font-size:11px;color:#888;margin-top:6px;display:block">费用类型下拉值：服务费、过户费、整理费</span>
+                      <div style="margin-top:8px;font-size:12px;line-height:1.9;color:#555">
+                        <div style="font-weight:600;color:#333;margin-bottom:2px">费用类型说明：</div>
+                        <div><b style="color:#fa8c16">过户费</b>：代办过户费。</div>
+                        <div><b style="color:#52c41a">整理费</b>：牌证整理过程中产生的费用。</div>
+                        <div><b style="color:#1890ff">服务费</b>：业务合作费，用于返利或固定场地费。</div>
+                      </div>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
                   </div>
