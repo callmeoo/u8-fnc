@@ -1569,13 +1569,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="modal" style="max-width:900px;width:94vw;max-height:94vh">
               <div class="modal-header"><span class="modal-title">新增凭证(成本) — 第2步：分录预览确认</span><span class="modal-close" @click="voucherNewStep=0">✕</span></div>
               <div class="modal-body">
+                <!-- 只读信息：摘要 / 费用类型 / U8部门名称 -->
+                <div class="form-row" style="margin-bottom:10px">
+                  <div class="form-item" style="flex:0 0 100%"><label class="form-label">摘要</label><div class="form-control"><input class="inp" style="width:100%;background:#f5f5f5" readonly :value="'付1月，'+step2FeeType+'，'+step2Payee"></div></div>
+                  <div class="form-item"><label class="form-label">费用类型</label><div class="form-control"><input class="inp" style="background:#f5f5f5;width:180px" readonly :value="step2FeeType"></div></div>
+                  <div class="form-item"><label class="form-label">U8部门名称</label><div class="form-control"><input class="inp" style="background:#f5f5f5;width:200px" readonly :value="voucherDeptName"></div></div>
+                </div>
+                <!-- 可编辑字段 -->
                 <div class="form-row" style="margin-bottom:10px">
                   <div class="form-item"><label class="form-label req">账簿</label><div class="form-control"><select class="sel"><option>唯普</option><option>机拍</option><option>唯普云</option><option>汇和</option></select></div></div>
                   <div class="form-item"><label class="form-label req">进项税率</label><div class="form-control"><select class="sel"><option>6%</option><option>3%</option><option>9%</option><option>1%</option><option>0%</option></select></div></div>
                   <div class="form-item"><label class="form-label req">制单日期</label><div class="form-control"><input class="inp" type="date" value="2026-04-20"></div></div>
-                  <div class="form-item"><label class="form-label">费用类型</label><div class="form-control"><input class="inp" style="background:#f5f5f5;width:180px" readonly :value="step2FeeType"></div></div>
-                  <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><select class="sel" v-model="voucherDeptCode" style="width:200px"><option value="" disabled>请选择</option><option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.code">{{d.name}}</option></select></div></div>
-                  <div class="form-item" style="flex:0 0 100%"><label class="form-label">摘要</label><div class="form-control"><input class="inp" style="width:100%;background:#f5f5f5" readonly :value="'付1月，'+step2FeeType+'，'+step2Payee"><div class="form-note">自动生成：付"月份"＋"费用类型"＋"收款方公司名称"</div></div></div>
                 </div>
 
                 <!-- 总进项税额可编辑块 -->
@@ -1590,15 +1594,16 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div style="border:1px solid #e8e8e8;border-radius:3px;overflow:hidden">
                   <table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed">
                     <colgroup>
-                      <col style="width:70px"><col style="width:260px">
-                      <col style="width:110px"><col style="width:130px"><col style="width:130px">
+                      <col style="width:70px"><col style="width:170px"><col style="width:110px">
+                      <col style="width:120px"><col style="width:110px"><col style="width:120px">
                     </colgroup>
                     <thead>
                       <tr style="background:#f5f5f5">
                         <th style="padding:8px 6px;font-weight:600">凭证期间</th>
-                        <th style="padding:8px 6px;font-weight:600;text-align:left">摘要</th>
+                        <th style="padding:8px 6px;font-weight:600;text-align:left">科目名称</th>
                         <th style="padding:8px 6px;font-weight:600">科目编码</th>
                         <th style="padding:8px 6px;font-weight:600;text-align:right">借方金额(元)</th>
+                        <th style="padding:8px 6px;font-weight:600;text-align:right">进项税额(元)</th>
                         <th style="padding:8px 6px;font-weight:600;text-align:right">贷方金额(元)</th>
                       </tr>
                     </thead>
@@ -1606,24 +1611,27 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <!-- 每辆车的借方行 -->
                       <tr v-for="(row, idx) in voucherStep2Rows" :key="idx" style="border-bottom:1px solid #f0f0f0">
                         <td style="padding:7px 6px;text-align:center">2026-4</td>
-                        <td style="padding:7px 6px;white-space:normal;line-height:1.4;font-size:11px;color:#333">付1月，{{step2FeeType}}，{{step2Payee}}（{{row.plate}}）</td>
+                        <td style="padding:7px 6px;white-space:normal;line-height:1.4;font-size:11px;color:#333">销售费用 — {{step2FeeType}}（{{row.plate}}）</td>
                         <td style="padding:7px 6px;text-align:center;font-size:11px">64010102</td>
                         <td style="padding:7px 6px;text-align:right;font-weight:600;color:#333">{{row.debit}}</td>
+                        <td style="padding:7px 6px;text-align:right;color:#d46b08">{{row.tax}}</td>
                         <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
                       </tr>
                       <!-- 进项税额借方行（黄色，金额联动 step2TaxTotal） -->
                       <tr style="background:#fffbe6;border-bottom:1px solid #ffe58f">
                         <td style="padding:7px 6px;text-align:center">2026-4</td>
-                        <td style="padding:7px 6px;white-space:normal;font-size:11px;color:#333">付1月，进项税额，{{step2Payee}}</td>
+                        <td style="padding:7px 6px;white-space:normal;font-size:11px;color:#333">应交税费 — 应交增值税(进项税额)</td>
                         <td style="padding:7px 6px;text-align:center;font-size:11px">2221010101</td>
                         <td style="padding:7px 6px;text-align:right;font-weight:600;color:#d46b08">{{step2TaxTotal}}</td>
+                        <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
                         <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
                       </tr>
                       <!-- 银行存款贷方行（粉色） -->
                       <tr style="background:#fff0f6;border-bottom:1px solid #f0f0f0">
                         <td style="padding:7px 6px;text-align:center">2026-4</td>
-                        <td style="padding:7px 6px;white-space:normal;font-size:11px;color:#333">付1月，{{step2FeeType}}，{{step2Payee}}</td>
+                        <td style="padding:7px 6px;white-space:normal;font-size:11px;color:#333">银行存款</td>
                         <td style="padding:7px 6px;text-align:center;font-size:11px">10020101</td>
+                        <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
                         <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
                         <td style="padding:7px 6px;text-align:right;font-weight:600;color:#c41d7f">1,060.00</td>
                       </tr>
@@ -2957,6 +2965,10 @@ new Vue({
     formPaymentSummary() {
       const parts = [this.formSummaryMonth, this.formFeeType, this.formPayee].filter(Boolean)
       return parts.length ? '付' + parts.join('，') : ''
+    },
+    voucherDeptName() {
+      const d = this.deptMappingData.find(x => x.code === this.voucherDeptCode)
+      return d ? d.name : ''
     },
     currentBreadcrumb() {
       const map = {
