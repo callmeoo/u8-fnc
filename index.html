@@ -487,8 +487,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="card-header">
                 <span class="card-title">BMS — 批量结算列表</span>
                 <div style="display:flex;gap:8px">
-                  <button class="btn btn-default" @click="openReconcile">导入对账单核对</button>
-                  <button class="btn btn-default" @click="importDialog=true">导入结算明细</button>
+                  <button class="btn" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="openReconcile">导入对账单核对</button>
+                  <button class="btn" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="importDialog=true">导入结算明细</button>
                   <button v-if="bmsStatusTab!=='draft'" class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
                   <button v-if="bmsStatusTab==='draft'" class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
                 </div>
@@ -1422,7 +1422,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <span style="flex:1"></span>
                   <button class="btn btn-primary btn-sm">查询</button>
                   <button class="btn btn-default btn-sm" @click="showVoucherGroupNew=true">新增</button>
-                  <button class="btn btn-primary btn-sm" @click="voucherNewStep=1">新增(成本)</button>
+                  <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="voucherNewStep=1">新增(成本)</button>
                 </div>
                 <div class="table-wrap">
                   <table>
