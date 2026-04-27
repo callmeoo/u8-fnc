@@ -979,7 +979,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="info-item"><div class="info-label">申请时间</div><div class="info-value">{{bmsCurrentDetail.time}} 10:23:45</div></div>
                   <div class="info-item"><div class="info-label">U8部门名称</div><div class="info-value">{{bmsCurrentDetail.org}}</div></div>
                   <div class="info-item"><div class="info-label">费用类型</div><div class="info-value">{{bmsCurrentDetail.feeType}}</div></div>
-                  <div class="info-item"><div class="info-label">结算年月</div><div class="info-value">{{bmsCurrentDetail.settleMonth}}</div></div>
                   <div class="info-item"><div class="info-label">收款方名称</div><div class="info-value">{{bmsCurrentDetail.payeeFull||bmsCurrentDetail.payee}}</div></div>
                   <div class="info-item"><div class="info-label">含税合计</div><div class="info-value amount">¥ {{bmsCurrentDetail.amount}}</div></div>
                 </div>
@@ -1047,12 +1046,27 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
                 <hr class="sep detail-item-section">
                 <div class="detail-item-section section-title" style="margin-bottom:10px">明细列表（4条）<span style="font-size:11px;font-weight:400;color:#999;margin-left:8px">费用类型：{{bmsCurrentDetail.feeType}} · U8部门名称：{{bmsCurrentDetail.org}}</span></div>
-                <div class="detail-item-section" style="display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 14px;background:#fafafa;border:1px solid #f0f0f0;border-radius:4px;margin-bottom:10px">
-                  <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤A·12345</b> <span class="amount" style="color:#333">¥ 360.00</span></span>
-                  <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤B·67890</b> <span class="amount" style="color:#333">¥ 360.00</span></span>
-                  <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤C·11111</b> <span class="amount" style="color:#333">¥ 400.00</span></span>
-                  <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤D·22222</b> <span class="amount" style="color:#333">¥ 240.00</span></span>
-                  <span style="width:100%;padding-top:8px;margin-top:4px;border-top:1px solid #f0f0f0;font-size:12px;display:flex;justify-content:flex-end">合计：<b class="amount" style="margin-left:6px;color:#333">¥ 1,360.00</b></span>
+                <div class="table-wrap detail-item-section">
+                  <table>
+                    <tr>
+                      <th>车牌号</th><th>VIN码</th><th>集团</th><th>门店</th><th>服务中心</th><th>实际结算金额(含税)</th>
+                    </tr>
+                    <tr>
+                      <td><b>粤A·12345</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx1</td><td>广州区域</td><td>番禺门店</td><td>番禺服务中心</td><td class="amount">360.00</td>
+                    </tr>
+                    <tr>
+                      <td><b>粤B·67890</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx2</td><td>广州区域</td><td>天河门店</td><td>天河服务中心</td><td class="amount">360.00</td>
+                    </tr>
+                    <tr>
+                      <td><b>粤C·11111</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx3</td><td>广州区域</td><td>越秀门店</td><td>越秀服务中心</td><td class="amount">400.00</td>
+                    </tr>
+                    <tr>
+                      <td><b>粤D·22222</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx4</td><td>广州区域</td><td>花都门店</td><td>花都服务中心</td><td class="amount">240.00</td>
+                    </tr>
+                    <tr style="background:#fafafa">
+                      <td colspan="5" style="text-align:right;font-weight:600">合计</td><td class="amount">1,360.00</td>
+                    </tr>
+                  </table>
                 </div>
               </div>
             </div>
@@ -1372,15 +1386,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap detail-item-section">
                     <table>
                       <tr>
-                        <th style="background:#f0f7ff">序号</th><th style="background:#f0f7ff">车牌号</th>
-                        <th style="background:#f0f7ff">实际结算金额(含税)</th>
+                        <th style="background:#f0f7ff">车牌号</th><th style="background:#f0f7ff">VIN码</th><th style="background:#f0f7ff">集团</th><th style="background:#f0f7ff">门店</th><th style="background:#f0f7ff">服务中心</th><th style="background:#f0f7ff">实际结算金额(含税)</th>
                       </tr>
-                      <tr><td>1</td><td><b>粤A·12345</b></td><td class="amount">360.00</td></tr>
-                      <tr><td>2</td><td><b>粤B·67890</b></td><td class="amount">360.00</td></tr>
-                      <tr><td>3</td><td><b>粤C·11111</b></td><td class="amount">400.00</td></tr>
-                      <tr v-if="fncDetailRecord.count>3"><td>4</td><td><b>粤D·22222</b></td><td class="amount">240.00</td></tr>
+                      <tr><td><b>粤A·12345</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx1</td><td>广州区域</td><td>番禺门店</td><td>番禺服务中心</td><td class="amount">360.00</td></tr>
+                      <tr><td><b>粤B·67890</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx2</td><td>广州区域</td><td>天河门店</td><td>天河服务中心</td><td class="amount">360.00</td></tr>
+                      <tr><td><b>粤C·11111</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx3</td><td>广州区域</td><td>越秀门店</td><td>越秀服务中心</td><td class="amount">400.00</td></tr>
+                      <tr v-if="fncDetailRecord.count>3"><td><b>粤D·22222</b></td><td style="font-size:11px;font-family:monospace;color:#555">LFV3A2BM2N3xxxxx4</td><td>广州区域</td><td>花都门店</td><td>花都服务中心</td><td class="amount">240.00</td></tr>
                       <tr style="background:#fafafa">
-                        <td colspan="2" style="text-align:right;font-weight:600;color:#333">合计</td>
+                        <td colspan="5" style="text-align:right;font-weight:600;color:#333">合计</td>
                         <td class="amount">{{fncDetailRecord.amount}}</td>
                       </tr>
                     </table>
