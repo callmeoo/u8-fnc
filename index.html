@@ -2292,27 +2292,67 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="card-body">
               <!-- Tab nav -->
               <div class="status-tabs" style="margin-bottom:20px">
-                <span class="stab" :class="{active:prdTab==='bg'}"       @click="prdTab='bg'">① 背景</span>
-                <span class="stab" :class="{active:prdTab==='bms'}"      @click="prdTab='bms'">② BMS批量结算</span>
-                <span class="stab" :class="{active:prdTab==='fnc'}"      @click="prdTab='fnc'">③ FNC批量结算</span>
-                <span class="stab" :class="{active:prdTab==='voucher'}"  @click="prdTab='voucher'">④ FNC凭证管理</span>
-                <span class="stab" :class="{active:prdTab==='approval'}" @click="prdTab='approval'">⑤ 审批流</span>
-                <span class="stab" :class="{active:prdTab==='pending'}"  @click="prdTab='pending'" style="color:#d46b08">⑥ 待定</span>
+                <span class="stab" :class="{active:prdTab==='origin'}"  @click="prdTab='origin'">① 原始需求</span>
+                <span class="stab" :class="{active:prdTab==='bg'}"      @click="prdTab='bg'">② 现状痛点和改造目标</span>
+                <span class="stab" :class="{active:prdTab==='points'}"  @click="prdTab='points'">③ 需求要点罗列</span>
+                <span class="stab" :class="{active:prdTab==='pending'}" @click="prdTab='pending'" style="color:#d46b08">④ 待定</span>
               </div>
 
-              <!-- ① 背景 -->
-              <div v-if="prdTab==='bg'">
-                <div class="section-title" style="margin-bottom:10px">系统概述</div>
-                <div style="font-size:12px;color:#555;line-height:2;margin-bottom:12px">批量结算功能在 <b>BMS</b>（业务后台）和 <b>FNC</b>（财务后台）中均有对应模块，两者共享同一套数据：
-                </div>
-                <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:16px">
-                  <tr style="background:#f5f7fa"><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">系统</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">角色</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">职责</th></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8"><b>BMS</b></td><td style="padding:8px 12px;border:1px solid #e8e8e8">业务员</td><td style="padding:8px 12px;border:1px solid #e8e8e8">发起申请、上传发票、提交审批、查看审批进度</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8"><b>FNC</b></td><td style="padding:8px 12px;border:1px solid #e8e8e8">财务人员</td><td style="padding:8px 12px;border:1px solid #e8e8e8">查看申请数据、审批核对、完成付款、开具U8凭证</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8"><b>企微H5</b></td><td style="padding:8px 12px;border:1px solid #e8e8e8">各级审批人</td><td style="padding:8px 12px;border:1px solid #e8e8e8">移动端审批（审批通过/驳回），与PC端数据实时同步</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8"><b>U8（用友ERP）</b></td><td style="padding:8px 12px;border:1px solid #e8e8e8">财务系统</td><td style="padding:8px 12px;border:1px solid #e8e8e8">接收FNC推送的凭证，完成会计入账</td></tr>
-                </table>
+              <!-- ① 原始需求（附件原文） -->
+              <div v-if="prdTab==='origin'">
+                <div class="alert alert-info" style="margin-bottom:14px">附件原文 — 来自《关于整理费及过户费流程优化与自动入账的需求申请》（业务方提交）</div>
+                <div style="background:#fff;border:1px solid #e8e8e8;border-radius:6px;padding:24px 28px;font-size:13px;color:#333;line-height:1.9;font-family:'PingFang SC','Microsoft YaHei',serif">
+                  <div style="text-align:center;font-size:16px;font-weight:700;margin-bottom:18px">关于整理费及过户费流程优化与自动入账的需求申请</div>
 
+                  <div style="font-weight:700;margin:18px 0 8px;color:#1890ff">一、需求背景</div>
+                  <div style="text-indent:2em;margin-bottom:8px">目前，公司整理费及过户费的成本处理流程存在以下问题：</div>
+                  <ol style="padding-left:32px;margin-bottom:10px">
+                    <li><b>流程割裂、重复操作：</b>业务员需先在BMS后台上传明细供财务复核，再到OA系统发起付款流程。双系统操作，业务员体验不佳。</li>
+                    <li><b>重复审核、效率低下：</b>财务人员需在BMS复核一次明细，又在OA复核一次付款信息，存在重复劳动。</li>
+                    <li><b>入账手工、易出差错：</b>财务入账时，需从BMS导出明细，人工整理成Excel后再导入U8系统，不仅耗时，还存在手工操作带来的数据错误风险。</li>
+                  </ol>
+                  <div style="text-indent:2em;margin-bottom:8px">从业务量来看，目前整理费及过户费成本每月涉及约 <b>50个凭证、11,100条明细数据</b>，人工处理工作量较大，流程优化的迫切性较高。</div>
+                  <div style="text-indent:2em;margin-bottom:8px">为解决上述问题，提升跨部门协作效率与财务核算准确性，现申请对BMS系统进行功能优化，将整理费及过户费的全流程整合至BMS系统闭环处理。</div>
+
+                  <div style="font-weight:700;margin:18px 0 8px;color:#1890ff">二、需求内容</div>
+
+                  <div style="font-weight:600;margin:12px 0 6px">（一）流程合并：将OA付款审批迁移至BMS</div>
+                  <div style="margin-bottom:6px"><b>目标：</b>实现业务员在BMS后台"上传明细+上传发票+填写付款信息+发起审批"一站式完成，无需再登录OA系统发起付款流程。</div>
+                  <div style="margin-bottom:4px"><b>具体要求：</b></div>
+                  <ul style="padding-left:32px;margin-bottom:10px">
+                    <li><b>功能整合：</b>在BMS后台现有的"报销核算中心"模块中，增加发票上传功能（支持图片或PDF格式，可多张上传），同时增加付款信息录入字段（如收款方名称、银行账号、开户行、付款金额等）以及多级审批流程配置。</li>
+                    <li><b>审批迁移：</b>将原OA系统中的审批环节（部门负责人 → 财务审核 → 公司领导）全部迁移至BMS系统内完成。审批通过后，BMS系统自动将单据状态更新为"待支付"，不再需要在OA发起任何后续流程。</li>
+                    <li><b>异常处理：</b>如审批不通过，支持驳回至发起人；发起人可在原明细基础上修改后重新提交，也可废弃原单重新发起。</li>
+                    <li><b>原始凭证功能：</b>审批表单需增加导出PDF和直接打印功能，方便财务人员将审批完成的单据（含发票附件）作为入账原始凭证归档保存。</li>
+                  </ul>
+
+                  <div style="font-weight:600;margin:12px 0 6px">（二）自动入账：BMS一键推送凭证至U8</div>
+                  <div style="margin-bottom:6px"><b>目标：</b>利用现有BMS与U8的接口，实现财务一键生成凭证，减少人工制单环节。</div>
+                  <div style="margin-bottom:4px"><b>具体要求：</b></div>
+                  <ul style="padding-left:32px;margin-bottom:10px">
+                    <li><b>推送主体选择：</b>由于公司存在多个法人主体，对应U8系统中不同的账套，因此在推送凭证时需要支持选择推送主体（即选择对应的公司账套），确保凭证推送到正确的U8账套中。</li>
+                    <li><b>推送前允许修改：</b>在点击"生成凭证"前，系统应允许财务人员对推送数据进行临时修改，主要涉及：
+                      <ul style="padding-left:24px;margin-top:4px">
+                        <li><b>进项税调整：</b>由于发票类型可能不同（如增值税专用发票、普通发票等），进项税额可能不同，财务人员需要能够按发票维度修改进项税金额。即每张上传的发票对应一条进项税额，财务可根据实际发票类型调整该发票的进项税额。</li>
+                        <li><b>批量除税功能：</b>对于需要将含税金额还原为不含税金额入账的场景，系统应提供批量除税功能。财务人员可选中多条明细，输入税率（如13%、9%、6%等），系统自动计算出每条明细的不含税金额和进项税额，并更新到推送明细中。该操作仅影响本次凭证推送，不覆盖业务员原始录入的数据，确保原始数据可追溯。</li>
+                      </ul>
+                    </li>
+                    <li><b>触发方式：</b>在BMS后台增加"生成凭证"按钮，由财务人员确认无误后手动点击推送，不要求审批通过后自动推送，以便财务留有核对调整的时间。</li>
+                    <li><b>科目映射：</b>由财务部提供《服务费、过户费、整理费凭证模板》，研发根据该表在后台配置映射规则。系统自动根据BMS中的费用类型、部门、项目等字段，匹配生成U8凭证的借方/贷方科目及辅助核算。</li>
+                    <li><b>接口调用：</b>利用现有BMS向U8推送凭证的接口，实现实时推送。若推送失败（如科目未配置、网络异常），系统需给出明确的错误提示（例如"XX费用类型未配置科目"），并支持财务修正后重新推送。</li>
+                  </ul>
+
+                  <div style="font-weight:700;margin:18px 0 8px;color:#1890ff">三、预期效果</div>
+                  <ul style="padding-left:32px">
+                    <li><b>减少重复操作：</b>业务员无需在BMS和OA之间切换，财务无需在两个系统重复审核。</li>
+                    <li><b>提升入账效率：</b>财务入账从"导出-整理-导入"变为"一键推送"，按每月 11,100 条数据计算，可大幅节省人工处理时间。</li>
+                    <li><b>降低差错风险：</b>系统自动映射科目、接口直推数据，避免人工整理Excel可能带来的错误。</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- ② 现状痛点和改造目标 -->
+              <div v-if="prdTab==='bg'">
                 <div class="section-title" style="margin-bottom:10px">现状痛点</div>
                 <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px 16px;margin-bottom:12px;font-size:12px;line-height:2.2">
                   <div style="font-weight:600;color:#d46b08;margin-bottom:4px">痛点一：流程分散，跨两系统（本次需求一）</div>业务员每次付款申请须在 BMS 填完后，再重复填写 OA 付款审批表；<br>财务同样需在两套系统分别审核，重复劳动、信息不同步。
@@ -2341,8 +2381,56 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="alert alert-warning"><span><b>已确认不包含：</b>财务打回（BMS侧无此操作）、凭证管理"开具超时"Tab（不新增）。</span></div>
               </div>
 
-              <!-- ② BMS批量结算 -->
-              <div v-if="prdTab==='bms'">
+              <!-- ③ 需求要点罗列（功能点列表，详细展开见各 sidebar 模块） -->
+              <div v-if="prdTab==='points'">
+                <div class="alert alert-info" style="margin-bottom:14px">本页仅罗列功能点，具体交互与字段说明请到左侧菜单对应模块查看。</div>
+
+                <div class="section-title" style="margin-bottom:10px">需求一：流程合并（OA → BMS）</div>
+                <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:18px">
+                  <tr style="background:#f5f7fa">
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">功能点</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
+                  </tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS 申请表单（一站式）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">明细勾选 + 发票上传 + 付款/收款信息录入 + 备注</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">5级审批流</td><td style="padding:8px 12px;border:1px solid #e8e8e8">区域经理 → 财务（麦经理）→ 区域总监 → 财务负责人 → 总经理</td><td style="padding:8px 12px;border:1px solid #e8e8e8">其他 &gt; 审批流</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">企微 H5 审批端</td><td style="padding:8px 12px;border:1px solid #e8e8e8">非财务角色在企微"付款审批"中处理待办</td><td style="padding:8px 12px;border:1px solid #e8e8e8">其他 &gt; 审批流（企微演示 tab）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">驳回 / 修改重提 / 废弃</td><td style="padding:8px 12px;border:1px solid #e8e8e8">任意级驳回退回业务员；可修改重提或废弃为终态</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算（详情页）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC 财务审批 + 付款</td><td style="padding:8px 12px;border:1px solid #e8e8e8">5级通过后流转 FNC，财务审批通过 → 待支付 → 完成打款 → 已结算</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 批量结算</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">发票全生命周期上传</td><td style="padding:8px 12px;border:1px solid #e8e8e8">申请人 / 各级审批节点 / 已结算后均可补充上传</td><td style="padding:8px 12px;border:1px solid #e8e8e8">其他 &gt; 审批流（发票凭证上传 tab）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">原始凭证导出 / 打印</td><td style="padding:8px 12px;border:1px solid #e8e8e8">导出 PDF + 打印明细 + 打包下载发票附件 ZIP</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 批量结算（详情页）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">导入对账单核对</td><td style="padding:8px 12px;border:1px solid #e8e8e8">上传供应商对账单，系统匹配明细，自动勾选可结算车辆</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算（待提交 tab）</td></tr>
+                </table>
+
+                <div class="section-title" style="margin-bottom:10px">需求二：自动入账（BMS → U8）</div>
+                <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:18px">
+                  <tr style="background:#f5f7fa">
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">功能点</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
+                  </tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">"从批量结算新增(成本)"入口</td><td style="padding:8px 12px;border:1px solid #e8e8e8">凭证管理列表新增按钮，与现有"新增"并列</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">两步骤生成凭证</td><td style="padding:8px 12px;border:1px solid #e8e8e8">Step 1 选择费用类型 + 结算年月 + 勾选已结算申请；Step 2 自动分录预览 + 财务调整</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">推送账套（多法人主体）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">支持选择对应公司账套，凭证推送到正确 U8 账套</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">进项税调整 + 批量除税</td><td style="padding:8px 12px;border:1px solid #e8e8e8">按发票维度调进项税额；可选中多条按税率（13/9/6%）批量计算</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">凭证摘要标题</td><td style="padding:8px 12px;border:1px solid #e8e8e8">U8返回凭证号 / 摘要 / 结算年月 / 开具操作人</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">一键推送 U8 + 凭证号回写</td><td style="padding:8px 12px;border:1px solid #e8e8e8">财务点击开具 → 推送 U8 → 凭证号回写 FNC；失败给出明确错误并支持重试</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                </table>
+
+                <div class="section-title" style="margin-bottom:10px">支撑配置</div>
+                <table style="width:100%;font-size:12px;border-collapse:collapse">
+                  <tr style="background:#f5f7fa">
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">功能点</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
+                  </tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">U8部门编码映射</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS列表筛选 / BMS表单 / FNC列表筛选 / 凭证新增整理费 共用</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算 &gt; 部门编码映射 tab</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">科目映射规则</td><td style="padding:8px 12px;border:1px solid #e8e8e8">按费用类型 / 部门 / 项目自动匹配借贷方科目（财务部提供模板）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">后台配置（评审后实施）</td></tr>
+                </table>
+              </div>
+
+              <!-- 旧 tab 占位（已合并/移除） -->
+              <div v-if="false">
                 <div class="section-title" style="margin-bottom:12px">2.1 列表字段</div>
                 <div class="alert alert-info" style="margin-bottom:10px">原"BIP部门编码"列改为显示<b>U8部门名称</b>；移除结算年月、收款方、总金额(含税)、处理人列。<br>U8部门名称筛选项数据来自后台配置 &gt; <b>部门编码映射</b>（仅展示已启用的部门）。</div>
                 <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:8px">
@@ -2588,16 +2676,15 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div>④ 所有节点上传的附件，统一汇总显示在申请详情页「发票附件」区域</div>
                 </div>
               </div>
+              </div><!-- /旧 tab 占位 -->
 
-              <!-- ⑥ 待定 -->
+              <!-- ④ 待定 -->
               <div v-if="prdTab==='pending'">
-                <div class="alert alert-warning" style="margin-bottom:16px">以下事项尚未确认，影响研发实现，评审前需处理。</div>
-
                 <div style="padding:16px 20px;background:#fff7e6;border:1px solid #ffd591;border-radius:6px;font-size:12px;line-height:2.2;margin-bottom:16px">
-                  <div style="font-weight:600;color:#d46b08;font-size:13px;margin-bottom:8px">陈霞未提供完整的部门编码映射数据</div>
+                  <div style="font-weight:600;color:#d46b08;font-size:13px;margin-bottom:8px">待业务方提供初始化的部门编码映射表</div>
                   <div style="color:#555;margin-bottom:10px">
                     <b>数据来源已确认</b>：所有 U8部门名称下拉选项（BMS列表筛选、BMS申请表单、FNC列表筛选、FNC凭证新增）统一从后台配置 &gt; <b>部门编码映射</b>中读取，仅显示已启用的部门。<br>
-                    <b>待补充</b>：当前映射表中仅有部分示例数据，<b>陈霞尚未提供完整的BIP部门编码与U8部门名称对照表</b>。<br>在陈霞补充完整数据前，原型中部门选项为示例，实际数据以陈霞最终确认的映射表为准。
+                    <b>待补充</b>：当前映射表中仅有部分示例数据，<b>业务方尚未提供完整的BIP部门编码与U8部门名称对照表</b>。<br>在业务方补充完整数据前，原型中部门选项为示例，实际数据以业务方最终确认的映射表为准。
                   </div>
                   <div style="background:#fff;border:1px solid #ffe58f;border-radius:4px;padding:10px 14px;font-size:11px;color:#666">
                     <b>影响范围：</b><br>
@@ -2606,7 +2693,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     · FNC 列表 &gt; U8部门名称筛选下拉<br>
                     · FNC 凭证管理 &gt; 从批量结算新增(成本) &gt; Step 1 整理费 U8部门编码下拉<br>
                     · 后台配置 &gt; 部门编码映射 表中的数据是否完整<br>
-                    <b>负责人：</b>陈霞（待提供）&nbsp;&nbsp;<b>截止时间：</b>评审前
+                    <b>负责人：</b>业务方（待提供）&nbsp;&nbsp;<b>截止时间：</b>评审前
                   </div>
                 </div>
 
@@ -3004,7 +3091,7 @@ new Vue({
   data() {
     return {
       activeMenu: 'prd',
-      prdTab: 'bg',
+      prdTab: 'origin',
       bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', group:'', store:'', serviceCenter:'', applicant:'', status:'全部' },
       deptMapFilter: { code:'', name:'', active:'全部' },
       toastMsg: '',
