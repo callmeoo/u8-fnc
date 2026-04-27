@@ -268,7 +268,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <b>费用类型：</b>{{formFeeType}} &nbsp;&nbsp; <b>已选明细：</b>4条 &nbsp;&nbsp;
                 <b>明细合计：</b><span class="amount">¥ 1,360.00</span>
               </div>
-              <div class="alert alert-info" style="margin-bottom:14px">每次结算仅支持同一费用类型，当前已选明细费用类型为：<b>{{formFeeType}}</b>。如需结算其他费用类型，请单独发起申请。</div>
               <div class="section-title" style="margin-bottom:14px">基本信息</div>
               <div class="form-row">
                 <div class="form-item full">
@@ -417,26 +416,21 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="table-wrap">
                 <table>
                   <tr>
-                    <th>序号</th><th>车牌号</th><th>VIN码</th>
-                    <th>实际结算金额(含税)</th><th>服务中心</th><th>集团</th><th>门店名称</th>
+                    <th>车牌号</th><th>VIN码</th><th>集团</th><th>门店</th><th>服务中心</th><th>实际结算金额(含税)</th>
                   </tr>
                   <tr>
-                    <td>1</td><td>粤A·12345</td><td>LFV3A2BM2N3xxxxx1</td>
-                    <td class="amount">360.00</td><td>番禺服务中心</td><td>广州区域</td><td>番禺门店</td>
+                    <td>粤A·12345</td><td>LFV3A2BM2N3xxxxx1</td><td>广州区域</td><td>番禺门店</td><td>番禺服务中心</td><td class="amount">360.00</td>
                   </tr>
                   <tr>
-                    <td>2</td><td>粤B·67890</td><td>LFV3A2BM2N3xxxxx2</td>
-                    <td class="amount">360.00</td><td>天河服务中心</td><td>广州区域</td><td>天河门店</td>
+                    <td>粤B·67890</td><td>LFV3A2BM2N3xxxxx2</td><td>广州区域</td><td>天河门店</td><td>天河服务中心</td><td class="amount">360.00</td>
                   </tr>
                   <tr>
-                    <td>3</td><td>粤C·11111</td><td>LFV3A2BM2N3xxxxx3</td>
-                    <td class="amount">400.00</td><td>越秀服务中心</td><td>广州区域</td><td>越秀门店</td>
+                    <td>粤C·11111</td><td>LFV3A2BM2N3xxxxx3</td><td>广州区域</td><td>越秀门店</td><td>越秀服务中心</td><td class="amount">400.00</td>
                   </tr>
                   <tr>
-                    <td>4</td><td>粤D·22222</td><td>LFV3A2BM2N3xxxxx4</td>
-                    <td class="amount">240.00</td><td>花都服务中心</td><td>广州区域</td><td>花都门店</td>
+                    <td>粤D·22222</td><td>LFV3A2BM2N3xxxxx4</td><td>广州区域</td><td>花都门店</td><td>花都服务中心</td><td class="amount">240.00</td>
                   </tr>
-                  <tr><td colspan="3" style="text-align:right;font-weight:600">合计</td><td class="amount">1,360.00</td><td colspan="3"></td></tr>
+                  <tr><td colspan="5" style="text-align:right;font-weight:600">合计</td><td class="amount">1,360.00</td></tr>
                 </table>
               </div>
               <div v-if="formValidated && (!formFeeType||!formBipDept||!formPayer||!formPayee||!formInvoiceType)" class="alert alert-error" style="margin-top:12px">请填写所有必填字段（标有 <b style="color:#ff4d4f">*</b>号）后再提交
