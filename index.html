@@ -1725,18 +1725,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="card">
                 <div class="card-body">
                   <!-- 标题行 -->
-                  <div style="border:1px solid #d9d9d9;border-radius:4px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;background:#fafafa">
-                    <span style="font-size:14px;font-weight:700;color:#222;letter-spacing:0.01em">
-                      {{voucherCurrentDetail.id}} &nbsp; 付4月，{{voucherDetailFeeType}}，{{voucherDetailScenario.payee}} &nbsp;
-                      <span style="font-weight:500;color:#555">{{voucherCurrentDetail.period}}</span> &nbsp;
-                      <span style="font-weight:500;color:#555">{{voucherCurrentDetail.user}}</span>
+                  <div style="border:1px solid #d9d9d9;border-radius:4px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;background:#fafafa;flex-wrap:wrap;gap:10px">
+                    <span style="font-size:14px;font-weight:700;color:#222;letter-spacing:0.01em;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
+                      <span>付4月，{{voucherDetailFeeType}}，{{voucherDetailScenario.payee}}</span>
+                      <span style="font-weight:500;color:#555">{{voucherCurrentDetail.period}}</span>
+                      <span style="font-weight:500;color:#555">王财务</span>
+                      <span style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;padding:2px 8px;border-left:1px dashed #d9d9d9">
+                        <span style="font-size:11px;font-weight:400;color:#888">演示模式：</span>
+                        <button v-for="ft in ['服务费','过户费','整理费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" style="padding:2px 8px;font-size:11px;font-weight:400" @click="voucherDetailFeeType=ft">{{ft}}</button>
+                      </span>
                     </span>
                     <button class="btn btn-danger btn-sm" @click="showReturnVoucher=true">删除凭证</button>
-                  </div>
-                  <!-- 演示用：费用类型切换器 -->
-                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 14px;background:#f0f7ff;border:1px solid #91d5ff;border-radius:4px">
-                    <span style="font-size:12px;color:#0050b3">演示模式 · 切换费用类型查看不同凭证：</span>
-                    <button v-for="ft in ['服务费','过户费','整理费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" @click="voucherDetailFeeType=ft">{{ft}}</button>
                   </div>
                   <!-- 分录明细表 -->
                   <div class="table-wrap">
@@ -1761,12 +1760,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <th style="min-width:90px">辅助信息</th>
                           <th style="min-width:130px">关联华夏流水号</th>
                           <th style="min-width:60px">备注</th>
+                          <th style="min-width:80px">操作</th>
                         </tr>
                       </thead>
                       <tbody>
                         <!-- 借方：业务费用（按 voucherDetailScenario 渲染） -->
-                        <tr v-for="(row, idx) in voucherDetailScenario.rows" :key="'d-'+idx">
-                          <td>2026</td><td>4</td><td>记</td><td>王财务</td><td>wpfy</td>
+                        <tr v-for="(row, idx) in voucherDetailScenario.rows" :key="'d-'+idx" :style="{background: idx%2===1?'#fafffe':''}">
+                          <td>2026</td><td>4</td><td>记</td><td>王财务</td><td></td>
                           <td>{{voucherDetailFeeType}}</td>
                           <td>{{voucherDetailScenario.subjectCode}}</td>
                           <td style="white-space:normal;line-height:1.4;font-size:11px">{{row.desc}}</td>
@@ -1774,25 +1774,27 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td style="text-align:right">{{row.debit}}</td><td style="color:#bbb">—</td>
                           <td>{{voucherDetailScenario.auxName}}</td>
                           <td>{{voucherDetailScenario.auxCode}}</td>
-                          <td>{{voucherDetailScenario.auxInfoLabel}}</td>
+                          <td>{{voucherDetailFeeType==='整理费' ? voucherDetailScenario.auxInfoLabel : row.auxInfo}}</td>
                           <td>{{row.auxInfo}}{{row.auxInfoExt?'（'+row.auxInfoExt+'）':''}}</td>
                           <td></td><td></td>
+                          <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
                         <!-- 借方：进项税额（汇总一行） -->
                         <tr style="background:#fffbe6">
-                          <td>2026</td><td>4</td><td>记</td><td>王财务</td><td>wpfy</td>
-                          <td></td>
+                          <td>2026</td><td>4</td><td>记</td><td>王财务</td><td></td>
+                          <td>进项税额</td>
                           <td>2221010101</td>
                           <td style="white-space:normal;line-height:1.4;font-size:11px">付4月，进项税额，{{voucherDetailScenario.payee}}</td>
                           <td>人民币</td><td>1</td>
                           <td style="text-align:right;color:#d46b08">{{voucherDetailScenario.taxAmt}}</td><td style="color:#bbb">—</td>
                           <td></td><td></td><td></td><td></td>
                           <td></td><td></td>
+                          <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
                         <!-- 贷方：银行存款 -->
                         <tr style="background:#fff0f6">
                           <td>2026</td><td>4</td><td>记</td><td>王财务</td><td></td>
-                          <td></td>
+                          <td>银行存款</td>
                           <td>10020101</td>
                           <td style="white-space:normal;line-height:1.4;font-size:11px">付4月，{{voucherDetailFeeType}}，{{voucherDetailScenario.payee}}</td>
                           <td>人民币</td><td>1</td>
@@ -1800,6 +1802,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td>现金流量项目</td><td>0007</td>
                           <td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
                           <td style="font-size:11px;color:#555">62604067544659797</td><td></td>
+                          <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
                       </tbody>
                     </table>
