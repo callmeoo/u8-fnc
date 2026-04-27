@@ -1102,6 +1102,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
                 <div class="filter-item"><label>申请人</label><input class="inp" placeholder="申请人" style="width:100px" @input="fncFilterChanged=true"></div>
                 <div class="filter-item"><label>收款方</label><input class="inp" placeholder="搜索收款方..." style="width:130px" @input="fncFilterChanged=true"></div>
+                <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="showFncRule=true">功能说明</button>
                 <button class="btn btn-primary btn-sm" @click="fncFilterChanged=false;$nextTick(()=>{fncFilterChanged=true;showToast('查询成功，显示匹配结果')})">查询</button>
                 <button class="btn btn-default btn-sm" @click="fncFilterChanged=false">重置</button>
               </div>
@@ -2788,6 +2789,63 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
   </div>
 </div>
 
+<!-- FNC 批量结算功能说明 (global) -->
+<div class="modal-mask" v-if="showFncRule" @click.self="showFncRule=false">
+  <div class="modal" style="max-width:780px">
+    <div class="modal-header"><span class="modal-title">FNC 批量结算 — 功能说明</span><span class="modal-close" @click="showFncRule=false">✕</span></div>
+    <div class="modal-body">
+      <div style="font-size:13px;line-height:1.9;color:#333">
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、数据源</div>
+        <ul style="margin:0 0 12px 20px;padding:0;color:#555">
+          <li>与 BMS 批量结算<b>共享同一套申请数据</b>。业务在 BMS 端发起申请，财务在 FNC 端完成审批和支付。</li>
+          <li>FNC 仅展示进入财务环节及之后的状态：<span class="tag tag-orange" style="font-size:11px">待审批</span>、<span class="tag tag-green" style="font-size:11px">待支付</span>、<span class="tag tag-cyan" style="font-size:11px">已结算</span>、<span class="tag tag-red" style="font-size:11px">已驳回</span>。</li>
+        </ul>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">二、列表 — 各状态下的操作项</div>
+        <div class="table-wrap" style="margin-bottom:12px">
+          <table style="font-size:12px">
+            <thead>
+              <tr style="background:#fafafa">
+                <th>状态</th><th>操作项</th><th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="tag tag-orange" style="font-size:11px">待审批</span></td><td>查看 / 上传发票 / 审批通过 / 驳回</td><td>财务审核：通过则进入待支付；驳回需填写原因，状态退回已驳回</td></tr>
+              <tr><td><span class="tag tag-green" style="font-size:11px">待支付</span></td><td>查看 / 上传发票 / 删除发票 / <b style="color:#52c41a">已结算</b></td><td>财务在银行系统完成线下打款后点击「已结算」</td></tr>
+              <tr><td><span class="tag tag-cyan" style="font-size:11px">已结算</span></td><td>查看 / 上传发票 / 删除发票</td><td>结算完成，可继续补传发票</td></tr>
+              <tr><td><span class="tag tag-red" style="font-size:11px">已驳回</span></td><td>查看</td><td>仅可查看驳回原因</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、申请详情 — 操作项</div>
+        <ul style="margin:0 0 12px 20px;padding:0;color:#555">
+          <li><b>待审批</b>：上传发票 / 审批通过 / 驳回。</li>
+          <li><b>待支付</b>：上传发票 / 删除发票 / 已结算（含二次确认弹窗）。</li>
+          <li><b>已结算</b>：上传发票 / 删除发票（仅补充用，不会改变状态）。</li>
+          <li><b>已驳回</b>：仅查看，不可再操作。</li>
+        </ul>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">四、点击「已结算」自动记录</div>
+        <ul style="margin:0 0 6px 20px;padding:0;color:#555">
+          <li>点击后弹出确认窗，文案：<i style="color:#888">"请确认已在银行系统完成付款操作，点击确认后申请状态将变更为'已结算'，此操作不可撤销。"</i></li>
+          <li>确认后系统自动写入：
+            <ul style="margin-top:4px">
+              <li><b>结算年月</b>：取确认操作时的当年当月（用于已结算 tab 的「结算年月」筛选）；</li>
+              <li><b>操作人</b>：当前登录的财务账号（用于审计追溯，凭证详情中的「制单人」也以此为准）；</li>
+              <li>状态由 <span class="tag tag-green" style="font-size:11px">待支付</span> 变为 <span class="tag tag-cyan" style="font-size:11px">已结算</span>，自动从待支付 tab 移入已结算 tab，<b>不可撤销</b>。</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" @click="showFncRule=false">我知道了</button>
+    </div>
+  </div>
+</div>
+
 <!-- BMS 批量结算功能说明 (global) -->
 <div class="modal-mask" v-if="showBmsRule" @click.self="showBmsRule=false">
   <div class="modal" style="max-width:720px">
@@ -2823,7 +2881,35 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li>凭证生成后，进项税额按公式自动计算并支持微调（详见凭证 Step2 弹窗中的「进项税额功能说明」）。</li>
         </ul>
 
-        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">五、其他注意事项</div>
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">五、列表 — 各状态下的操作项</div>
+        <div class="table-wrap" style="margin-bottom:12px">
+          <table style="font-size:12px">
+            <thead>
+              <tr style="background:#fafafa">
+                <th>状态</th><th>操作项</th><th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="tag tag-gray" style="font-size:11px">待提交</span></td><td>勾选 / 移除 / 马上结算</td><td>明细级勾选；点右上角「马上结算」进入申请表单</td></tr>
+              <tr><td><span class="tag tag-orange" style="font-size:11px">待审批</span></td><td>查看 / 上传发票 / 取消申请</td><td>财务审批中，业务可补传发票或取消申请</td></tr>
+              <tr><td><span class="tag tag-green" style="font-size:11px">待支付</span></td><td>查看 / 上传发票 / 取消申请</td><td>等待财务线下打款</td></tr>
+              <tr><td><span class="tag tag-cyan" style="font-size:11px">已结算</span></td><td>查看 / 上传发票</td><td>结算完成，可补传发票</td></tr>
+              <tr><td><span class="tag tag-red" style="font-size:11px">已驳回</span></td><td>查看 / 修改 / 废弃</td><td>修改后重新提交，或废弃释放底层明细</td></tr>
+              <tr><td><span class="tag tag-gray" style="font-size:11px">已废弃</span></td><td>查看</td><td>仅历史查看，不可再操作</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">六、申请详情 — 操作项</div>
+        <ul style="margin:0 0 12px 20px;padding:0;color:#555">
+          <li><b>待审批</b>：上传发票 / 取消申请（审批通过 / 驳回 这两个操作只在 FNC 端进行）。</li>
+          <li><b>待支付</b>：上传发票（线下打款由 FNC 完成）。</li>
+          <li><b>已结算</b>：上传发票（仅补充用，不会改变状态）。</li>
+          <li><b>已驳回</b>：修改（重新填写表单后再次提交）/ 废弃（释放底层明细，状态变为已废弃，不可恢复）。</li>
+          <li><b>已废弃</b>：仅查看。</li>
+        </ul>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">七、其他注意事项</div>
         <ul style="margin:0 0 6px 20px;padding:0;color:#555">
           <li>所有「U8部门名称」下拉数据来自后台「部门编码映射」，仅展示已启用部门。</li>
           <li>查重维度：VIN + 费用项目；导入存在重复项时会标记提示，但<b>允许人工保留</b>（用于补充结算等场景）。</li>
@@ -3016,6 +3102,7 @@ new Vue({
       showTaxRule: false,
       showBmsRule: false,
       showVoucherRule: false,
+      showFncRule: false,
       // FNC settle
       fncStatusTab: 'all',
       fncStatusTabs: [
