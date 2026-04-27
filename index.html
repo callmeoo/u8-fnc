@@ -487,6 +487,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="card-header">
                 <span class="card-title">BMS — 批量结算列表</span>
                 <div style="display:flex;gap:8px">
+                  <button v-if="bmsStatusTab==='draft'" class="btn btn-default" @click="openReconcile">导入对账单核对</button>
                   <button class="btn btn-default" @click="importDialog=true">导入对账明细</button>
                   <button v-if="bmsStatusTab!=='draft'" class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
                   <button v-if="bmsStatusTab==='draft'" class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
@@ -700,6 +701,130 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-footer">
                 <button class="btn btn-default" @click="importStep===1?(importDialog=false):(importStep=1)">{{importStep===1?'取消':'上一步'}}</button>
                 <button class="btn btn-primary" @click="importStep===1?importStep=2:confirmImport()">{{importStep===1?'下一步（预览）':'确认导入'}}</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 对账单核对 Dialog -->
+          <div class="modal-mask" v-if="reconcileDialog" @click.self="reconcileDialog=false">
+            <div class="modal" style="max-width:880px">
+              <div class="modal-header">
+                <span class="modal-title">对账单核对 — 第{{reconcileStep}}步：{{reconcileStep===1?'上传外部对账单':'匹配结果'}}</span>
+                <span class="modal-close" @click="reconcileDialog=false;reconcileStep=1">✕</span>
+              </div>
+              <div class="modal-body">
+                <!-- Step 1：上传 -->
+                <div v-if="reconcileStep===1">
+                  <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.9;color:#555">
+                    <div style="font-weight:600;color:#d46b08;margin-bottom:4px">使用说明</div>
+                    <div>① 上传合作商提供的外部「服务费/业务合作费」对账单 Excel/CSV，系统按 <b>VIN（或车牌）+ 金额</b> 与已自动生成的服务费记录匹配。</div>
+                    <div>② 完全匹配的记录将<b>自动勾选</b>；存在差异的记录会单独列出供人工确认。</div>
+                    <div>③ 仅作核对用途，不会修改系统已生成的金额；如需调整金额请走差异处理流程。</div>
+                  </div>
+                  <div class="alert alert-info" style="align-items:flex-start">
+                    <div style="flex:1">
+                      <b>对账单字段：</b>VIN码 / 车牌号 / 实际结算金额(含税) / 月份（可选）
+                    </div>
+                    <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadReconcileTemplate">⬇ 下载对账单模板</button>
+                  </div>
+                  <div class="upload-area" style="margin-top:4px" @click="reconcileStep=2">
+                    <div>点击上传外部对账单（仅支持系统标准格式）</div>
+                    <div class="upload-hint">点击此处模拟上传并查看匹配结果</div>
+                  </div>
+                </div>
+
+                <!-- Step 2：匹配结果 -->
+                <div v-if="reconcileStep===2">
+                  <!-- 汇总 -->
+                  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+                    <div style="flex:1;min-width:140px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px;padding:10px 12px">
+                      <div style="font-size:11px;color:#666">完全匹配（自动勾选）</div>
+                      <div style="font-size:18px;font-weight:600;color:#52c41a;margin-top:2px">{{reconcileResult.matched.length}} 条</div>
+                    </div>
+                    <div style="flex:1;min-width:140px;background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:10px 12px">
+                      <div style="font-size:11px;color:#666">金额不符（需人工确认）</div>
+                      <div style="font-size:18px;font-weight:600;color:#d48806;margin-top:2px">{{reconcileResult.priceDiff.length}} 条</div>
+                    </div>
+                    <div style="flex:1;min-width:140px;background:#fff1f0;border:1px solid #ffa39e;border-radius:4px;padding:10px 12px">
+                      <div style="font-size:11px;color:#666">系统有 / 对账单无</div>
+                      <div style="font-size:18px;font-weight:600;color:#cf1322;margin-top:2px">{{reconcileResult.missingInBill.length}} 条</div>
+                    </div>
+                    <div style="flex:1;min-width:140px;background:#e6f7ff;border:1px solid #91d5ff;border-radius:4px;padding:10px 12px">
+                      <div style="font-size:11px;color:#666">对账单有 / 系统无</div>
+                      <div style="font-size:18px;font-weight:600;color:#0958d9;margin-top:2px">{{reconcileResult.missingInSystem.length}} 条</div>
+                    </div>
+                  </div>
+
+                  <!-- 完全匹配 -->
+                  <div style="margin-bottom:14px">
+                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#52c41a">✓ 完全匹配（{{reconcileResult.matched.length}} 条 · 提交后自动勾选）</div>
+                    <div class="table-wrap">
+                      <table>
+                        <tr><th>车牌号</th><th>VIN码</th><th>系统金额</th><th>对账单金额</th></tr>
+                        <tr v-for="m in reconcileResult.matched" :key="m.plate">
+                          <td><b>{{m.plate}}</b></td>
+                          <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
+                          <td class="amount">{{m.sysAmt}}</td>
+                          <td class="amount" style="color:#52c41a">{{m.billAmt}}</td>
+                        </tr>
+                        <tr v-if="reconcileResult.matched.length===0"><td colspan="4" style="text-align:center;color:#999;padding:14px">无</td></tr>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- 金额不符 -->
+                  <div v-if="reconcileResult.priceDiff.length" style="margin-bottom:14px">
+                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#d48806">⚠ 金额不符（{{reconcileResult.priceDiff.length}} 条 · 默认<b>不勾选</b>，可手动选择按何方金额结算）</div>
+                    <div class="table-wrap">
+                      <table>
+                        <tr><th>车牌号</th><th>VIN码</th><th>系统金额</th><th>对账单金额</th><th>差额</th><th>处理建议</th></tr>
+                        <tr v-for="m in reconcileResult.priceDiff" :key="m.plate">
+                          <td><b>{{m.plate}}</b></td>
+                          <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
+                          <td class="amount">{{m.sysAmt}}</td>
+                          <td class="amount" style="color:#d48806">{{m.billAmt}}</td>
+                          <td class="amount" style="color:#cf1322">{{m.diff}}</td>
+                          <td style="font-size:11px;color:#666">人工核对原始单据</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- 系统有/对账单无 -->
+                  <div v-if="reconcileResult.missingInBill.length" style="margin-bottom:14px">
+                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#cf1322">系统有 / 对账单无（{{reconcileResult.missingInBill.length}} 条 · 默认<b>不勾选</b>，建议本次不结算）</div>
+                    <div class="table-wrap">
+                      <table>
+                        <tr><th>车牌号</th><th>VIN码</th><th>系统金额</th><th>清分时间</th></tr>
+                        <tr v-for="m in reconcileResult.missingInBill" :key="m.plate">
+                          <td><b>{{m.plate}}</b></td>
+                          <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
+                          <td class="amount">{{m.sysAmt}}</td>
+                          <td style="font-size:11px;color:#666">{{m.clearTime}}</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- 对账单有/系统无 -->
+                  <div v-if="reconcileResult.missingInSystem.length">
+                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#0958d9">对账单有 / 系统无（{{reconcileResult.missingInSystem.length}} 条 · 系统暂未生成对应清分记录，请联系业务核实）</div>
+                    <div class="table-wrap">
+                      <table>
+                        <tr><th>车牌号</th><th>VIN码</th><th>对账单金额</th></tr>
+                        <tr v-for="m in reconcileResult.missingInSystem" :key="m.plate">
+                          <td><b>{{m.plate}}</b></td>
+                          <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
+                          <td class="amount" style="color:#0958d9">{{m.billAmt}}</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="reconcileStep===1?(reconcileDialog=false):(reconcileStep=1)">{{reconcileStep===1?'取消':'上一步'}}</button>
+                <button class="btn btn-primary" @click="reconcileStep===1?(reconcileStep=2):confirmReconcile()">{{reconcileStep===1?'下一步（查看匹配结果）':'确认核对结果，自动勾选匹配项'}}</button>
               </div>
             </div>
           </div>
@@ -2674,6 +2799,24 @@ new Vue({
       showRejectDialog: false,
       showApproveDialog: false,
       showBmsTips: false,
+      reconcileDialog: false,
+      reconcileStep: 1,
+      reconcileResult: {
+        matched: [
+          {plate:'粤A·12345', vin:'LFV3A2BM2N3000001', sysAmt:'360.00', billAmt:'360.00'},
+          {plate:'粤B·67890', vin:'LFV3A2BM2N3000002', sysAmt:'360.00', billAmt:'360.00'},
+          {plate:'粤F·44444', vin:'LFV3A2BM2N3000006', sysAmt:'360.00', billAmt:'360.00'},
+        ],
+        priceDiff: [
+          {plate:'粤D·22222', vin:'LFV3A2BM2N3000004', sysAmt:'240.00', billAmt:'200.00', diff:'+40.00'},
+        ],
+        missingInBill: [
+          {plate:'粤G·55555', vin:'LFV3A2BM2N3000007', sysAmt:'420.00', clearTime:'2026-04-10'},
+        ],
+        missingInSystem: [
+          {plate:'粤J·88888', vin:'LFV3A2BM2N3009999', billAmt:'350.00'},
+        ],
+      },
       showUploadInvoice: false,
       showDiscardConfirm: false,
       showCancelConfirm: false,
@@ -2960,6 +3103,37 @@ new Vue({
         return
       }
       this.bmsView = 'form'
+    },
+    openReconcile() {
+      this.reconcileStep = 1
+      this.reconcileDialog = true
+    },
+    confirmReconcile() {
+      const matchedPlates = this.reconcileResult.matched.map(m => m.plate)
+      matchedPlates.forEach(p => {
+        if (!this.bmsVehicleChecked.includes(p) && this.bmsVehicleData.find(v => v.plate === p)) {
+          this.bmsVehicleChecked.push(p)
+        }
+      })
+      this.reconcileDialog = false
+      this.reconcileStep = 1
+      this.showToast(`核对完成，已自动勾选 ${matchedPlates.length} 条匹配记录`)
+    },
+    downloadReconcileTemplate() {
+      const BOM = '\ufeff'
+      const headers = ['VIN码', '车牌号', '实际结算金额(含税)', '月份(可选)']
+      const example = ['LFV3A2BM2N3000001', '粤A·12345', '360.00', '2026-04']
+      const csv = [headers, example].map(r => r.join(',')).join('\r\n')
+      const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = '外部对账单核对模板.csv'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      this.showToast('对账单模板下载成功')
     },
     downloadImportTemplate() {
       const BOM = '\ufeff'
