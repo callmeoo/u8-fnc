@@ -1605,41 +1605,41 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </colgroup>
                     <thead>
                       <tr style="background:#f5f5f5">
-                        <th style="padding:8px 6px;font-weight:600">凭证期间</th>
-                        <th style="padding:8px 6px;font-weight:600">U8费用项</th>
-                        <th style="padding:8px 6px;font-weight:600">项目编码</th>
-                        <th style="padding:8px 6px;font-weight:600;text-align:right">借方金额(元)</th>
-                        <th style="padding:8px 6px;font-weight:600;text-align:right">进项税额(元)</th>
-                        <th style="padding:8px 6px;font-weight:600;text-align:right">贷方金额(元)</th>
+                        <th style="padding:8px 8px;font-weight:600;text-align:left">凭证期间</th>
+                        <th style="padding:8px 8px;font-weight:600;text-align:left">U8费用项</th>
+                        <th style="padding:8px 8px;font-weight:600;text-align:left">项目编码</th>
+                        <th style="padding:8px 8px;font-weight:600;text-align:right">借方金额(元)</th>
+                        <th style="padding:8px 8px;font-weight:600;text-align:right">进项税额(元)</th>
+                        <th style="padding:8px 8px;font-weight:600;text-align:right">贷方金额(元)</th>
                       </tr>
                     </thead>
                     <tbody>
                       <!-- 每辆车的借方行 -->
                       <tr v-for="(row, idx) in voucherStep2Rows" :key="idx" style="border-bottom:1px solid #f0f0f0">
-                        <td style="padding:7px 6px;text-align:center">2026-4</td>
-                        <td style="padding:7px 6px;text-align:center">{{step2FeeType}}</td>
-                        <td style="padding:7px 6px;text-align:center;font-size:11px">{{row.plate}}</td>
-                        <td style="padding:7px 6px;text-align:right;font-weight:600;color:#333">{{row.debit}}</td>
-                        <td style="padding:7px 6px;text-align:right;color:#d46b08">{{row.tax}}</td>
-                        <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
+                        <td style="padding:7px 8px;text-align:left">2026-4</td>
+                        <td style="padding:7px 8px;text-align:left">{{step2FeeType}}</td>
+                        <td style="padding:7px 8px;text-align:left;font-size:11px">{{row.plate}}</td>
+                        <td style="padding:7px 8px;text-align:right;font-weight:600;color:#333">{{row.debit}}</td>
+                        <td style="padding:7px 8px;text-align:right;color:#d46b08">{{row.tax}}</td>
+                        <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
                       </tr>
                       <!-- 进项税额借方行（黄色，金额联动 step2TaxTotal） -->
                       <tr style="background:#fffbe6;border-bottom:1px solid #ffe58f">
-                        <td style="padding:7px 6px;text-align:center">2026-4</td>
-                        <td style="padding:7px 6px;text-align:center;color:#999">—</td>
-                        <td style="padding:7px 6px;text-align:center;color:#999">—</td>
-                        <td style="padding:7px 6px;text-align:right;font-weight:600;color:#d46b08">{{step2TaxTotal}}</td>
-                        <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
-                        <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
+                        <td style="padding:7px 8px;text-align:left">2026-4</td>
+                        <td style="padding:7px 8px;text-align:left">进项税额</td>
+                        <td style="padding:7px 8px;text-align:left;font-size:11px">2221010101</td>
+                        <td style="padding:7px 8px;text-align:right;font-weight:600;color:#d46b08">{{step2TaxTotal}}</td>
+                        <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
+                        <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
                       </tr>
                       <!-- 银行存款贷方行（粉色） -->
                       <tr style="background:#fff0f6;border-bottom:1px solid #f0f0f0">
-                        <td style="padding:7px 6px;text-align:center">2026-4</td>
-                        <td style="padding:7px 6px;text-align:center;color:#999">—</td>
-                        <td style="padding:7px 6px;text-align:center;color:#999">—</td>
-                        <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
-                        <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
-                        <td style="padding:7px 6px;text-align:right;font-weight:600;color:#c41d7f">1,060.00</td>
+                        <td style="padding:7px 8px;text-align:left">2026-4</td>
+                        <td style="padding:7px 8px;text-align:left">银行存款</td>
+                        <td style="padding:7px 8px;text-align:left;font-size:11px">10020101</td>
+                        <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
+                        <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
+                        <td style="padding:7px 8px;text-align:right;font-weight:600;color:#c41d7f">1,060.00</td>
                       </tr>
                     </tbody>
                   </table>
