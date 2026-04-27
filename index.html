@@ -742,19 +742,15 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div v-if="reconcileStep===2">
                   <!-- 汇总 -->
                   <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-                    <div style="flex:1;min-width:140px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px;padding:10px 12px">
+                    <div style="flex:1;min-width:160px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px;padding:10px 12px">
                       <div style="font-size:11px;color:#666">完全匹配（自动勾选）</div>
                       <div style="font-size:18px;font-weight:600;color:#52c41a;margin-top:2px">{{reconcileResult.matched.length}} 条</div>
                     </div>
-                    <div style="flex:1;min-width:140px;background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:10px 12px">
-                      <div style="font-size:11px;color:#666">金额不符（需人工确认）</div>
-                      <div style="font-size:18px;font-weight:600;color:#d48806;margin-top:2px">{{reconcileResult.priceDiff.length}} 条</div>
-                    </div>
-                    <div style="flex:1;min-width:140px;background:#fff1f0;border:1px solid #ffa39e;border-radius:4px;padding:10px 12px">
+                    <div style="flex:1;min-width:160px;background:#fff1f0;border:1px solid #ffa39e;border-radius:4px;padding:10px 12px">
                       <div style="font-size:11px;color:#666">系统有 / 对账单无</div>
                       <div style="font-size:18px;font-weight:600;color:#cf1322;margin-top:2px">{{reconcileResult.missingInBill.length}} 条</div>
                     </div>
-                    <div style="flex:1;min-width:140px;background:#e6f7ff;border:1px solid #91d5ff;border-radius:4px;padding:10px 12px">
+                    <div style="flex:1;min-width:160px;background:#e6f7ff;border:1px solid #91d5ff;border-radius:4px;padding:10px 12px">
                       <div style="font-size:11px;color:#666">对账单有 / 系统无</div>
                       <div style="font-size:18px;font-weight:600;color:#0958d9;margin-top:2px">{{reconcileResult.missingInSystem.length}} 条</div>
                     </div>
@@ -777,24 +773,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </div>
                   </div>
 
-                  <!-- 金额不符 -->
-                  <div v-if="reconcileResult.priceDiff.length" style="margin-bottom:14px">
-                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#d48806">⚠ 金额不符（{{reconcileResult.priceDiff.length}} 条 · 默认<b>不勾选</b>，可手动选择按何方金额结算）</div>
-                    <div class="table-wrap">
-                      <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>系统金额</th><th>对账单金额</th><th>差额</th><th>处理建议</th></tr>
-                        <tr v-for="m in reconcileResult.priceDiff" :key="m.plate">
-                          <td><b>{{m.plate}}</b></td>
-                          <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
-                          <td class="amount">{{m.sysAmt}}</td>
-                          <td class="amount" style="color:#d48806">{{m.billAmt}}</td>
-                          <td class="amount" style="color:#cf1322">{{m.diff}}</td>
-                          <td style="font-size:11px;color:#666">人工核对原始单据</td>
-                        </tr>
-                      </table>
-                    </div>
-                  </div>
-
                   <!-- 系统有/对账单无 -->
                   <div v-if="reconcileResult.missingInBill.length" style="margin-bottom:14px">
                     <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#cf1322">系统有 / 对账单无（{{reconcileResult.missingInBill.length}} 条 · 默认<b>不勾选</b>，建议本次不结算）</div>
@@ -813,7 +791,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                   <!-- 对账单有/系统无 -->
                   <div v-if="reconcileResult.missingInSystem.length">
-                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#0958d9">对账单有 / 系统无（{{reconcileResult.missingInSystem.length}} 条 · 系统暂未生成对应清分记录，请联系业务核实）</div>
+                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#0958d9">对账单有 / 系统无（{{reconcileResult.missingInSystem.length}} 条 · 系统暂未生成对应清分记录，请核实）</div>
                     <div class="table-wrap">
                       <table>
                         <tr><th>车牌号</th><th>VIN码</th><th>对账单金额</th></tr>
@@ -2811,9 +2789,6 @@ new Vue({
           {plate:'粤A·12345', vin:'LFV3A2BM2N3000001', sysAmt:'360.00', billAmt:'360.00'},
           {plate:'粤B·67890', vin:'LFV3A2BM2N3000002', sysAmt:'360.00', billAmt:'360.00'},
           {plate:'粤F·44444', vin:'LFV3A2BM2N3000006', sysAmt:'360.00', billAmt:'360.00'},
-        ],
-        priceDiff: [
-          {plate:'粤D·22222', vin:'LFV3A2BM2N3000004', sysAmt:'240.00', billAmt:'200.00', diff:'+40.00'},
         ],
         missingInBill: [
           {plate:'粤G·55555', vin:'LFV3A2BM2N3000007', sysAmt:'420.00', clearTime:'2026-04-10'},
