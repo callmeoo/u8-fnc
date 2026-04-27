@@ -1483,6 +1483,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <datalist id="dept-name-list-v"><option v-for="d in deptMappingData" :key="d.code" :value="d.name">{{d.code}}</option></datalist>
                   </div>
                   <div class="filter-item"><label>状态</label><select class="sel" v-model="deptMapFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <button class="btn btn-default btn-sm" @click="showDeptMapRule=true">功能说明</button>
                   <span style="flex:1"></span>
                   <button class="btn btn-primary btn-sm">查询</button>
                   <button class="btn btn-primary btn-sm" @click="openDeptMapping()">新增</button>
@@ -2728,6 +2729,34 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
   </div>
 </div><!-- /lightbox-mask -->
 
+<!-- 部门编码映射功能说明 (global) -->
+<div class="modal-mask" v-if="showDeptMapRule" @click.self="showDeptMapRule=false">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header"><span class="modal-title">部门编码映射 — 功能说明</span><span class="modal-close" @click="showDeptMapRule=false">✕</span></div>
+    <div class="modal-body">
+      <div style="font-size:13px;line-height:1.9;color:#333">
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、为何需要在此维护 U8 部门编码</div>
+        <ul style="margin:0 0 14px 20px;padding:0;color:#555">
+          <li>U8 系统未对外提供「部门编码查询接口」，BMS / FNC 无法实时拉取部门编码，需在此处人工维护编码与名称的映射关系。</li>
+          <li>初始化数据来自<b>陈霞提供的 Excel 文件</b>，导入后由财务在本页面持续维护增删改启停。</li>
+          <li>BMS 申请表单、FNC 凭证管理「整理费」凭证生成等场景下的「U8部门名称」下拉选项，统一从本表读取（仅展示已启用部门）。</li>
+        </ul>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">二、停用后历史数据的处理</div>
+        <ul style="margin:0 0 6px 20px;padding:0;color:#555">
+          <li>停用<b>仅影响后续选择</b>：被停用的部门不再出现在任何 U8部门名称下拉中。</li>
+          <li>已生成的 BMS 申请、FNC 凭证、推送给 U8 的记录<b>保持不变</b>，不会回写或清空，凭证详情、列表、报表中仍然显示原部门名称。</li>
+          <li>列表筛选项「U8部门名称」<b>不</b>过滤已停用部门，避免历史数据无法检索；如需恢复使用，重新启用即可。</li>
+          <li>停用为可逆操作；删除操作目前不开放，避免历史关联失效。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" @click="showDeptMapRule=false">我知道了</button>
+    </div>
+  </div>
+</div>
+
 <!-- 停用部门 二次确认 (global) -->
 <div class="modal-mask" v-if="showDeptDisableConfirm" @click.self="showDeptDisableConfirm=false">
   <div class="modal" style="max-width:440px">
@@ -2875,6 +2904,7 @@ new Vue({
       deptForm: { code:'', name:'', remark:'' },
       showDeptDisableConfirm: false,
       deptDisableTarget: null,
+      showDeptMapRule: false,
       showTaxRule: false,
       // FNC settle
       fncStatusTab: 'all',
