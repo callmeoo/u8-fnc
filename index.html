@@ -1582,6 +1582,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="form-item"><label class="form-label req">制单日期</label><div class="form-control"><input class="inp" type="date" value="2026-04-20"></div></div>
                 </div>
 
+                <!-- 演示用：费用类型切换器（mock：3 种费用对应不同科目编码 / 辅助项目） -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 14px;background:#f0f7ff;border:1px solid #91d5ff;border-radius:4px">
+                  <span style="font-size:12px;color:#0050b3">演示模式 · 切换费用类型查看不同分录：</span>
+                  <button v-for="ft in ['服务费','过户费','整理费']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
+                </div>
+
                 <!-- 总进项税额可编辑块 -->
                 <div style="display:flex;align-items:center;gap:10px;background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:8px 14px;margin-bottom:10px">
                   <span style="font-size:13px;font-weight:600;white-space:nowrap">总进项税额（可修改）：</span>
@@ -1612,7 +1618,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <tr v-for="(row, idx) in voucherStep2Rows" :key="idx" style="border-bottom:1px solid #f0f0f0">
                         <td style="padding:7px 6px;text-align:center">2026-4</td>
                         <td style="padding:7px 6px;white-space:normal;line-height:1.4;font-size:11px;color:#333">销售费用 — {{step2FeeType}}（{{row.plate}}）</td>
-                        <td style="padding:7px 6px;text-align:center;font-size:11px">64010102</td>
+                        <td style="padding:7px 6px;text-align:center;font-size:11px">{{step2SubjectCode}}</td>
                         <td style="padding:7px 6px;text-align:right;font-weight:600;color:#333">{{row.debit}}</td>
                         <td style="padding:7px 6px;text-align:right;color:#d46b08">{{row.tax}}</td>
                         <td style="padding:7px 6px;text-align:right;color:#bbb">—</td>
@@ -1721,11 +1727,16 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <!-- 标题行 -->
                   <div style="border:1px solid #d9d9d9;border-radius:4px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;background:#fafafa">
                     <span style="font-size:14px;font-weight:700;color:#222;letter-spacing:0.01em">
-                      {{voucherCurrentDetail.id}} &nbsp; {{voucherCurrentDetail.summary}} &nbsp;
+                      {{voucherCurrentDetail.id}} &nbsp; 付4月，{{voucherDetailFeeType}}，{{voucherDetailScenario.payee}} &nbsp;
                       <span style="font-weight:500;color:#555">{{voucherCurrentDetail.period}}</span> &nbsp;
                       <span style="font-weight:500;color:#555">{{voucherCurrentDetail.user}}</span>
                     </span>
                     <button class="btn btn-danger btn-sm" @click="showReturnVoucher=true">删除凭证</button>
+                  </div>
+                  <!-- 演示用：费用类型切换器 -->
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 14px;background:#f0f7ff;border:1px solid #91d5ff;border-radius:4px">
+                    <span style="font-size:12px;color:#0050b3">演示模式 · 切换费用类型查看不同凭证：</span>
+                    <button v-for="ft in ['服务费','过户费','整理费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" @click="voucherDetailFeeType=ft">{{ft}}</button>
                   </div>
                   <!-- 分录明细表 -->
                   <div class="table-wrap">
@@ -1737,6 +1748,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <th style="min-width:56px">凭证类别</th>
                           <th style="min-width:64px">制单人</th>
                           <th style="min-width:64px">用户</th>
+                          <th style="min-width:70px">U8费用项</th>
                           <th style="min-width:80px">科目编码</th>
                           <th style="min-width:160px">摘要</th>
                           <th style="min-width:72px">币种名称</th>
@@ -1752,71 +1764,42 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         </tr>
                       </thead>
                       <tbody>
-                        <!-- 每辆车 2 行：借方（服务费）+ 贷方（银行存款） -->
-                        <tr>
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td>wpfy</td>
-                          <td>122109</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>330</td><td>0</td>
-                          <td>客户</td><td>0017</td><td>费用户备用金</td><td>0300000028</td><td></td><td></td>
+                        <!-- 借方：业务费用（按 voucherDetailScenario 渲染） -->
+                        <tr v-for="(row, idx) in voucherDetailScenario.rows" :key="'d-'+idx">
+                          <td>2026</td><td>4</td><td>记</td><td>王财务</td><td>wpfy</td>
+                          <td>{{voucherDetailFeeType}}</td>
+                          <td>{{voucherDetailScenario.subjectCode}}</td>
+                          <td style="white-space:normal;line-height:1.4;font-size:11px">{{row.desc}}</td>
+                          <td>人民币</td><td>1</td>
+                          <td style="text-align:right">{{row.debit}}</td><td style="color:#bbb">—</td>
+                          <td>{{voucherDetailScenario.auxName}}</td>
+                          <td>{{voucherDetailScenario.auxCode}}</td>
+                          <td>{{voucherDetailScenario.auxInfoLabel}}</td>
+                          <td>{{row.auxInfo}}{{row.auxInfoExt?'（'+row.auxInfoExt+'）':''}}</td>
+                          <td></td><td></td>
                         </tr>
-                        <tr style="background:#fafffe">
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td></td>
-                          <td>10020802</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>0</td><td>330</td>
-                          <td>现金流量项目</td><td>0007</td><td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
-                          <td style="font-size:11px;color:#555;white-space:normal;line-height:1.4">62604067544659797<br>88926</td><td></td>
+                        <!-- 借方：进项税额（汇总一行） -->
+                        <tr style="background:#fffbe6">
+                          <td>2026</td><td>4</td><td>记</td><td>王财务</td><td>wpfy</td>
+                          <td></td>
+                          <td>2221010101</td>
+                          <td style="white-space:normal;line-height:1.4;font-size:11px">付4月，进项税额，{{voucherDetailScenario.payee}}</td>
+                          <td>人民币</td><td>1</td>
+                          <td style="text-align:right;color:#d46b08">{{voucherDetailScenario.taxAmt}}</td><td style="color:#bbb">—</td>
+                          <td></td><td></td><td></td><td></td>
+                          <td></td><td></td>
                         </tr>
-                        <tr>
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td>wpfy</td>
-                          <td>122109</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>300</td><td>0</td>
-                          <td>客户</td><td>0017</td><td>费用户备用金</td><td>0300000028</td><td></td><td></td>
-                        </tr>
-                        <tr style="background:#fafffe">
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td></td>
-                          <td>10020802</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>0</td><td>300</td>
-                          <td>现金流量项目</td><td>0007</td><td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
-                          <td style="font-size:11px;color:#555;white-space:normal;line-height:1.4">62604037522421929<br>50233</td><td></td>
-                        </tr>
-                        <tr>
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td>wpfy</td>
-                          <td>122109</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>300</td><td>0</td>
-                          <td>客户</td><td>0017</td><td>费用户备用金</td><td>0300000028</td><td></td><td></td>
-                        </tr>
-                        <tr style="background:#fafffe">
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td></td>
-                          <td>10020802</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>0</td><td>300</td>
-                          <td>现金流量项目</td><td>0007</td><td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
-                          <td style="font-size:11px;color:#555;white-space:normal;line-height:1.4">62604037522404576<br>58236</td><td></td>
-                        </tr>
-                        <tr>
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td>wpfy</td>
-                          <td>122109</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>300</td><td>0</td>
-                          <td>客户</td><td>0017</td><td>费用户备用金</td><td>0300000028</td><td></td><td></td>
-                        </tr>
-                        <tr style="background:#fafffe">
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td></td>
-                          <td>10020802</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>0</td><td>300</td>
-                          <td>现金流量项目</td><td>0007</td><td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
-                          <td style="font-size:11px;color:#555;white-space:normal;line-height:1.4">62604037522388958<br>60521</td><td></td>
-                        </tr>
-                        <tr>
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td>wpfy</td>
-                          <td>122109</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>300</td><td>0</td>
-                          <td>客户</td><td>0017</td><td>费用户备用金</td><td>0300000028</td><td></td><td></td>
-                        </tr>
-                        <tr style="background:#fafffe">
-                          <td>2026</td><td>4</td><td>记</td><td>张晖</td><td></td>
-                          <td>10020802</td><td>支付服务费（4.01-06）</td><td>人民币</td><td>1</td>
-                          <td>0</td><td>300</td>
-                          <td>现金流量项目</td><td>0007</td><td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
-                          <td style="font-size:11px;color:#555;white-space:normal;line-height:1.4">62604037522232847<br>59418</td><td></td>
+                        <!-- 贷方：银行存款 -->
+                        <tr style="background:#fff0f6">
+                          <td>2026</td><td>4</td><td>记</td><td>王财务</td><td></td>
+                          <td></td>
+                          <td>10020101</td>
+                          <td style="white-space:normal;line-height:1.4;font-size:11px">付4月，{{voucherDetailFeeType}}，{{voucherDetailScenario.payee}}</td>
+                          <td>人民币</td><td>1</td>
+                          <td style="color:#bbb">—</td><td style="text-align:right;color:#c41d7f">{{voucherDetailScenario.creditAmt}}</td>
+                          <td>现金流量项目</td><td>0007</td>
+                          <td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
+                          <td style="font-size:11px;color:#555">62604067544659797</td><td></td>
                         </tr>
                       </tbody>
                     </table>
@@ -2826,6 +2809,7 @@ new Vue({
       fncDetailVisible: false,
       fncDetailRecord: null,
       voucherDetailFilterChanged: false,
+      voucherDetailFeeType: '服务费',
       showFncApproveDialog: false,
       showFncRejectDialog: false,
       showFncSettleConfirm1: false,
@@ -2969,6 +2953,41 @@ new Vue({
     voucherDeptName() {
       const d = this.deptMappingData.find(x => x.code === this.voucherDeptCode)
       return d ? d.name : ''
+    },
+    step2SubjectCode() {
+      const map = { '服务费':'64010102', '过户费':'64010103', '整理费':'64011209' }
+      return map[this.step2FeeType] || '64010102'
+    },
+    voucherDetailScenario() {
+      const ft = this.voucherDetailFeeType
+      const base = {
+        '服务费': {
+          subjectCode:'64010102', auxName:'项目', auxCode:'0010', auxInfoLabel:'车牌',
+          rows:[
+            {desc:'付4月，服务费，常有（天津）信息技术有限公司（粤A·12345）', auxInfo:'粤A·12345', debit:'339.62', credit:''},
+            {desc:'付4月，服务费，常有（天津）信息技术有限公司（粤B·67890）', auxInfo:'粤B·67890', debit:'339.62', credit:''},
+            {desc:'付4月，服务费，常有（天津）信息技术有限公司（粤C·11111）', auxInfo:'粤C·11111', debit:'320.75', credit:''},
+          ],
+          taxAmt:'60.01', creditAmt:'1,060.00', payee:'常有（天津）信息技术有限公司',
+        },
+        '过户费': {
+          subjectCode:'64010103', auxName:'项目', auxCode:'0010', auxInfoLabel:'车牌',
+          rows:[
+            {desc:'付4月，过户费，好快帮（广州）科技有限公司（粤D·22222）', auxInfo:'粤D·22222', debit:'377.36', credit:''},
+            {desc:'付4月，过户费，好快帮（广州）科技有限公司（粤E·33333）', auxInfo:'粤E·33333', debit:'377.36', credit:''},
+          ],
+          taxAmt:'45.28', creditAmt:'800.00', payee:'好快帮（广州）科技有限公司',
+        },
+        '整理费': {
+          subjectCode:'64011209', auxName:'部门', auxCode:'0001', auxInfoLabel:'U8部门名称',
+          rows:[
+            {desc:'付4月，整理费，常有（天津）信息技术有限公司（番禺车管分所）', auxInfo:'番禺车管分所', auxInfoExt:'7401', debit:'471.70', credit:''},
+            {desc:'付4月，整理费，常有（天津）信息技术有限公司（越秀车管）', auxInfo:'越秀车管', auxInfoExt:'7402', debit:'471.70', credit:''},
+          ],
+          taxAmt:'56.60', creditAmt:'1,000.00', payee:'常有（天津）信息技术有限公司',
+        },
+      }
+      return base[ft] || base['服务费']
     },
     currentBreadcrumb() {
       const map = {
@@ -3245,6 +3264,7 @@ new Vue({
     },
     confirmVoucherCreate() {
       this.voucherNewStep = 0
+      this.voucherDetailFeeType = this.step2FeeType
       // 跳转到刚创建的凭证详情（取第一条待开具记录作为mock）
       const created = this.voucherAllData.find(v => v.statusKey === 'pending') || this.voucherAllData[0]
       this.$nextTick(() => {
