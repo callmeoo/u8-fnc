@@ -663,8 +663,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                   <div class="alert alert-info" style="align-items:flex-start">
                     <div style="flex:1">
-                      <b>标准模板字段：</b>车牌号 / VIN码（非必填）/ 门店 / 费用项目 / 实际结算金额(含税)<br>
-                      <span style="font-size:11px;color:#888;margin-top:4px;display:block">费用项目下拉值：服务费、过户费、整理费</span>
+                      <b>标准模板字段：</b><br>
+                      <div style="margin-top:6px;font-size:12px;line-height:1.9;color:#555">
+                        <div><b style="color:#333">基础信息：</b>车牌号 / VIN码（非必填）/ 集团 / 门店 / 服务中心（费用类型=整理费时必填）</div>
+                        <div><b style="color:#333">业务信息：</b>费用类型 / 实际结算金额(含税)</div>
+                      </div>
+                      <span style="font-size:11px;color:#888;margin-top:6px;display:block">费用类型下拉值：服务费、过户费、整理费</span>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
                   </div>
@@ -679,15 +683,15 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th>车牌号</th><th>VIN码</th><th>门店</th>
-                        <th>费用项目</th>
+                        <th>车牌号</th><th>VIN码</th><th>集团</th><th>门店</th><th>服务中心</th>
+                        <th>费用类型</th>
                         <th>实际结算金额(含税)</th>
                       </tr>
-                      <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td>广州越秀门店</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td></tr>
-                      <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td>广州越秀门店</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td></tr>
-                      <tr><td><b>粤F·44444</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td>天河门店</td><td><span class="tag tag-orange">过户费</span></td><td class="amount">700.00</td></tr>
-                      <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td>天河门店</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td></tr>
-                      <tr><td><b>粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td>番禺门店</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
+                      <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td>广州区域</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td></tr>
+                      <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td>广州区域</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td></tr>
+                      <tr><td><b>粤F·44444</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td>广州区域</td><td>天河门店</td><td>—</td><td><span class="tag tag-orange">过户费</span></td><td class="amount">700.00</td></tr>
+                      <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td>广州区域</td><td>天河门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td></tr>
+                      <tr><td><b>粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td>广州区域</td><td>番禺门店</td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
                     </table>
                   </div>
                   <div class="alert alert-success" style="margin-top:12px">校验通过，无重复记录（查重维度：VIN+费用项目）</div>
@@ -2959,9 +2963,9 @@ new Vue({
     },
     downloadImportTemplate() {
       const BOM = '\ufeff'
-      const headers = ['车牌号', 'VIN码(非必填)', '门店', '费用项目', '实际结算金额(含税)']
-      const note = ['', '', '', '可选值：服务费 / 过户费 / 整理费', '']
-      const example = ['粤A·12345', 'LFV3A2BM2N3xxxxx1', '广州番禺门店', '服务费', '360.00']
+      const headers = ['车牌号', 'VIN码(非必填)', '集团', '门店', '服务中心(整理费必填)', '费用类型', '实际结算金额(含税)']
+      const note   = ['',         '',                '',     '',     '',                       '可选值：服务费 / 过户费 / 整理费', '']
+      const example= ['粤A·12345','LFV3A2BM2N3xxxxx1','广州区域','广州番禺门店','广州番禺服务中心','整理费',                          '360.00']
       const csv = [headers, note, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
