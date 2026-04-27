@@ -768,7 +768,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#52c41a">✓ 完全匹配（{{reconcileResult.matched.length}} 条 · 提交后自动勾选）</div>
                     <div class="table-wrap">
                       <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>门店</th><th>系统金额</th></tr>
+                        <tr><th>车牌号</th><th>VIN码</th><th>门店全称</th><th>系统金额</th></tr>
                         <tr v-for="m in reconcileResult.matched" :key="m.plate">
                           <td><b>{{m.plate}}</b></td>
                           <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
@@ -785,7 +785,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#cf1322">系统有 / 对账单无（{{reconcileResult.missingInBill.length}} 条 · 默认<b>不勾选</b>，建议本次不结算）</div>
                     <div class="table-wrap">
                       <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>门店</th><th>系统金额</th><th>清分时间</th></tr>
+                        <tr><th>车牌号</th><th>VIN码</th><th>门店全称</th><th>系统金额</th><th>清分时间</th></tr>
                         <tr v-for="m in reconcileResult.missingInBill" :key="m.plate">
                           <td><b>{{m.plate}}</b></td>
                           <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
@@ -802,7 +802,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#0958d9">对账单有 / 系统无（{{reconcileResult.missingInSystem.length}} 条 · 系统暂未生成对应清分记录，请核实）</div>
                     <div class="table-wrap">
                       <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>门店</th></tr>
+                        <tr><th>车牌号</th><th>VIN码</th><th>门店全称</th></tr>
                         <tr v-for="m in reconcileResult.missingInSystem" :key="m.plate">
                           <td><b>{{m.plate}}</b></td>
                           <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
