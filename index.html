@@ -1265,24 +1265,24 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <button class="btn btn-danger btn-sm" @click="showFncRejectDialog=true">驳回</button>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
-                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">打印</button>
-                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">导出 PDF</button>
+                    <button class="btn btn-default btn-sm" @click="printDetailExceptList()">打印</button>
+                    <button class="btn btn-default btn-sm" @click="exportDetailPDF()">导出 PDF</button>
                   </div>
                   <div v-if="fncDetailRecord.status==='fnc-pay'" style="margin-bottom:16px;flex-wrap:wrap;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px">
                     <span style="font-size:12px;color:#389e0d;margin-right:4px">当前状态：<b>待支付</b></span>
                     <button class="btn btn-primary btn-sm" @click="openFncSettleConfirm(fncDetailRecord)">已结算</button>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
-                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">打印</button>
-                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">导出 PDF</button>
+                    <button class="btn btn-default btn-sm" @click="printDetailExceptList()">打印</button>
+                    <button class="btn btn-default btn-sm" @click="exportDetailPDF()">导出 PDF</button>
                   </div>
                   <div v-if="fncDetailRecord.status==='fnc-settled'" style="margin-bottom:16px;flex-wrap:wrap;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#e6fffb;border:1px solid #87e8de;border-radius:4px">
                     <span style="font-size:12px;color:#08979c;flex:1">当前状态：<b>已结算</b></span>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-danger btn-sm" @click="showFncDeleteInvoice=true">删除发票</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
-                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">打印</button>
-                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">导出 PDF</button>
+                    <button class="btn btn-default btn-sm" @click="printDetailExceptList()">打印</button>
+                    <button class="btn btn-default btn-sm" @click="exportDetailPDF()">导出 PDF</button>
                   </div>
                   <!-- 已驳回：仅展示驳回原因，不再提供操作 -->
                   <div v-if="fncDetailRecord.status==='fnc-rejected'" style="margin-bottom:16px">
@@ -2913,7 +2913,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li><b>已驳回</b>：仅展示驳回原因，<b>无任何操作项</b>。</li>
         </ul>
         <div style="margin:0 0 6px 20px;font-size:12px;color:#888">发票附件区：每张发票支持点击文件名进入<b>预览弹窗</b>，弹窗内提供「关闭 / 打印 / 下载」3 个操作 —— 「打印」直接调用浏览器打印发票图片或 PDF，「下载」将原始文件下载到本地，可用于线下归档。</div>
-        <div style="margin:0 0 12px 20px;font-size:12px;color:#888">说明：「打印车辆明细」仅打印车辆明细列表；「打印」打印申请详情中除车辆明细与发票附件外的全部内容（<b style="color:#d46b08">本期开发中，按钮置灰不可点击</b>）；「导出 PDF」生成全范围的 PDF（含基本信息、付款/收款、审批流程、车辆明细、发票附件等所有模块；<b style="color:#d46b08">本期开发中，按钮置灰不可点击</b>）。</div>
+        <div style="margin:0 0 12px 20px;font-size:12px;color:#888">说明：「打印车辆明细」仅打印车辆明细列表；「打印」打印申请详情中除车辆明细与发票附件外的全部内容；「导出 PDF」生成全范围的 PDF（含基本信息、付款/收款、审批流程、车辆明细、发票附件等所有模块）。</div>
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">四、点击「已结算」自动记录</div>
         <ul style="margin:0 0 6px 20px;padding:0;color:#555">
@@ -3502,6 +3502,79 @@ new Vue({
     },
   },
   methods: {
+    printDetailExceptList() {
+      const root = document.querySelector('.detail-overlay-content')
+      if (!root) { this.showToast('未找到申请详情内容'); return }
+      const clone = root.cloneNode(true)
+      clone.querySelectorAll('.detail-item-section, .detail-invoice-section').forEach(el => el.remove())
+      clone.querySelectorAll('button, .modal-close, .lightbox-close-btn').forEach(el => el.remove())
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>申请详情</title>
+        <style>
+          body{font-family:sans-serif;font-size:12px;padding:24px;color:#222}
+          h3{font-size:14px;margin:14px 0 8px;color:#1890ff}
+          .section-title{font-size:13px;font-weight:600;border-left:3px solid #1890ff;padding-left:8px;margin:14px 0 8px}
+          .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;margin-bottom:8px}
+          .info-item{display:flex;font-size:12px;line-height:1.7}
+          .info-label{width:90px;color:#666}
+          .info-value{flex:1;color:#222}
+          .alert{padding:8px 12px;border-radius:4px;margin-bottom:10px;font-size:12px;border:1px solid #d9d9d9}
+          .alert-error{background:#fff1f0;border-color:#ffa39e;color:#cf1322}
+          .approval-flow{font-size:12px}
+          .flow-node{margin-bottom:8px}
+          .flow-name{font-weight:600}
+          .flow-role{color:#888;font-size:11px}
+          .flow-time{color:#999;font-size:11px}
+          hr{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
+          @media print{body{padding:12px}}
+        </style></head><body>
+        <h3>申请详情（除车辆明细与发票附件）</h3>
+        ${clone.innerHTML}</body></html>`
+      const iframe = document.createElement('iframe')
+      iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;border:0'
+      document.body.appendChild(iframe)
+      const doc = iframe.contentWindow.document
+      doc.open(); doc.write(html); doc.close()
+      iframe.contentWindow.focus()
+      setTimeout(() => {
+        iframe.contentWindow.print()
+        setTimeout(() => document.body.removeChild(iframe), 500)
+      }, 200)
+    },
+    exportDetailPDF() {
+      const root = document.querySelector('.detail-overlay-content')
+      if (!root) { this.showToast('未找到申请详情内容'); return }
+      const clone = root.cloneNode(true)
+      clone.querySelectorAll('button, .modal-close, .lightbox-close-btn').forEach(el => el.remove())
+      const win = window.open('', '_blank')
+      if (!win) { this.showToast('请允许弹出窗口以生成 PDF'); return }
+      win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>申请详情 — 全文 PDF</title>
+        <style>
+          body{font-family:sans-serif;font-size:12px;padding:24px;color:#222}
+          h3{font-size:14px;margin:14px 0 8px;color:#1890ff}
+          .section-title{font-size:13px;font-weight:600;border-left:3px solid #1890ff;padding-left:8px;margin:14px 0 8px}
+          .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;margin-bottom:8px}
+          .info-item{display:flex;font-size:12px;line-height:1.7}
+          .info-label{width:90px;color:#666}
+          .info-value{flex:1;color:#222}
+          .alert{padding:8px 12px;border-radius:4px;margin-bottom:10px;font-size:12px;border:1px solid #d9d9d9}
+          .alert-error{background:#fff1f0;border-color:#ffa39e;color:#cf1322}
+          table{border-collapse:collapse;width:100%;font-size:11px}
+          th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}
+          th{background:#f5f5f5;font-weight:600}
+          .file-list a{display:block;color:#1890ff;text-decoration:underline;margin-bottom:4px}
+          hr{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
+          .tip{font-size:11px;color:#999;margin-top:8px}
+          @media print{body{padding:12px}}
+        </style></head><body>
+        <h3>申请详情（全范围 PDF）</h3>
+        ${clone.innerHTML}
+        <div class="tip">提示：在浏览器打印对话框中选择"另存为 PDF"即可生成 PDF 文件。</div>
+        </body></html>`)
+      win.document.close()
+      win.focus()
+      setTimeout(() => win.print(), 300)
+      this.showToast('已打开打印窗口，可在弹窗中选择"另存为 PDF"')
+    },
     printInvoice() {
       const invEl = document.querySelector('.lightbox-mask .inv-wrap')
       if (!invEl) {
