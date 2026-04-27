@@ -957,8 +957,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <span style="font-size:12px;color:#d46b08;margin-right:4px">当前状态：<b>待审批</b></span>
                   <button class="btn btn-default btn-sm" @click="showUploadInvoice=true">上传发票</button>
                   <button class="btn btn-danger btn-sm" @click="showCancelConfirm=true">取消申请</button>
-                  <button class="btn btn-primary btn-sm" @click="showApproveDialog=true">审批通过</button>
-                  <button class="btn btn-danger btn-sm" @click="showRejectDialog=true">驳回</button>
                 </div>
                 <!-- 待支付：操作按钮 -->
                 <div v-if="bmsCurrentDetail.status==='pay'" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#f6ffed;border-radius:4px;border:1px solid #b7eb8f">
