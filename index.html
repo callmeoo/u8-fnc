@@ -3142,8 +3142,8 @@ new Vue({
     },
     downloadImportTemplate() {
       const BOM = '\ufeff'
-      const headers = ['车牌号', 'VIN码(非必填)', '集团', '门店', '服务中心(整理费必填)', '费用类型', '实际结算金额(含税)']
-      const note   = ['',         '',                '',     '',     '',                       '可选值：服务费 / 过户费 / 整理费', '']
+      const headers = ['车牌号', 'VIN码(非必填)', '集团', '门店', '服务中心(整理费必填)', '费用类型', '实际结算金额(含税，单位：元)']
+      const note   = ['',         '',                '',     '',     '',                       '可选值：服务费 / 过户费 / 整理费', '请以元为单位填写，保留两位小数']
       const example= ['粤A·12345','LFV3A2BM2N3xxxxx1','广州区域','广州番禺门店','广州番禺服务中心','整理费',                          '360.00']
       const csv = [headers, note, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
