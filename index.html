@@ -2728,6 +2728,24 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
   </div>
 </div><!-- /lightbox-mask -->
 
+<!-- 停用部门 二次确认 (global) -->
+<div class="modal-mask" v-if="showDeptDisableConfirm" @click.self="showDeptDisableConfirm=false">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header"><span class="modal-title">停用确认</span><span class="modal-close" @click="showDeptDisableConfirm=false">✕</span></div>
+    <div class="modal-body">
+      <div class="alert alert-warning"><span>停用后该部门将不再出现在 BMS / FNC 的「U8部门名称」下拉选项中，已生成的历史数据不受影响。如需恢复请重新启用。</span></div>
+      <div class="info-grid" style="margin-top:10px" v-if="deptDisableTarget">
+        <div class="info-item"><div class="info-label">U8部门编码</div><div class="info-value">{{deptDisableTarget.code}}</div></div>
+        <div class="info-item"><div class="info-label">U8部门名称</div><div class="info-value">{{deptDisableTarget.name}}</div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" @click="showDeptDisableConfirm=false">取消</button>
+      <button class="btn btn-danger" @click="confirmDeptDisable()">确认停用</button>
+    </div>
+  </div>
+</div>
+
 <!-- Mapping dialog (global — accessible from BMS voucher mapping tab and FNC dept-mapping page) -->
 <div class="modal-mask" v-if="deptMappingDialog" @click.self="deptMappingDialog=false">
   <div class="modal" style="max-width:480px">
@@ -2855,6 +2873,8 @@ new Vue({
       deptMappingDialog: false,
       deptMappingEditing: null,
       deptForm: { code:'', name:'', remark:'' },
+      showDeptDisableConfirm: false,
+      deptDisableTarget: null,
       showTaxRule: false,
       // FNC settle
       fncStatusTab: 'all',
@@ -3298,11 +3318,28 @@ new Vue({
       this.deptMappingDialog = false
     },
     toggleDeptActive(d) {
-      d.active = !d.active
-      const today = new Date()
-      const pad = n => String(n).padStart(2,'0')
-      d.updatedAt = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
-      this.showToast(d.active ? '已启用' : '已停用')
+      if (d.active) {
+        this.deptDisableTarget = d
+        this.showDeptDisableConfirm = true
+      } else {
+        d.active = true
+        const today = new Date()
+        const pad = n => String(n).padStart(2,'0')
+        d.updatedAt = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
+        this.showToast('已启用')
+      }
+    },
+    confirmDeptDisable() {
+      const d = this.deptDisableTarget
+      if (d) {
+        d.active = false
+        const today = new Date()
+        const pad = n => String(n).padStart(2,'0')
+        d.updatedAt = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
+        this.showToast('已停用')
+      }
+      this.showDeptDisableConfirm = false
+      this.deptDisableTarget = null
     },
     openReconcile() {
       this.reconcileStep = 1
