@@ -486,14 +486,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div v-if="bmsListTab==='settle'" class="card" style="border-radius:0 4px 4px 4px">
               <div class="card-header">
                 <span class="card-title">BMS — 批量结算列表</span>
-                <!-- 非待提交 tab：显示"导入"和"申请结算" -->
-                <div v-if="bmsStatusTab!=='draft'" style="display:flex;gap:8px">
+                <div style="display:flex;gap:8px">
                   <button class="btn btn-default" @click="importDialog=true">导入对账明细</button>
-                  <button class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
-                </div>
-                <!-- 待提交 tab：仅显示"马上申请结算" -->
-                <div v-if="bmsStatusTab==='draft'" style="display:flex;gap:8px">
-                  <button class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
+                  <button v-if="bmsStatusTab!=='draft'" class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
+                  <button v-if="bmsStatusTab==='draft'" class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
                 </div>
               </div>
               <div class="card-body">
