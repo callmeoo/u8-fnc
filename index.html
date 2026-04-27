@@ -2357,7 +2357,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div style="font-size:12px;color:#333;line-height:2.4;padding:12px 16px;background:#f0f7ff;border-radius:6px;border:1px solid #d6e4ff;margin-bottom:16px">
                   <div> <b>需求一</b>：OA审批流整体迁移至 BMS，业务员在 BMS 内一站式完成</div>
                   <div style="margin-left:24px;color:#555">明细确认 → 发票上传 → 付款信息录入 → 发起审批流 → 审批通过后进入待支付</div>
-                  <div style="margin-top:6px"> <b>需求二</b>：FNC 凭证管理新增"从批量结算新增(成本)"入口</div>
+                  <div style="margin-top:6px"> <b>需求二</b>：FNC 凭证管理新增"新增(成本)"入口</div>
                   <div style="margin-left:24px;color:#555">财务选择已结算申请 → 系统自动生成分录预览 → 确认 → 一键开具推送 U8</div>
                 </div>
 
@@ -2384,7 +2384,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
                   </tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS 申请表单（一站式）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">明细勾选 + 发票上传 + 付款/收款信息录入 + 备注</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS 申请表单（一站式）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">明细勾选 / 导入对账单 / 导入明细 + 发票上传 + 付款/收款信息录入 + 备注</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">5级审批流</td><td style="padding:8px 12px;border:1px solid #e8e8e8">区域经理 → 财务（麦经理）→ 区域总监 → 财务负责人 → 总经理</td><td style="padding:8px 12px;border:1px solid #e8e8e8">其他 &gt; 审批流</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">企微 H5 审批端</td><td style="padding:8px 12px;border:1px solid #e8e8e8">非财务角色在企微"付款审批"中处理待办</td><td style="padding:8px 12px;border:1px solid #e8e8e8">其他 &gt; 审批流（企微演示 tab）</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">驳回 / 修改重提 / 废弃</td><td style="padding:8px 12px;border:1px solid #e8e8e8">任意级驳回退回业务员；可修改重提或废弃为终态</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算（详情页）</td></tr>
@@ -2401,11 +2401,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
                   </tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">"从批量结算新增(成本)"入口</td><td style="padding:8px 12px;border:1px solid #e8e8e8">凭证管理列表新增按钮，与现有"新增"并列</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">两步骤生成凭证</td><td style="padding:8px 12px;border:1px solid #e8e8e8">Step 1 选择费用类型 + 结算年月 + 勾选已结算申请；Step 2 自动分录预览 + 财务调整</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">"新增(成本)"入口</td><td style="padding:8px 12px;border:1px solid #e8e8e8">凭证管理列表新增按钮，与现有"新增"并列</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">两步骤生成凭证</td><td style="padding:8px 12px;border:1px solid #e8e8e8">Step 1 勾选已结算申请；Step 2 自动分录预览 + 财务调整</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">推送账套（多法人主体）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">支持选择对应公司账套，凭证推送到正确 U8 账套</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">进项税调整 + 批量除税</td><td style="padding:8px 12px;border:1px solid #e8e8e8">按发票维度调进项税额；可选中多条按税率（13/9/6%）批量计算</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">凭证摘要标题</td><td style="padding:8px 12px;border:1px solid #e8e8e8">U8返回凭证号 / 摘要 / 结算年月 / 开具操作人</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">一键推送 U8 + 凭证号回写</td><td style="padding:8px 12px;border:1px solid #e8e8e8">财务点击开具 → 推送 U8 → 凭证号回写 FNC；失败给出明确错误并支持重试</td><td style="padding:8px 12px;border:1px solid #e8e8e8">FNC &gt; 凭证管理</td></tr>
                 </table>
 
