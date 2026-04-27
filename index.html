@@ -546,19 +546,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                   <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredBmsList.length + ' 条')">🔍 查询</button>
                   <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',feeType:'全部',group:'',store:'',serviceCenter:'',applicant:'',status:'全部'}">重置</button>
+                  <button v-if="bmsStatusTab==='draft'" class="btn btn-default btn-sm" @click="showBmsTips=true">📋 操作说明</button>
                 </div>
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
                 <div v-if="bmsStatusTab==='draft'">
-                  <div class="alert alert-info" style="margin-bottom:10px">
-                    <div style="font-weight:600;margin-bottom:4px">📋 操作说明</div>
-                    <ol style="margin:0;padding-left:20px;line-height:1.8">
-                      <li>以下为待结算的车辆明细，点击勾选后，需点击右上角「马上结算」以进行填写申请表单。</li>
-                      <li>勾选时，需要选择相同费用类型的车辆。</li>
-                      <li>所选车辆需为<b>同一费用类型</b>，且属于<b>同一部门</b>。</li>
-                      <li>服务费（业务合作费），订单清分后，系统会自动增加。这部分内容只需勾选即可，无需人工导入上传。</li>
-                    </ol>
-                  </div>
                   <div v-if="bmsApplyError" class="alert alert-error" style="margin-bottom:10px">⚠️ {{bmsApplyError}}</div>
                   <div class="table-wrap">
                     <table>
@@ -728,6 +720,24 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-footer">
                 <button class="btn btn-default" @click="showRejectDialog=false">取消</button>
                 <button class="btn btn-danger" @click="showRejectDialog=false">确认驳回</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 待提交操作说明 Dialog -->
+          <div class="modal-mask" v-if="showBmsTips" @click.self="showBmsTips=false">
+            <div class="modal" style="max-width:520px">
+              <div class="modal-header"><span class="modal-title">📋 操作说明</span><span class="modal-close" @click="showBmsTips=false">✕</span></div>
+              <div class="modal-body">
+                <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:13px;color:#333">
+                  <li>以下为待结算的车辆明细，点击勾选后，需点击右上角「马上结算」以进行填写申请表单。</li>
+                  <li>勾选时，需要选择相同费用类型的车辆。</li>
+                  <li>所选车辆需为<b>同一费用类型</b>，且属于<b>同一部门</b>。</li>
+                  <li>服务费（业务合作费），订单清分后，系统会自动增加。这部分内容只需勾选即可，无需人工导入上传。</li>
+                </ol>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" @click="showBmsTips=false">我知道了</button>
               </div>
             </div>
           </div>
@@ -2682,6 +2692,7 @@ new Vue({
       importStep: 1,
       showRejectDialog: false,
       showApproveDialog: false,
+      showBmsTips: false,
       showUploadInvoice: false,
       showDiscardConfirm: false,
       showCancelConfirm: false,
