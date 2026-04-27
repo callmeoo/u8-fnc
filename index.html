@@ -717,43 +717,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
           </div>
 
-          <!-- 进项税额功能说明 Dialog -->
-          <div class="modal-mask" v-if="showTaxRule" @click.self="showTaxRule=false">
-            <div class="modal" style="max-width:640px">
-              <div class="modal-header"><span class="modal-title">进项税额功能说明</span><span class="modal-close" @click="showTaxRule=false">✕</span></div>
-              <div class="modal-body">
-                <div style="font-size:13px;line-height:1.9;color:#333">
-                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、单台车进项税额计算公式</div>
-                  <div style="background:#f6f8fa;border:1px solid #eaecef;border-radius:4px;padding:10px 14px;margin-bottom:12px;font-family:monospace;font-size:12px;color:#333">
-                    单台车进项税额 = 单台车实际结算金额(含税) ÷ (1 + 进项税率) × 进项税率<br>
-                    单台车借方金额 = 单台车实际结算金额(含税) − 单台车进项税额
-                  </div>
-                  <div style="margin-bottom:14px;color:#555">举例：进项税率 6%，单台车含税金额 360 元 → 进项税额 = 360 ÷ 1.06 × 6% ≈ <b style="color:#d46b08">20.38</b>，借方金额 = 360 − 20.38 = <b>339.62</b>。</div>
-
-                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">二、总进项税额调整后的重算规则</div>
-                  <div style="margin-bottom:6px;color:#555">财务在「总进项税额（可修改）」中改值后，系统按以下规则联动重算每台车的进项税额，保持与税率一致：</div>
-                  <ol style="margin:0 0 12px 20px;padding:0;color:#555">
-                    <li>取调整后的总进项税额 <code>T</code>。</li>
-                    <li>用「总含税金额 ÷ (1 + 进项税率) × 进项税率」反推系统建议总税额 <code>T₀</code>。</li>
-                    <li>计算调整系数 <code>k = T ÷ T₀</code>。</li>
-                    <li>每台车进项税额 = 该车原税额 × <code>k</code>，对应借方金额 = 该车含税金额 − 调整后的税额。</li>
-                    <li>因四舍五入产生的尾差，系统会把差额并入金额最大的一行，确保 Σ 各车税额 = 调整后的总税额、且借贷平衡。</li>
-                  </ol>
-
-                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、与税率的关系</div>
-                  <ul style="margin:0 0 6px 20px;padding:0;color:#555">
-                    <li>顶部「进项税率」改变时，自动按公式一重算总税额与每台车税额。</li>
-                    <li>「总进项税额」手工改后视为锁定值，再次切换税率会重置为公式一计算结果。</li>
-                    <li>含税金额始终以批量结算明细为准，不可修改。</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-primary" @click="showTaxRule=false">我知道了</button>
-              </div>
-            </div>
-          </div>
-
           <!-- 对账单核对 Dialog -->
           <div class="modal-mask" v-if="reconcileDialog" @click.self="reconcileDialog=false">
             <div class="modal" style="max-width:880px">
@@ -1614,7 +1577,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <!-- 可编辑字段 -->
                 <div class="form-row" style="margin-bottom:10px">
                   <div class="form-item"><label class="form-label req">账簿</label><div class="form-control"><select class="sel"><option>唯普</option><option>机拍</option><option>唯普云</option><option>汇和</option></select></div></div>
-                  <div class="form-item"><label class="form-label req">进项税率</label><div class="form-control"><select class="sel"><option>6%</option><option>3%</option><option>9%</option><option>1%</option><option>0%</option></select></div></div>
+                  <div class="form-item"><label class="form-label req">进项税率</label><div class="form-control"><select class="sel" v-model="step2TaxRate" @change="step2TaxOverride=''"><option>6%</option><option>3%</option><option>9%</option><option>1%</option><option>0%</option></select></div></div>
                   <div class="form-item"><label class="form-label req">制单日期</label><div class="form-control"><input class="inp" type="date" value="2026-04-20"></div></div>
                 </div>
 
@@ -1677,23 +1640,60 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td style="padding:7px 8px;text-align:left;font-size:11px">10020101</td>
                         <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
                         <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
-                        <td style="padding:7px 8px;text-align:right;font-weight:600;color:#c41d7f">1,060.00</td>
+                        <td style="padding:7px 8px;text-align:right;font-weight:600;color:#c41d7f">{{step2TotalWithTax}}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
                 <!-- 底部汇总条 -->
-                <div class="summary-bar" style="margin-top:10px">含税合计：<b class="amount">¥ 1,060.00</b> &nbsp;|&nbsp;
+                <div class="summary-bar" style="margin-top:10px">含税合计：<b class="amount">¥ {{step2TotalWithTax}}</b> &nbsp;|&nbsp;
                   总进项税额：<b class="amount" style="color:#d46b08">¥ {{step2TaxTotal}}</b> &nbsp;|&nbsp;
-                  借方合计：<b class="amount">¥ 1,060.00</b> &nbsp;|&nbsp;
-                  贷方合计：<b class="amount">¥ 1,060.00</b> &nbsp;|&nbsp;
+                  借方合计：<b class="amount">¥ {{step2TotalWithTax}}</b> &nbsp;|&nbsp;
+                  贷方合计：<b class="amount">¥ {{step2TotalWithTax}}</b> &nbsp;|&nbsp;
                   <span class="tag tag-green">✓ 借贷平衡</span>
                 </div>
               </div>
               <div class="modal-footer">
                 <button class="btn btn-default" @click="voucherNewStep=1">← 上一步</button>
                 <button class="btn btn-primary" @click="confirmVoucherCreate()">确认创建凭证（状态：待开具）</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 进项税额功能说明 Dialog -->
+          <div class="modal-mask" v-if="showTaxRule" @click.self="showTaxRule=false">
+            <div class="modal" style="max-width:640px">
+              <div class="modal-header"><span class="modal-title">进项税额功能说明</span><span class="modal-close" @click="showTaxRule=false">✕</span></div>
+              <div class="modal-body">
+                <div style="font-size:13px;line-height:1.9;color:#333">
+                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、单台车进项税额计算公式</div>
+                  <div style="background:#f6f8fa;border:1px solid #eaecef;border-radius:4px;padding:10px 14px;margin-bottom:12px;font-family:monospace;font-size:12px;color:#333">
+                    单台车进项税额 = 单台车实际结算金额(含税) ÷ (1 + 进项税率) × 进项税率<br>
+                    单台车借方金额 = 单台车实际结算金额(含税) − 单台车进项税额
+                  </div>
+                  <div style="margin-bottom:14px;color:#555">举例：进项税率 6%，单台车含税金额 360 元 → 进项税额 = 360 ÷ 1.06 × 6% ≈ <b style="color:#d46b08">20.38</b>，借方金额 = 360 − 20.38 = <b>339.62</b>。</div>
+
+                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">二、总进项税额调整后的重算规则</div>
+                  <div style="margin-bottom:6px;color:#555">财务在「总进项税额（可修改）」中改值后，系统按以下规则联动重算每台车的进项税额，保持与税率一致：</div>
+                  <ol style="margin:0 0 12px 20px;padding:0;color:#555">
+                    <li>取调整后的总进项税额 <code>T</code>。</li>
+                    <li>用「总含税金额 ÷ (1 + 进项税率) × 进项税率」反推系统建议总税额 <code>T₀</code>。</li>
+                    <li>计算调整系数 <code>k = T ÷ T₀</code>。</li>
+                    <li>每台车进项税额 = 该车原税额 × <code>k</code>，对应借方金额 = 该车含税金额 − 调整后的税额。</li>
+                    <li>因四舍五入产生的尾差，系统会把差额并入金额最大的一行，确保 Σ 各车税额 = 调整后的总税额、且借贷平衡。</li>
+                  </ol>
+
+                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、与税率的关系</div>
+                  <ul style="margin:0 0 6px 20px;padding:0;color:#555">
+                    <li>顶部「进项税率」改变时，自动按公式一重算总税额与每台车税额。</li>
+                    <li>「总进项税额」手工改后视为锁定值，再次切换税率会重置为公式一计算结果。</li>
+                    <li>含税金额始终以批量结算明细为准，不可修改。</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" @click="showTaxRule=false">我知道了</button>
               </div>
             </div>
           </div>
@@ -2882,17 +2882,18 @@ new Vue({
       voucherDeptCode: '7402',
       step1Payee: '',
       step1Dept: '',
-      step2TaxTotal: '60.00',
-      voucherStep2Rows: [
-        {plate:'粤A·12345', withTax:'360.00', tax:'20.38', debit:'339.62'},
-        {plate:'粤B·67890', withTax:'360.00', tax:'20.38', debit:'339.62'},
-        {plate:'粤C·11111', withTax:'340.00', tax:'19.25', debit:'320.75'},
-        {plate:'粤D·22222', withTax:'360.00', tax:'20.38', debit:'339.62'},
-        {plate:'粤E·33333', withTax:'360.00', tax:'20.38', debit:'339.62'},
-        {plate:'粤F·44444', withTax:'360.00', tax:'20.38', debit:'339.62'},
-        {plate:'粤G·55555', withTax:'400.00', tax:'22.64', debit:'377.36'},
-        {plate:'粤H·66666', withTax:'360.00', tax:'20.38', debit:'339.62'},
-        {plate:'粤J·77777', withTax:'360.00', tax:'20.38', debit:'339.62'},
+      step2TaxRate: '6%',
+      step2TaxOverride: '',
+      voucherStep2Base: [
+        {plate:'粤A·12345', withTax:360},
+        {plate:'粤B·67890', withTax:360},
+        {plate:'粤C·11111', withTax:340},
+        {plate:'粤D·22222', withTax:360},
+        {plate:'粤E·33333', withTax:360},
+        {plate:'粤F·44444', withTax:360},
+        {plate:'粤G·55555', withTax:400},
+        {plate:'粤H·66666', withTax:360},
+        {plate:'粤J·77777', withTax:360},
       ],
       deptMappingData: [
         {code:'01',  name:'财务部',                          remark:'',active:true,updatedAt:'2026-04-10'},
@@ -3000,6 +3001,66 @@ new Vue({
     step2SubjectCode() {
       const map = { '服务费':'64010102', '过户费':'64010103', '整理费':'64011209' }
       return map[this.step2FeeType] || '64010102'
+    },
+    step2RateNum() {
+      const r = parseFloat(String(this.step2TaxRate).replace('%','')) / 100
+      return isFinite(r) ? r : 0
+    },
+    voucherStep2Rows() {
+      const r = this.step2RateNum
+      const fmt = n => (Math.round(n * 100) / 100).toFixed(2)
+      const baseRows = this.voucherStep2Base.map(b => {
+        const tax = r > 0 ? +(b.withTax / (1 + r) * r).toFixed(2) : 0
+        return { plate: b.plate, withTax: b.withTax, tax }
+      })
+      const autoTotal = +baseRows.reduce((s, x) => s + x.tax, 0).toFixed(2)
+      const overrideNum = parseFloat(this.step2TaxOverride)
+      let useOverride = !isNaN(overrideNum) && overrideNum >= 0 && Math.abs(overrideNum - autoTotal) > 0.001 && autoTotal > 0
+      if (useOverride) {
+        const k = overrideNum / autoTotal
+        let runningTax = 0
+        const lastIdx = baseRows.length - 1
+        baseRows.forEach((row, i) => {
+          if (i < lastIdx) {
+            row.tax = +(row.tax * k).toFixed(2)
+            runningTax += row.tax
+          } else {
+            row.tax = +(overrideNum - runningTax).toFixed(2)
+          }
+        })
+      }
+      return baseRows.map(row => ({
+        plate: row.plate,
+        withTax: fmt(row.withTax),
+        tax: fmt(row.tax),
+        debit: fmt(row.withTax - row.tax),
+      }))
+    },
+    step2TotalWithTax() {
+      const t = this.voucherStep2Base.reduce((s, x) => s + x.withTax, 0)
+      return (Math.round(t * 100) / 100).toFixed(2)
+    },
+    step2TotalTaxAuto() {
+      const r = this.step2RateNum
+      if (r <= 0) return '0.00'
+      const t = this.voucherStep2Base.reduce((s, x) => s + x.withTax / (1 + r) * r, 0)
+      return (Math.round(t * 100) / 100).toFixed(2)
+    },
+    step2TotalDebit() {
+      const t = this.voucherStep2Rows.reduce((s, x) => s + parseFloat(x.debit), 0)
+      const totalTax = this.voucherStep2Rows.reduce((s, x) => s + parseFloat(x.tax), 0)
+      return (Math.round((t + totalTax) * 100) / 100).toFixed(2)
+    },
+    step2TaxTotal: {
+      get() {
+        if (this.step2TaxOverride !== '' && !isNaN(parseFloat(this.step2TaxOverride))) {
+          return this.step2TaxOverride
+        }
+        return this.step2TotalTaxAuto
+      },
+      set(v) {
+        this.step2TaxOverride = v
+      },
     },
     voucherDetailScenario() {
       const ft = this.voucherDetailFeeType
