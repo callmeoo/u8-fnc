@@ -1596,7 +1596,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <span style="font-size:12px;color:#0050b3">演示模式 · 切换费用类型查看不同分录：</span>
                   <button v-for="ft in ['服务费','过户费','整理费']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
                   <span style="flex:1"></span>
-                  <button class="btn btn-default btn-sm" @click="showTaxRule=true">进项税额功能说明</button>
+                  <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="showTaxRule=true">进项税额功能说明</button>
                 </div>
 
                 <!-- 总进项税额可编辑块 -->
@@ -1849,7 +1849,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td style="color:#bbb">—</td><td style="text-align:right;color:#c41d7f">{{voucherDetailScenario.creditAmt}}</td>
                           <td>现金流量项目</td><td>0007</td>
                           <td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
-                          <td style="font-size:11px;color:#555">62604067544659797</td><td></td>
+                          <td></td><td></td>
                           <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
                       </tbody>
