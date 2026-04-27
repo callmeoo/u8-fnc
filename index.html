@@ -488,7 +488,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="card-title">BMS — 批量结算列表</span>
                 <div style="display:flex;gap:8px">
                   <button v-if="bmsStatusTab==='draft'" class="btn btn-default" @click="openReconcile">导入对账单核对</button>
-                  <button class="btn btn-default" @click="importDialog=true">导入对账明细</button>
+                  <button class="btn btn-default" @click="importDialog=true">导入结算明细</button>
                   <button v-if="bmsStatusTab!=='draft'" class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
                   <button v-if="bmsStatusTab==='draft'" class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
                 </div>
@@ -568,7 +568,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(bmsVehicleData.indexOf(v),1);showToast('已移除')">移除</button></td>
                       </tr>
                       <tr v-if="filteredVehicleData.length===0">
-                        <td colspan="10" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入对账明细'}}</td>
+                        <td colspan="10" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入结算明细'}}</td>
                       </tr>
                     </table>
                   </div>
@@ -642,7 +642,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <!-- Import Dialog -->
           <div class="modal-mask" v-if="importDialog" @click.self="importDialog=false">
             <div class="modal" style="max-width:880px">
-              <div class="modal-header"><span class="modal-title">导入对账明细</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
+              <div class="modal-header"><span class="modal-title">导入结算明细</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
               <div class="modal-body">
                 <!-- Step 1: 上传文件 -->
                 <div v-if="importStep===1">
@@ -3126,7 +3126,7 @@ new Vue({
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = '批量结算对账明细标准模板.csv'
+      a.download = '批量结算明细标准模板.csv'
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
