@@ -506,7 +506,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <!-- Filter bar -->
                 <div class="filter-bar">
                   <div class="filter-item"><label>申请时间</label><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateFrom"><span>至</span><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateTo"></div>
-                  <div class="filter-item" v-if="bmsStatusTab!=='draft'"><label>结算年月</label><input class="inp" type="month" style="width:120px" v-model="bmsFilter.settleMonth"></div>
+                  <div class="filter-item" v-if="bmsStatusTab==='settled'"><label>结算年月</label><input class="inp" type="month" style="width:120px" v-model="bmsFilter.settleMonth"></div>
                   <div class="filter-item">
                     <label>费用类型</label>
                     <select class="sel" v-model="bmsFilter.feeType">
