@@ -1541,7 +1541,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <tr @click="step2FeeType='服务费';step2Payee='常有（天津）信息技术有限公司';voucherDeptCode='7401'" style="cursor:pointer">
                       <td class="check-col"><input type="radio" name="batchStep1" checked></td>
                       <td style="max-width:160px;white-space:normal">2026年1月服务费结算申请</td>
-                      <td>番禺车管分所</td>
+                      <td>{{deptNameByCode('7401')}}</td>
                       <td><span class="tag tag-blue" style="font-size:11px">服务费</span></td>
                       <td>常有（天津）信息技术有限公司</td>
                       <td class="amount">1,060.00</td><td>3</td><td>2026-01-15</td>
@@ -1549,7 +1549,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <tr @click="step2FeeType='过户费';step2Payee='好快帮（广州）科技有限公司';voucherDeptCode='7402'" style="cursor:pointer">
                       <td class="check-col"><input type="radio" name="batchStep1"></td>
                       <td style="max-width:160px;white-space:normal">2026年1月过户费结算申请</td>
-                      <td>越秀车管所</td>
+                      <td>{{deptNameByCode('7402')}}</td>
                       <td><span class="tag tag-green" style="font-size:11px">过户费</span></td>
                       <td>好快帮（广州）科技有限公司</td>
                       <td class="amount">3,800.00</td><td>9</td><td>2026-01-17</td>
@@ -1557,7 +1557,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <tr @click="step2FeeType='整理费';step2Payee='常有（天津）信息技术有限公司';voucherDeptCode='7403'" style="cursor:pointer">
                       <td class="check-col"><input type="radio" name="batchStep1"></td>
                       <td style="max-width:160px;white-space:normal">2026年1月整理费结算申请</td>
-                      <td>花都车管所</td>
+                      <td>{{deptNameByCode('7403')}}</td>
                       <td><span class="tag tag-orange" style="font-size:11px">整理费</span></td>
                       <td>常有（天津）信息技术有限公司</td>
                       <td class="amount">1,800.00</td><td>4</td><td>2026-01-17</td>
@@ -3311,6 +3311,10 @@ new Vue({
       this.showFncSettleConfirm2 = false
       this.fncCurrentRecord = null
       this.showToast('已结算确认成功，状态已更新为「已结算」')
+    },
+    deptNameByCode(code) {
+      const d = this.deptMappingData.find(x => x.code === code)
+      return d ? d.name : '—'
     },
     openDeptMapping(dept) {
       if (dept) {
