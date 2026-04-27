@@ -1206,32 +1206,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
           </div>
 
-          <!-- FNC 已结算 第1次确认弹框 -->
-          <div class="modal-mask" v-if="showFncSettleConfirm1" @click.self="showFncSettleConfirm1=false">
-            <div class="modal" style="max-width:460px">
-              <div class="modal-header"><span class="modal-title">确认已结算 — 第1步</span><span class="modal-close" @click="showFncSettleConfirm1=false">✕</span></div>
-              <div class="modal-body">
-                <div class="alert alert-warning">请确认已在银行系统完成付款操作后，再点击"下一步"进行二次确认。</div>
-                <div class="info-grid" style="margin-top:10px">
-                  <div class="info-item"><div class="info-label">申请编号</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.id:'—'}}</div></div>
-                  <div class="info-item"><div class="info-label">含税合计</div><div class="info-value amount">¥ {{fncCurrentRecord?fncCurrentRecord.amount:'—'}}</div></div>
-                  <div class="info-item"><div class="info-label">收款方</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.payee:'—'}}</div></div>
-                  <div class="info-item"><div class="info-label">U8部门名称</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.org:'—'}}</div></div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-default" @click="showFncSettleConfirm1=false">取消</button>
-                <button class="btn btn-primary" @click="showFncSettleConfirm1=false;showFncSettleConfirm2=true">下一步（二次确认）→</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- FNC 已结算 第2次确认弹框 -->
+          <!-- FNC 已结算 确认弹框 -->
           <div class="modal-mask" v-if="showFncSettleConfirm2" @click.self="showFncSettleConfirm2=false">
             <div class="modal" style="max-width:460px">
-              <div class="modal-header"><span class="modal-title">确认已结算 — 第2步（最终确认）</span><span class="modal-close" @click="showFncSettleConfirm2=false">✕</span></div>
+              <div class="modal-header"><span class="modal-title">确认已结算</span><span class="modal-close" @click="showFncSettleConfirm2=false">✕</span></div>
               <div class="modal-body">
-                <div class="alert alert-error"> <b>高风险操作：</b>确认后申请状态将变更为"已结算"，此操作<b>不可撤销</b>。请再次确认付款已完成。</div>
+                <div class="alert alert-warning">请确认已在银行系统完成付款操作，点击确认后申请状态将变更为"已结算"，此操作<b>不可撤销</b>。</div>
                 <div class="info-grid" style="margin-top:10px">
                   <div class="info-item"><div class="info-label">申请编号</div><div class="info-value">{{fncCurrentRecord?fncCurrentRecord.id:'—'}}</div></div>
                   <div class="info-item"><div class="info-label">含税合计</div><div class="info-value amount">¥ {{fncCurrentRecord?fncCurrentRecord.amount:'—'}}</div></div>
@@ -3112,7 +3092,7 @@ new Vue({
     },
     openFncSettleConfirm(record) {
       this.fncCurrentRecord = record
-      this.showFncSettleConfirm1 = true
+      this.showFncSettleConfirm2 = true
     },
     confirmFncSettled() {
       const r = this.fncCurrentRecord
