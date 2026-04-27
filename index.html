@@ -563,7 +563,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <table>
                       <tr>
                         <th class="check-col"><input type="checkbox" :checked="filteredVehicleData.length>0&&bmsVehicleChecked.length===filteredVehicleData.length" @change="bmsVehicleChecked=$event.target.checked?filteredVehicleData.map(v=>v.plate):[];bmsApplyError=''"></th>
-                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>服务中心</th><th>BIP部门名称</th><th>集团</th><th>门店</th>
+                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>集团</th><th>门店</th><th>服务中心</th>
                         <th>实际结算金额(含税)</th><th>操作</th>
                       </tr>
                       <tr v-for="v in filteredVehicleData" :key="v.plate" :style="bmsVehicleChecked.includes(v.plate)?'background:#e6f7ff':''">
@@ -572,15 +572,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td><b>{{v.plate}}</b></td>
                         <td style="font-size:11px;font-family:monospace;color:#555">{{v.vin||'—'}}</td>
                         <td>{{v.feeType}}</td>
-                        <td style="font-size:11px;color:#555">{{v.serviceCenter||'—'}}</td>
-                        <td style="font-size:11px;color:#555">{{v.org}}</td>
                         <td style="font-size:11px;color:#555">{{v.group||'—'}}</td>
                         <td style="font-size:11px;color:#555">{{v.store||'—'}}</td>
+                        <td style="font-size:11px;color:#555">{{v.serviceCenter||'—'}}</td>
                         <td class="amount">{{v.actualAmt}}</td>
                         <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(bmsVehicleData.indexOf(v),1);showToast('已移除')">移除</button></td>
                       </tr>
                       <tr v-if="filteredVehicleData.length===0">
-                        <td colspan="11" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入对账明细'}}</td>
+                        <td colspan="10" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入对账明细'}}</td>
                       </tr>
                     </table>
                   </div>
