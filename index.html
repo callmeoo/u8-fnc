@@ -287,7 +287,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                 </div>
                 <div class="form-item">
-                  <label class="form-label req">BIP部门名称</label>
+                  <label class="form-label req">U8部门名称</label>
                   <div class="form-control">
                     <input class="inp" style="width:100%" placeholder="请搜索或选择BIP部门..." list="bipDept-list" v-model="formBipDept" :class="{'field-error':formValidated&&!formBipDept}">
                     <datalist id="bipDept-list">
@@ -1509,7 +1509,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="filter-bar">
                   <div class="filter-item"><label>费用类型</label><select class="sel" style="width:130px"><option>全部</option><option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option></select></div>
                   <div class="filter-item">
-                    <label>BIP部门名称</label>
+                    <label>U8部门名称</label>
                     <select class="sel" style="width:140px" v-model="step1Dept">
                       <option value="">全部</option>
                       <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
@@ -1528,7 +1528,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="alert alert-info"><span>以下列表仅展示<b>未推送凭证</b>的批量结算申请记录；每次只能选择<b>一条</b>记录生成凭证。</span></div>
                 <div class="table-wrap">
                   <table>
-                    <tr><th class="check-col"></th><th>标题</th><th>BIP部门名称</th><th>费用类型</th><th>收款方名称</th><th>含税合计（元）</th><th>明细条数</th><th>申请时间</th></tr>
+                    <tr><th class="check-col"></th><th>标题</th><th>U8部门名称</th><th>费用类型</th><th>收款方名称</th><th>含税合计（元）</th><th>明细条数</th><th>申请时间</th></tr>
                     <tr @click="step2FeeType='服务费';step2Payee='常有（天津）信息技术有限公司';voucherDeptCode='7401'" style="cursor:pointer">
                       <td class="check-col"><input type="radio" name="batchStep1" checked></td>
                       <td style="max-width:160px;white-space:normal">2026年1月服务费结算申请</td>
