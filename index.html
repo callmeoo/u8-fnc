@@ -1472,9 +1472,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <!-- 部门编码映射 tab -->
               <div v-if="voucherTab==='mapping'">
                 <div class="filter-bar" style="margin-top:12px">
-                  <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
-                  <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
-                  <div class="filter-item"><label>状态</label><select class="sel"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <div class="filter-item">
+                    <label>U8部门编码</label>
+                    <input class="inp" placeholder="搜索编码..." style="width:140px" list="dept-code-list-v" v-model="deptMapFilter.code">
+                    <datalist id="dept-code-list-v"><option v-for="d in deptMappingData" :key="d.code" :value="d.code">{{d.name}}</option></datalist>
+                  </div>
+                  <div class="filter-item">
+                    <label>U8部门名称</label>
+                    <input class="inp" placeholder="搜索名称..." style="width:180px" list="dept-name-list-v" v-model="deptMapFilter.name">
+                    <datalist id="dept-name-list-v"><option v-for="d in deptMappingData" :key="d.code" :value="d.name">{{d.code}}</option></datalist>
+                  </div>
+                  <div class="filter-item"><label>状态</label><select class="sel" v-model="deptMapFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
                   <span style="flex:1"></span>
                   <button class="btn btn-primary btn-sm">查询</button>
                   <button class="btn btn-primary btn-sm" @click="openDeptMapping()">新增</button>
@@ -1482,7 +1490,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="table-wrap">
                   <table>
                     <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
-                    <tr v-for="d in deptMappingData" :key="d.code">
+                    <tr v-for="d in filteredDeptMapping" :key="d.code">
                       <td><b>{{d.code}}</b></td>
                       <td>{{d.name}}</td>
                       <td style="color:#999">{{d.remark||'—'}}</td>
@@ -1490,6 +1498,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <td style="color:#999">{{d.updatedAt}}</td>
                       <td><button class="btn-link" @click="openDeptMapping(d)">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''" @click="toggleDeptActive(d)">{{d.active?'停用':'启用'}}</button></td>
                     </tr>
+                    <tr v-if="filteredDeptMapping.length===0"><td colspan="6" style="text-align:center;color:#999;padding:24px">暂无数据</td></tr>
                   </table>
                 </div>
                 <div class="pagination">
@@ -1938,14 +1947,22 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
             <div class="card-body">
               <div class="filter-bar">
-                <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
-                <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
-                <div class="filter-item"><label>状态</label><select class="sel"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                <div class="filter-item">
+                  <label>U8部门编码</label>
+                  <input class="inp" placeholder="搜索编码..." style="width:140px" list="dept-code-list-bg" v-model="deptMapFilter.code">
+                  <datalist id="dept-code-list-bg"><option v-for="d in deptMappingData" :key="d.code" :value="d.code">{{d.name}}</option></datalist>
+                </div>
+                <div class="filter-item">
+                  <label>U8部门名称</label>
+                  <input class="inp" placeholder="搜索名称..." style="width:180px" list="dept-name-list-bg" v-model="deptMapFilter.name">
+                  <datalist id="dept-name-list-bg"><option v-for="d in deptMappingData" :key="d.code" :value="d.name">{{d.code}}</option></datalist>
+                </div>
+                <div class="filter-item"><label>状态</label><select class="sel" v-model="deptMapFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
                 <button class="btn btn-primary btn-sm">查询</button>
               </div>
               <table>
                 <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
-                <tr v-for="d in deptMappingData" :key="d.code">
+                <tr v-for="d in filteredDeptMapping" :key="d.code">
                   <td><b>{{d.code}}</b></td>
                   <td>{{d.name}}</td>
                   <td style="color:#999">{{d.remark||'—'}}</td>
@@ -1954,25 +1971,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <td><button class="btn-link" @click="openDeptMapping(d)">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''" @click="toggleDeptActive(d)">{{d.active?'停用':'启用'}}</button></td>
                 </tr>
               </table>
-            </div>
-          </div>
-          <!-- Mapping dialog -->
-          <div class="modal-mask" v-if="deptMappingDialog" @click.self="deptMappingDialog=false">
-            <div class="modal" style="max-width:480px">
-              <div class="modal-header"><span class="modal-title">{{deptMappingEditing?'编辑U8部门':'新增U8部门'}}</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
-              <div class="modal-body">
-                <div class="form-row">
-                  <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402" v-model="deptForm.code"></div></div>
-                  <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）" v-model="deptForm.name"></div></div>
-                </div>
-                <div class="form-row">
-                  <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填" v-model="deptForm.remark"></div></div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-default" @click="deptMappingDialog=false">取消</button>
-                <button class="btn btn-primary" @click="saveDeptMapping()">保存</button>
-              </div>
             </div>
           </div>
         </div>
@@ -2729,6 +2727,26 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
     </div>
   </div>
 </div><!-- /lightbox-mask -->
+
+<!-- Mapping dialog (global — accessible from BMS voucher mapping tab and FNC dept-mapping page) -->
+<div class="modal-mask" v-if="deptMappingDialog" @click.self="deptMappingDialog=false">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header"><span class="modal-title">{{deptMappingEditing?'编辑U8部门':'新增U8部门'}}</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402" v-model="deptForm.code"></div></div>
+        <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）" v-model="deptForm.name"></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填" v-model="deptForm.remark"></div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" @click="deptMappingDialog=false">取消</button>
+      <button class="btn btn-primary" @click="saveDeptMapping()">保存</button>
+    </div>
+  </div>
+</div>
 </div><!-- /#app -->
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
