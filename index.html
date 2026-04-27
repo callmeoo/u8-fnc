@@ -487,7 +487,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="card-header">
                 <span class="card-title">BMS — 批量结算列表</span>
                 <div style="display:flex;gap:8px">
-                  <button v-if="bmsStatusTab==='draft'" class="btn btn-default" @click="openReconcile">导入对账单核对</button>
+                  <button class="btn btn-default" @click="openReconcile">导入对账单核对</button>
                   <button class="btn btn-default" @click="importDialog=true">导入结算明细</button>
                   <button v-if="bmsStatusTab!=='draft'" class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
                   <button v-if="bmsStatusTab==='draft'" class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
