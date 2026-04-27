@@ -1839,9 +1839,47 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <!-- ==================== 审批流 ==================== -->
         <div v-if="activeMenu==='approval'">
 
-          <!-- 需求点1：付款审批配置 -->
-          <div class="card" style="margin-bottom:12px">
-            <div class="card-header"><span class="card-title">需求点1：付款审批配置</span></div>
+          <!-- 一级 tab：需求说明 / 付款审批流配置 / 发票凭证上传 / 企微审批流演示 -->
+          <div class="tabs" style="margin-bottom:0;background:#fff;padding:0 16px;border-radius:4px 4px 0 0;border:1px solid #e8e8e8;border-bottom:none">
+            <span class="tab" :class="{active:approvalSidebarTab==='desc'}"    @click="approvalSidebarTab='desc'">需求说明</span>
+            <span class="tab" :class="{active:approvalSidebarTab==='config'}"  @click="approvalSidebarTab='config'">付款审批流配置</span>
+            <span class="tab" :class="{active:approvalSidebarTab==='invoice'}" @click="approvalSidebarTab='invoice'">发票凭证上传</span>
+            <span class="tab" :class="{active:approvalSidebarTab==='h5'}"      @click="approvalSidebarTab='h5'">企微审批流演示</span>
+          </div>
+
+          <!-- Tab 1：需求说明 -->
+          <div v-if="approvalSidebarTab==='desc'" class="card" style="border-radius:0 4px 4px 4px">
+            <div class="card-header"><span class="card-title">需求说明 — 付款审批（产品需求文档）</span></div>
+            <div class="card-body">
+              <div class="alert alert-info">本页说明付款审批的产品需求，供研发参考实现。</div>
+              <div class="section-title" style="margin:14px 0 8px">一、审批触发</div>
+              <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
+                <li>BMS申请人提交结算申请后，系统按<b>费用类型</b>自动匹配审批流并推送待办</li>
+                <li>审批人在PC端（FNC系统）或H5端（企业微信）处理待审批任务</li>
+                <li>全部层级通过 → 申请进入「待支付」；任意层级驳回 → 退回「已驳回」并通知申请人</li>
+              </ul>
+              <div class="section-title" style="margin:14px 0 8px">二、PC端审批入口</div>
+              <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
+                <li>FNC系统 → 批量结算列表 → 「待审批」tab → 点击「查看」→ 在详情页操作审批通过/驳回</li>
+              </ul>
+              <div class="section-title" style="margin:14px 0 8px">三、H5端（企业微信）审批入口</div>
+              <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
+                <li>企业微信 → 审批 → 付款审批 → 待审批列表 → 点击进入详情</li>
+                <li>详情页内容与PC端保持一致（基本信息/付款信息/收款信息/审批流程）</li>
+                <li>操作按钮：「审批通过」「审批驳回」</li>
+                <li>在企微审批列表中，「付款审批」位于「采购车款提现」之后、「调账申请」之前</li>
+              </ul>
+              <div class="section-title" style="margin:14px 0 8px">四、数据联动</div>
+              <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
+                <li>审批通过/驳回结果实时同步至BMS批量结算列表状态</li>
+                <li>申请人在BMS侧可查看完整审批流程和意见</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 2：付款审批流配置 -->
+          <div v-if="approvalSidebarTab==='config'" class="card" style="border-radius:0 4px 4px 4px">
+            <div class="card-header"><span class="card-title">付款审批流配置</span></div>
             <div class="card-body">
               <div class="alert alert-info" style="margin-bottom:14px">三种费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
               <div style="display:flex;gap:40px;padding:8px 0">
@@ -1861,9 +1899,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
           </div>
 
-          <!-- 需求点2：附件上传说明 + 视图切换 -->
-          <div class="card" style="margin-bottom:12px">
-            <div class="card-header"><span class="card-title">需求点2：发票凭证上传</span></div>
+          <!-- Tab 3：发票凭证上传 -->
+          <div v-if="approvalSidebarTab==='invoice'" class="card" style="border-radius:0 4px 4px 4px">
+            <div class="card-header"><span class="card-title">发票凭证上传</span></div>
             <div class="card-body">
               <div class="alert alert-info" style="margin-bottom:12px">
                  <b>财务诉求：</b>在审批流各节点支持业务人员新增发票凭证上传。上传后系统同步至审批详情页「发票附件」。
@@ -1873,48 +1911,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <li>各审批节点审批人可在H5端（企微）补充上传发票附件</li>
                 <li>所有节点上传的附件汇总展示在申请详情页「发票附件」区域</li>
               </ul>
-              <div style="display:flex;align-items:center;gap:12px">
-                <span style="font-size:12px;color:#666">查看视图：</span>
-                <button class="btn" :class="approvalMode==='pc'?'btn-primary':'btn-default'" @click="approvalMode='pc'">需求说明</button>
-                <button class="btn" :class="approvalMode==='h5'?'btn-primary':'btn-default'" @click="approvalMode='h5'"> H5（企微移动端）</button>
-              </div>
+              <div style="font-size:12px;color:#999">如需查看 H5 端实际上传位置，可切换到「企微审批流演示」tab。</div>
             </div>
           </div>
 
-          <!-- 需求说明（原PC端） -->
-          <div v-if="approvalMode==='pc'">
-            <div class="card">
-              <div class="card-header"><span class="card-title">需求说明 — 付款审批（产品需求文档）</span></div>
-              <div class="card-body">
-                <div class="alert alert-info">本页说明付款审批的产品需求，供研发参考实现。</div>
-                <div class="section-title" style="margin:14px 0 8px">一、审批触发</div>
-                <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
-                  <li>BMS申请人提交结算申请后，系统按<b>费用类型</b>自动匹配审批流并推送待办</li>
-                  <li>审批人在PC端（FNC系统）或H5端（企业微信）处理待审批任务</li>
-                  <li>全部层级通过 → 申请进入「待支付」；任意层级驳回 → 退回「已驳回」并通知申请人</li>
-                </ul>
-                <div class="section-title" style="margin:14px 0 8px">二、PC端审批入口</div>
-                <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
-                  <li>FNC系统 → 批量结算列表 → 「待审批」tab → 点击「查看」→ 在详情页操作审批通过/驳回</li>
-                </ul>
-                <div class="section-title" style="margin:14px 0 8px">三、H5端（企业微信）审批入口</div>
-                <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
-                  <li>企业微信 → 审批 → 付款审批 → 待审批列表 → 点击进入详情</li>
-                  <li>详情页内容与PC端保持一致（基本信息/付款信息/收款信息/审批流程）</li>
-                  <li>操作按钮：「审批通过」「审批驳回」</li>
-                  <li>在企微审批列表中，「付款审批」位于「采购车款提现」之后、「调账申请」之前</li>
-                </ul>
-                <div class="section-title" style="margin:14px 0 8px">四、数据联动</div>
-                <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
-                  <li>审批通过/驳回结果实时同步至BMS批量结算列表状态</li>
-                  <li>申请人在BMS侧可查看完整审批流程和意见</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- H5端：企微手机审批模拟 -->
-          <div v-if="approvalMode==='h5'" style="display:flex;justify-content:center;padding:8px 0 24px">
+          <!-- Tab 4：企微审批流演示（H5端：企微手机审批模拟） -->
+          <div v-if="approvalSidebarTab==='h5'" style="display:flex;justify-content:center;padding:8px 0 24px;background:#fff;border:1px solid #e8e8e8;border-radius:0 4px 4px 4px">
             <div style="width:375px">
               <!-- 手机外壳 -->
               <div style="background:#222;border-radius:36px;padding:10px;box-shadow:0 8px 32px rgba(0,0,0,.35)">
@@ -2801,7 +2803,7 @@ new Vue({
         {id:'V2025080',period:'2025-8',summary:'付8月服务费，好快帮（广州）科技有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2025-08-20',user:'王财务',debit:'2,600.00',credit:'2,600.00',statusKey:'deleted',status:'已删除',tagClass:'tag-gray',fromBatch:true},
       ],
       // Approval
-      approvalMode: 'pc',
+      approvalSidebarTab: 'desc',
       approvalDetailVisible: false,
       approvalFeeTab: 'service',
       h5ApprovalDetail: false,
