@@ -1261,37 +1261,32 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <!-- 权限操作栏 -->
                   <div v-if="fncDetailRecord.status==='fnc-approval'" style="margin-bottom:16px;flex-wrap:wrap;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#fff7e6;border:1px solid #ffd591;border-radius:4px">
                     <span style="font-size:12px;color:#d46b08;flex:1">当前状态：<b>待审批</b>，您有权限进行以下操作：</span>
-                    <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-primary btn-sm" @click="showFncApproveDialog=true">审批通过</button>
                     <button class="btn btn-danger btn-sm" @click="showFncRejectDialog=true">驳回</button>
+                    <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
-                    <button class="btn btn-default btn-sm" @click="showToast('正在准备打印（不含车辆明细与发票附件）…')">打印</button>
-                    <button class="btn btn-default btn-sm" @click="showToast('PDF生成中（不含发票图片）…')">导出 PDF</button>
+                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">打印</button>
+                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">导出 PDF</button>
                   </div>
                   <div v-if="fncDetailRecord.status==='fnc-pay'" style="margin-bottom:16px;flex-wrap:wrap;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px">
                     <span style="font-size:12px;color:#389e0d;margin-right:4px">当前状态：<b>待支付</b></span>
                     <button class="btn btn-primary btn-sm" @click="openFncSettleConfirm(fncDetailRecord)">已结算</button>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
-                    <button class="btn btn-default btn-sm" @click="showToast('正在准备打印（不含车辆明细与发票附件）…')">打印</button>
-                    <button class="btn btn-default btn-sm" @click="showToast('PDF生成中（不含发票图片）…')">导出 PDF</button>
+                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">打印</button>
+                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">导出 PDF</button>
                   </div>
                   <div v-if="fncDetailRecord.status==='fnc-settled'" style="margin-bottom:16px;flex-wrap:wrap;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#e6fffb;border:1px solid #87e8de;border-radius:4px">
                     <span style="font-size:12px;color:#08979c;flex:1">当前状态：<b>已结算</b></span>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-danger btn-sm" @click="showFncDeleteInvoice=true">删除发票</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
-                    <button class="btn btn-default btn-sm" @click="showToast('正在准备打印（不含车辆明细与发票附件）…')">打印</button>
-                    <button class="btn btn-default btn-sm" @click="showToast('PDF生成中（不含发票图片）…')">导出 PDF</button>
+                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">打印</button>
+                    <button class="btn btn-default btn-sm" disabled style="opacity:.55;cursor:not-allowed" title="功能开发中">导出 PDF</button>
                   </div>
-                  <!-- 已驳回：驳回原因 + 修改重提 + 废弃 -->
+                  <!-- 已驳回：仅展示驳回原因，不再提供操作 -->
                   <div v-if="fncDetailRecord.status==='fnc-rejected'" style="margin-bottom:16px">
-                    <div class="alert alert-error" style="margin-bottom:10px"><b>驳回原因：</b>发票信息不完整，请补充后重新提交。<span style="margin-left:10px;font-size:11px;color:#999">— 王财务 · 2026-01-16 15:30</span></div>
-                    <div style="display:flex;gap:8px;align-items:center;padding:10px 14px;background:#fff2f0;border-radius:4px;border:1px solid #ffccc7">
-                      <span style="font-size:12px;color:#666;flex:1">FNC已驳回，请修改重提或废弃。</span>
-                      <button class="btn btn-primary btn-sm" @click="showToast('请在BMS侧修改后重新提交')">修改重提</button>
-                      <button class="btn btn-danger btn-sm" @click="showDiscardConfirm=true">废弃</button>
-                    </div>
+                    <div class="alert alert-error"><b>驳回原因：</b>发票信息不完整，请补充后重新提交。<span style="margin-left:10px;font-size:11px;color:#999">— 王财务 · 2026-01-16 15:30</span></div>
                   </div>
                   <!-- 基本信息 -->
                   <div class="section-title" style="margin-bottom:12px">基本信息</div>
@@ -2914,12 +2909,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、申请详情 — 操作项</div>
         <ul style="margin:0 0 8px 20px;padding:0;color:#555">
-          <li><b>待审批</b>：上传发票 / 审批通过 / 驳回 / 打印车辆明细 / 打印 / 导出 PDF。</li>
+          <li><b>待审批</b>：审批通过 / 驳回 / 上传发票 / 打印车辆明细 / 打印 / 导出 PDF。</li>
           <li><b>待支付</b>：已结算（含二次确认弹窗）/ 上传发票 / 打印车辆明细 / 打印 / 导出 PDF。</li>
           <li><b>已结算</b>：上传发票 / 删除发票（仅补充用，不会改变状态）/ 打印车辆明细 / 打印 / 导出 PDF。</li>
-          <li><b>已驳回</b>：仅查看，不可再操作。</li>
+          <li><b>已驳回</b>：仅展示驳回原因，<b>无任何操作项</b>。</li>
         </ul>
-        <div style="margin:0 0 12px 20px;font-size:12px;color:#888">说明：「打印车辆明细」仅打印车辆明细列表；「打印」打印申请详情中除车辆明细与发票附件外的全部内容；「导出 PDF」生成全范围的 PDF（含基本信息、付款/收款、审批流程、车辆明细、发票附件等所有模块）。</div>
+        <div style="margin:0 0 12px 20px;font-size:12px;color:#888">说明：「打印车辆明细」仅打印车辆明细列表；「打印」打印申请详情中除车辆明细与发票附件外的全部内容（<b style="color:#d46b08">本期开发中，按钮置灰不可点击</b>）；「导出 PDF」生成全范围的 PDF（含基本信息、付款/收款、审批流程、车辆明细、发票附件等所有模块；<b style="color:#d46b08">本期开发中，按钮置灰不可点击</b>）。</div>
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">四、点击「已结算」自动记录</div>
         <ul style="margin:0 0 6px 20px;padding:0;color:#555">
