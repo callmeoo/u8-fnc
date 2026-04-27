@@ -722,13 +722,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div v-if="reconcileStep===1">
                   <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.9;color:#555">
                     <div style="font-weight:600;color:#d46b08;margin-bottom:4px">使用说明</div>
-                    <div>① 上传合作商提供的外部「服务费/业务合作费」对账单 Excel/CSV，系统按 <b>VIN（或车牌）+ 金额</b> 与已自动生成的服务费记录匹配。</div>
-                    <div>② 完全匹配的记录将<b>自动勾选</b>；存在差异的记录会单独列出供人工确认。</div>
-                    <div>③ 仅作核对用途，不会修改系统已生成的金额；如需调整金额请走差异处理流程。</div>
+                    <div>① 上传合作商提供的外部「服务费/业务合作费」对账单 Excel/CSV，系统按 <b>车牌号 / VIN码</b> 与已自动生成的服务费记录匹配。</div>
+                    <div>② 完全匹配的记录将<b>自动勾选</b>；不匹配的记录会单独列出供人工核实。</div>
+                    <div>③ 仅核对车辆是否在结算范围内，不核对金额。结算金额以系统数据为准。</div>
                   </div>
                   <div class="alert alert-info" style="align-items:flex-start">
                     <div style="flex:1">
-                      <b>对账单字段：</b>VIN码 / 车牌号 / 实际结算金额(含税) / 月份（可选）
+                      <b>对账单字段：</b>车牌号 / VIN码 / 门店全称
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadReconcileTemplate">⬇ 下载对账单模板</button>
                   </div>
@@ -761,12 +761,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#52c41a">✓ 完全匹配（{{reconcileResult.matched.length}} 条 · 提交后自动勾选）</div>
                     <div class="table-wrap">
                       <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>系统金额</th><th>对账单金额</th></tr>
+                        <tr><th>车牌号</th><th>VIN码</th><th>门店</th><th>系统金额</th></tr>
                         <tr v-for="m in reconcileResult.matched" :key="m.plate">
                           <td><b>{{m.plate}}</b></td>
                           <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
+                          <td style="font-size:11px;color:#555">{{m.store||'—'}}</td>
                           <td class="amount">{{m.sysAmt}}</td>
-                          <td class="amount" style="color:#52c41a">{{m.billAmt}}</td>
                         </tr>
                         <tr v-if="reconcileResult.matched.length===0"><td colspan="4" style="text-align:center;color:#999;padding:14px">无</td></tr>
                       </table>
@@ -778,10 +778,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#cf1322">系统有 / 对账单无（{{reconcileResult.missingInBill.length}} 条 · 默认<b>不勾选</b>，建议本次不结算）</div>
                     <div class="table-wrap">
                       <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>系统金额</th><th>清分时间</th></tr>
+                        <tr><th>车牌号</th><th>VIN码</th><th>门店</th><th>系统金额</th><th>清分时间</th></tr>
                         <tr v-for="m in reconcileResult.missingInBill" :key="m.plate">
                           <td><b>{{m.plate}}</b></td>
                           <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
+                          <td style="font-size:11px;color:#555">{{m.store||'—'}}</td>
                           <td class="amount">{{m.sysAmt}}</td>
                           <td style="font-size:11px;color:#666">{{m.clearTime}}</td>
                         </tr>
@@ -794,11 +795,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#0958d9">对账单有 / 系统无（{{reconcileResult.missingInSystem.length}} 条 · 系统暂未生成对应清分记录，请核实）</div>
                     <div class="table-wrap">
                       <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>对账单金额</th></tr>
+                        <tr><th>车牌号</th><th>VIN码</th><th>门店</th></tr>
                         <tr v-for="m in reconcileResult.missingInSystem" :key="m.plate">
                           <td><b>{{m.plate}}</b></td>
                           <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
-                          <td class="amount" style="color:#0958d9">{{m.billAmt}}</td>
+                          <td style="font-size:11px;color:#555">{{m.store||'—'}}</td>
                         </tr>
                       </table>
                     </div>
@@ -2786,15 +2787,15 @@ new Vue({
       reconcileStep: 1,
       reconcileResult: {
         matched: [
-          {plate:'粤A·12345', vin:'LFV3A2BM2N3000001', sysAmt:'360.00', billAmt:'360.00'},
-          {plate:'粤B·67890', vin:'LFV3A2BM2N3000002', sysAmt:'360.00', billAmt:'360.00'},
-          {plate:'粤F·44444', vin:'LFV3A2BM2N3000006', sysAmt:'360.00', billAmt:'360.00'},
+          {plate:'粤A·12345', vin:'LFV3A2BM2N3000001', store:'广州番禺门店', sysAmt:'360.00'},
+          {plate:'粤B·67890', vin:'LFV3A2BM2N3000002', store:'广州番禺门店', sysAmt:'360.00'},
+          {plate:'粤F·44444', vin:'LFV3A2BM2N3000006', store:'广州天河门店', sysAmt:'360.00'},
         ],
         missingInBill: [
-          {plate:'粤G·55555', vin:'LFV3A2BM2N3000007', sysAmt:'420.00', clearTime:'2026-04-10'},
+          {plate:'粤G·55555', vin:'LFV3A2BM2N3000007', store:'广州天河门店', sysAmt:'420.00', clearTime:'2026-04-10'},
         ],
         missingInSystem: [
-          {plate:'粤J·88888', vin:'LFV3A2BM2N3009999', billAmt:'350.00'},
+          {plate:'粤J·88888', vin:'LFV3A2BM2N3009999', store:'广州越秀门店'},
         ],
       },
       showUploadInvoice: false,
@@ -3101,8 +3102,8 @@ new Vue({
     },
     downloadReconcileTemplate() {
       const BOM = '\ufeff'
-      const headers = ['VIN码', '车牌号', '实际结算金额(含税)', '月份(可选)']
-      const example = ['LFV3A2BM2N3000001', '粤A·12345', '360.00', '2026-04']
+      const headers = ['车牌号', 'VIN码', '门店全称']
+      const example = ['粤A·12345', 'LFV3A2BM2N3000001', '广州番禺门店']
       const csv = [headers, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
