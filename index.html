@@ -1421,6 +1421,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="filter-item"><label>制单日期</label><input class="inp" type="date" placeholder="开始日期" style="width:120px"><span>—</span><input class="inp" type="date" placeholder="结束日期" style="width:120px"></div>
                   <div class="filter-item"><label>摘要</label><input class="inp" placeholder="请输入" style="width:140px"></div>
                   <span style="flex:1"></span>
+                  <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="showVoucherRule=true">功能说明</button>
                   <button class="btn btn-primary btn-sm">查询</button>
                   <button class="btn btn-default btn-sm" @click="showVoucherGroupNew=true">新增</button>
                   <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="voucherNewStep=1">新增(成本)</button>
@@ -2732,6 +2733,61 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
   </div>
 </div><!-- /lightbox-mask -->
 
+<!-- 凭证管理 — 新增(成本) 功能说明 (global) -->
+<div class="modal-mask" v-if="showVoucherRule" @click.self="showVoucherRule=false">
+  <div class="modal" style="max-width:880px">
+    <div class="modal-header"><span class="modal-title">凭证管理 — 功能说明</span><span class="modal-close" @click="showVoucherRule=false">✕</span></div>
+    <div class="modal-body">
+      <div style="font-size:13px;line-height:1.9;color:#333">
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、「新增(成本)」入口说明</div>
+        <ul style="margin:0 0 12px 20px;padding:0;color:#555">
+          <li>数据源：仅展示<b>已结算 + 未推送凭证</b>的批量结算申请单。</li>
+          <li>每次只能<b>单选</b>一笔申请单生成凭证；多笔需分别处理。</li>
+          <li>Step2 分录预览中允许调整<b>进项税率</b>和<b>总进项税额</b>；调整后系统自动按比例分摊到每台车（详见 Step2 弹窗中的「进项税额功能说明」）。</li>
+          <li>「确认创建凭证」后，凭证状态进入<span class="tag tag-blue" style="font-size:11px">待开具</span>，由系统推送 U8；推送成功凭证号自动回写。</li>
+        </ul>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">二、不同费用项对应的科目映射</div>
+        <div class="table-wrap" style="margin-bottom:12px">
+          <table style="font-size:12px">
+            <thead>
+              <tr style="background:#fafafa">
+                <th>U8费用项</th><th>BMS费用项</th><th>科目编码</th><th>辅助项目名称</th><th>辅助项目编码</th><th>辅助信息名称</th><th>辅助信息</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>服务商服务费</td><td><span class="tag tag-blue" style="font-size:11px">服务费</span></td><td>64010102</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌</td></tr>
+              <tr><td>代办过户费</td><td><span class="tag tag-green" style="font-size:11px">过户费</span></td><td>64010103</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌</td></tr>
+              <tr><td>牌证费及邮递</td><td><span class="tag tag-orange" style="font-size:11px">整理费</span></td><td>64011209</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
+              <tr style="background:#fffbe6"><td>进项税额</td><td>—</td><td>2221010101</td><td colspan="4" style="color:#999">汇总一行，按总进项税额计入</td></tr>
+              <tr style="background:#fff0f6"><td>银行存款</td><td>—</td><td>10020101</td><td colspan="4" style="color:#999">贷方汇总，按申请单含税合计</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、辅助维度差异</div>
+        <ul style="margin:0 0 12px 20px;padding:0;color:#555">
+          <li><b>服务费 / 过户费</b>：以「项目」为辅助维度，<b>按车牌</b>逐行展开（一辆车 = 一条借方分录）。</li>
+          <li><b>整理费</b>：以「部门」为辅助维度，<b>按 U8 部门</b>聚合（一个部门 = 一条借方分录），数据来自后台「部门编码映射」。</li>
+        </ul>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">四、凭证状态流转</div>
+        <ul style="margin:0 0 6px 20px;padding:0;color:#555">
+          <li><span class="tag tag-blue" style="font-size:11px">待开具</span> → 系统自动推送 U8</li>
+          <li><span class="tag tag-blue" style="font-size:11px">开具中</span> → U8 处理中</li>
+          <li><span class="tag tag-green" style="font-size:11px">已开具</span> → U8 凭证号回写完成</li>
+          <li><span class="tag tag-red" style="font-size:11px">开具失败</span> → 查看失败原因，可手动回填或删除重新生成</li>
+          <li><span class="tag tag-gray" style="font-size:11px">已删除</span> → 凭证已作废，可在该 tab 中查阅历史</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" @click="showVoucherRule=false">我知道了</button>
+    </div>
+  </div>
+</div>
+
 <!-- BMS 批量结算功能说明 (global) -->
 <div class="modal-mask" v-if="showBmsRule" @click.self="showBmsRule=false">
   <div class="modal" style="max-width:720px">
@@ -2959,6 +3015,7 @@ new Vue({
       showDeptMapRule: false,
       showTaxRule: false,
       showBmsRule: false,
+      showVoucherRule: false,
       // FNC settle
       fncStatusTab: 'all',
       fncStatusTabs: [
