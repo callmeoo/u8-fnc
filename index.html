@@ -1471,14 +1471,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
               <!-- 部门编码映射 tab -->
               <div v-if="voucherTab==='mapping'">
-                <div class="alert alert-info" style="margin-top:12px"> <b>方案二：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</div>
-                <div class="filter-bar">
+                <div class="filter-bar" style="margin-top:12px">
                   <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
                   <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
                   <div class="filter-item"><label>状态</label><select class="sel"><option>全部</option><option>启用</option><option>停用</option></select></div>
                   <span style="flex:1"></span>
                   <button class="btn btn-primary btn-sm">查询</button>
-                  <button class="btn btn-primary btn-sm" @click="deptMappingDialog=true">新增</button>
+                  <button class="btn btn-primary btn-sm" @click="openDeptMapping()">新增</button>
                 </div>
                 <div class="table-wrap">
                   <table>
@@ -1489,7 +1488,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <td style="color:#999">{{d.remark||'—'}}</td>
                       <td><span class="tag" :class="d.active?'tag-green':'tag-gray'">{{d.active?'启用':'停用'}}</span></td>
                       <td style="color:#999">{{d.updatedAt}}</td>
-                      <td><button class="btn-link">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''">{{d.active?'停用':'启用'}}</button></td>
+                      <td><button class="btn-link" @click="openDeptMapping(d)">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''" @click="toggleDeptActive(d)">{{d.active?'停用':'启用'}}</button></td>
                     </tr>
                   </table>
                 </div>
@@ -1896,10 +1895,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div class="card">
             <div class="card-header">
               <span class="card-title">FNC后台 — 基础配置 / U8部门编码维护</span>
-              <button class="btn btn-primary" @click="deptMappingDialog=true">＋ 新增</button>
+              <button class="btn btn-primary" @click="openDeptMapping()">＋ 新增</button>
             </div>
             <div class="card-body">
-              <div class="alert alert-info"><span><b>说明：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</span></div>
               <div class="filter-bar">
                 <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
                 <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
@@ -1914,7 +1912,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <td style="color:#999">{{d.remark||'—'}}</td>
                   <td><span class="tag" :class="d.active?'tag-green':'tag-gray'">{{d.active?'启用':'停用'}}</span></td>
                   <td style="color:#999">{{d.updatedAt}}</td>
-                  <td><button class="btn-link">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''">{{d.active?'停用':'启用'}}</button></td>
+                  <td><button class="btn-link" @click="openDeptMapping(d)">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''" @click="toggleDeptActive(d)">{{d.active?'停用':'启用'}}</button></td>
                 </tr>
               </table>
             </div>
@@ -1922,19 +1920,19 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <!-- Mapping dialog -->
           <div class="modal-mask" v-if="deptMappingDialog" @click.self="deptMappingDialog=false">
             <div class="modal" style="max-width:480px">
-              <div class="modal-header"><span class="modal-title">新增 / 编辑U8部门</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
+              <div class="modal-header"><span class="modal-title">{{deptMappingEditing?'编辑U8部门':'新增U8部门'}}</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
               <div class="modal-body">
                 <div class="form-row">
-                  <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402"></div></div>
-                  <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）"></div></div>
+                  <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402" v-model="deptForm.code"></div></div>
+                  <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）" v-model="deptForm.name"></div></div>
                 </div>
                 <div class="form-row">
-                  <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填"></div></div>
+                  <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填" v-model="deptForm.remark"></div></div>
                 </div>
               </div>
               <div class="modal-footer">
                 <button class="btn btn-default" @click="deptMappingDialog=false">取消</button>
-                <button class="btn btn-primary" @click="deptMappingDialog=false">保存</button>
+                <button class="btn btn-primary" @click="saveDeptMapping()">保存</button>
               </div>
             </div>
           </div>
@@ -2798,6 +2796,8 @@ new Vue({
       showReturnVoucher: false,
       showBackfill: false,
       deptMappingDialog: false,
+      deptMappingEditing: null,
+      deptForm: { code:'', name:'', remark:'' },
       // FNC settle
       fncStatusTab: 'all',
       fncStatusTabs: [
@@ -3142,6 +3142,48 @@ new Vue({
       this.showFncSettleConfirm2 = false
       this.fncCurrentRecord = null
       this.showToast('已结算确认成功，状态已更新为「已结算」')
+    },
+    openDeptMapping(dept) {
+      if (dept) {
+        this.deptMappingEditing = dept
+        this.deptForm = { code: dept.code, name: dept.name, remark: dept.remark || '' }
+      } else {
+        this.deptMappingEditing = null
+        this.deptForm = { code:'', name:'', remark:'' }
+      }
+      this.deptMappingDialog = true
+    },
+    saveDeptMapping() {
+      const f = this.deptForm
+      if (!f.code || !f.name) {
+        this.showToast('请填写部门编码和名称')
+        return
+      }
+      const today = new Date()
+      const pad = n => String(n).padStart(2,'0')
+      const ts = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
+      if (this.deptMappingEditing) {
+        this.deptMappingEditing.code = f.code
+        this.deptMappingEditing.name = f.name
+        this.deptMappingEditing.remark = f.remark
+        this.deptMappingEditing.updatedAt = ts
+        this.showToast('修改成功')
+      } else {
+        if (this.deptMappingData.find(d => d.code === f.code)) {
+          this.showToast('该部门编码已存在')
+          return
+        }
+        this.deptMappingData.push({ code:f.code, name:f.name, remark:f.remark, active:true, updatedAt:ts })
+        this.showToast('新增成功')
+      }
+      this.deptMappingDialog = false
+    },
+    toggleDeptActive(d) {
+      d.active = !d.active
+      const today = new Date()
+      const pad = n => String(n).padStart(2,'0')
+      d.updatedAt = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
+      this.showToast(d.active ? '已启用' : '已停用')
     },
     openReconcile() {
       this.reconcileStep = 1
