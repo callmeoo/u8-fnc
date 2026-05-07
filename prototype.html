@@ -443,7 +443,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               </div>
               <div style="margin-top:16px;display:flex;gap:8px">
                 <button class="btn btn-primary" @click="submitApproval">提交审批</button>
-                <button class="btn btn-default" @click="saveDraft">保存草稿</button>
                 <button class="btn btn-default" @click="bmsView='list'">继续添加车辆</button>
               </div>
             </div>
@@ -527,17 +526,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
                     </select>
                   </div>
-                  <div class="filter-item">
+                  <div class="filter-item" v-if="bmsStatusTab==='draft'">
                     <label>集团</label>
                     <input class="inp" style="width:110px" placeholder="搜索集团..." list="bms-group-list" v-model="bmsFilter.group">
                     <datalist id="bms-group-list"><option>广州区域</option><option>深圳区域</option><option>佛山区域</option></datalist>
                   </div>
-                  <div class="filter-item">
+                  <div class="filter-item" v-if="bmsStatusTab==='draft'">
                     <label>门店</label>
                     <input class="inp" style="width:120px" placeholder="搜索门店..." list="bms-store-list" v-model="bmsFilter.store">
                     <datalist id="bms-store-list"><option>广州番禺门店</option><option>广州天河门店</option><option>广州越秀门店</option><option>广州花都门店</option></datalist>
                   </div>
-                  <div class="filter-item">
+                  <div class="filter-item" v-if="bmsStatusTab==='draft'">
                     <label>服务中心</label>
                     <input class="inp" style="width:130px" placeholder="搜索服务中心..." list="bms-sc-list" v-model="bmsFilter.serviceCenter">
                     <datalist id="bms-sc-list"><option>广州番禺服务中心</option><option>广州天河服务中心</option><option>广州越秀服务中心</option><option>广州花都服务中心</option></datalist>
@@ -597,7 +596,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th>U8部门名称</th><th>费用类型</th><th>标题</th><th>结算说明</th><th>明细数</th><th>集团</th><th>门店名称</th><th>服务中心</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
+                        <th>U8部门名称</th><th>费用类型</th><th>标题</th><th>结算说明</th><th>明细数</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
                       </tr>
                       <template v-for="r in filteredBmsList" :key="r.id">
                         <tr>
@@ -606,9 +605,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td style="max-width:140px;white-space:normal">{{r.title}}</td>
                           <td style="max-width:160px;white-space:normal;font-size:11px;color:#555">{{r.settleDesc||'—'}}</td>
                           <td style="text-align:center">{{r.count||'—'}}</td>
-                          <td style="font-size:11px;color:#555">{{r.group||'—'}}</td>
-                          <td style="font-size:11px;color:#555">{{r.storeName||'—'}}</td>
-                          <td style="font-size:11px;color:#555">{{r.serviceCenter||'—'}}</td>
                           <td>
                             <span v-if="r.approvalStatus" class="tag" :class="r.approvalTagClass">{{r.approvalStatus}}</span>
                             <span v-else style="color:#999">—</span>
@@ -625,7 +621,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           </td>
                         </tr>
                         <tr v-if="r.status==='rejected' && r.rejectReason" class="reject-reason-row">
-                          <td colspan="13">
+                          <td colspan="10">
                             <span style="color:#999;margin-right:6px">驳回原因：</span>
                             <span class="reject-reason-cell">{{r.rejectReason}}</span>
                             <span style="color:#999;margin-left:12px;font-size:11px">— {{r.rejectBy}} · {{r.rejectTime}}</span>
@@ -633,7 +629,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         </tr>
                       </template>
                       <tr v-if="filteredBmsList.length===0">
-                        <td colspan="13" style="text-align:center;color:#999;padding:30px">暂无数据</td>
+                        <td colspan="10" style="text-align:center;color:#999;padding:30px">暂无数据</td>
                       </tr>
 
                     </table>
