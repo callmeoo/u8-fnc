@@ -1844,15 +1844,29 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div class="card" style="margin-bottom:12px">
             <div class="card-header"><span class="card-title">需求点1：付款审批配置</span></div>
             <div class="card-body">
-              <div class="alert alert-info" style="margin-bottom:14px">💡 三种费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
-              <div style="display:flex;gap:40px;padding:8px 0">
+              <div class="alert alert-info" style="margin-bottom:14px">审批流共5级，层级结构相同；区域经理、区域总监因费用类型不同而分别指定人员（见下方两列）。</div>
+              <div style="display:flex;gap:32px;padding:8px 0;align-items:flex-start">
+                <!-- 服务费（业务合作费） -->
                 <div style="flex:1">
-                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费、过户费、整理费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
+                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费（业务合作费）&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
                   <div class="approval-flow">
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">申请人</div><div class="flow-role">BMS侧发起申请</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理</div><div class="flow-role">第1级审批</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理：黄帆</div><div class="flow-role">第1级审批</div></div></div>
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务人员（麦经理）</div><div class="flow-role">第2级审批</div></div></div>
-                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域总监</div><div class="flow-role">第3级审批</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域总监：陈晓瑾</div><div class="flow-role">第3级审批</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务负责人</div><div class="flow-role">第4级审批</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">总经理</div><div class="flow-role">第5级审批</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div></div><div class="flow-content"><div class="flow-name">进入「待支付」</div><div class="flow-role">等待FNC财务付款</div></div></div>
+                  </div>
+                </div>
+                <!-- 过户费、整理费 -->
+                <div style="flex:1">
+                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>过户费（代办过户费）、整理费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
+                  <div class="approval-flow">
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">申请人</div><div class="flow-role">BMS侧发起申请</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理：张伟林</div><div class="flow-role">第1级审批（马宜颖产假期间代理）</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务人员（麦经理）</div><div class="flow-role">第2级审批</div></div></div>
+                    <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域总监：惠钦</div><div class="flow-role">第3级审批</div></div></div>
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">财务负责人</div><div class="flow-role">第4级审批</div></div></div>
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">总经理</div><div class="flow-role">第5级审批</div></div></div>
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div></div><div class="flow-content"><div class="flow-name">进入「待支付」</div><div class="flow-role">等待FNC财务付款</div></div></div>
@@ -2189,7 +2203,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="section-title" style="margin-bottom:10px">整体流程（改造后）</div>
                 <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:6px;padding:14px 18px;font-size:12px;line-height:2.6;color:#333;margin-bottom:16px">
                   <div><span style="display:inline-block;width:22px;text-align:center;color:#1890ff;font-weight:700">①</span><b>BMS业务员</b>：选明细 → 填申请表单（标题 / 结算说明 / 付款信息 / 发票）→ 提交审批</div>
-                  <div><span style="display:inline-block;width:22px;text-align:center;color:#1890ff;font-weight:700">②</span><b>5级审批流</b>：区域经理 → 财务（麦经理）→ 区域总监 → 财务负责人 → 总经理；全部通过后进入 FNC 待审批</div>
+                  <div><span style="display:inline-block;width:22px;text-align:center;color:#1890ff;font-weight:700">②</span><b>5级审批流</b>：区域经理 → 财务（麦经理）→ 区域总监 → 财务负责人 → 总经理；全部通过后进入 FNC 待审批。区域经理/区域总监按费用类型指定人员：服务费为黄帆/陈晓瑾，过户费&整理费为张伟林/惠钦</div>
                   <div><span style="display:inline-block;width:22px;text-align:center;color:#fa8c16;font-weight:700">③</span><b>FNC 批量结算 — 待审批</b>：5级审批通过后自动流转；<b>财务角色</b>可在 FNC 系统直接审批；<b>非财务角色</b>需通过企微 H5 审批流审批</div>
                   <div><span style="display:inline-block;width:22px;text-align:center;color:#fa8c16;font-weight:700">④</span><b>FNC 财务审批通过</b>：在"待审批"Tab 点击审批通过 → 申请进入 <span class="tag tag-green" style="font-size:11px">待支付</span></div>
                   <div><span style="display:inline-block;width:22px;text-align:center;color:#fa8c16;font-weight:700">⑤</span><b>FNC 财务发起支付</b>：完成打款，申请状态变 <span class="tag tag-cyan" style="font-size:11px">已结算</span>，系统自动记录结算年月和操作人</div>
@@ -2414,16 +2428,62 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div v-if="prdTab==='approval'">
                 <div class="alert alert-info" style="margin-bottom:14px">📌 本次将OA付款审批流整体迁移至BMS；审批人可通过 <b>PC端（FNC）</b> 或 <b>H5端（企业微信）</b> 处理待办。</div>
 
-                <div class="section-title" style="margin-bottom:12px">5.1 审批流配置（5级，三种费用类型共用）</div>
+                <div class="section-title" style="margin-bottom:12px">5.1 审批流配置（5级，层级结构相同，区域经理/区域总监按费用类型分别配置）</div>
+
+                <!-- 审批人员对照表 -->
+                <table style="width:100%;font-size:12px;border-collapse:collapse;margin-bottom:14px">
+                  <tr style="background:#f5f7fa">
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">审批层级</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">角色</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">服务费（业务合作费）</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">过户费（代办过户费）、整理费</th>
+                    <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">审批入口</th>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">第1级</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">区域经理</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">黄帆</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">张伟林（马宜颖产假期间代理；后续人资确认后可换回马宜颖）</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">企业微信</td>
+                  </tr>
+                  <tr style="background:#fafafa">
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">第2级</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">财务人员（麦经理）</td>
+                    <td colspan="2" style="padding:8px 12px;border:1px solid #e8e8e8;color:#888">两种费用类型相同</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">FNC / 企微</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">第3级</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">区域总监</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">陈晓瑾</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">惠钦</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">企业微信</td>
+                  </tr>
+                  <tr style="background:#fafafa">
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">第4级</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">财务负责人</td>
+                    <td colspan="2" style="padding:8px 12px;border:1px solid #e8e8e8;color:#888">两种费用类型相同</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">企业微信</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">第5级</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">总经理</td>
+                    <td colspan="2" style="padding:8px 12px;border:1px solid #e8e8e8;color:#888">两种费用类型相同</td>
+                    <td style="padding:8px 12px;border:1px solid #e8e8e8">企业微信</td>
+                  </tr>
+                </table>
+
+                <!-- 审批流示意图（以过户费/整理费为例，服务费同层级，仅人员不同） -->
+                <div style="font-size:11px;color:#999;margin-bottom:8px">层级示意（区域经理、区域总监处填写对应费用类型的指定人员）：</div>
                 <div style="overflow-x:auto;margin-bottom:16px">
                   <div style="display:flex;gap:0;align-items:stretch;min-width:620px">
                     <div style="flex:1;text-align:center;padding:10px 6px;background:#1890ff;color:#fff;border-radius:6px 0 0 6px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">申请人<br><span style="font-size:10px;font-weight:400;opacity:.8">发起申请</span></div>
                     <div style="width:24px;background:#e6f4ff;display:flex;align-items:center;justify-content:center;color:#1890ff;font-size:14px">→</div>
-                    <div style="flex:1;text-align:center;padding:10px 6px;background:#fff;border:1px solid #d9d9d9;font-size:12px;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-weight:600">区域经理</div><div style="font-size:10px;color:#999;margin-top:2px">第1级</div><div style="font-size:10px;color:#1890ff;margin-top:1px">企业微信</div></div>
+                    <div style="flex:1;text-align:center;padding:10px 6px;background:#fff;border:1px solid #d9d9d9;font-size:12px;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-weight:600">区域经理</div><div style="font-size:10px;color:#1890ff;margin-top:1px">见上表</div><div style="font-size:10px;color:#999;margin-top:1px">第1级 · 企业微信</div></div>
                     <div style="width:24px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px">→</div>
                     <div style="flex:1;text-align:center;padding:10px 6px;background:#fff;border:1px solid #d9d9d9;font-size:12px;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-weight:600">财务（麦经理）</div><div style="font-size:10px;color:#999;margin-top:2px">第2级</div><div style="font-size:10px;color:#52c41a;margin-top:1px">FNC / 企微</div></div>
                     <div style="width:24px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px">→</div>
-                    <div style="flex:1;text-align:center;padding:10px 6px;background:#fff;border:1px solid #d9d9d9;font-size:12px;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-weight:600">区域总监</div><div style="font-size:10px;color:#999;margin-top:2px">第3级</div><div style="font-size:10px;color:#1890ff;margin-top:1px">企业微信</div></div>
+                    <div style="flex:1;text-align:center;padding:10px 6px;background:#fff;border:1px solid #d9d9d9;font-size:12px;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-weight:600">区域总监</div><div style="font-size:10px;color:#1890ff;margin-top:1px">见上表</div><div style="font-size:10px;color:#999;margin-top:1px">第3级 · 企业微信</div></div>
                     <div style="width:24px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px">→</div>
                     <div style="flex:1;text-align:center;padding:10px 6px;background:#fff;border:1px solid #d9d9d9;font-size:12px;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-weight:600">财务负责人</div><div style="font-size:10px;color:#999;margin-top:2px">第4级</div><div style="font-size:10px;color:#1890ff;margin-top:1px">企业微信</div></div>
                     <div style="width:24px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px">→</div>
