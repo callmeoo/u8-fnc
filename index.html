@@ -705,9 +705,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       </tr>
                       <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td>广州区域</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td></tr>
                       <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td>广州区域</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td></tr>
-                      <tr><td>—</td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td>—</td><td>—</td><td>广州天河服务中心</td><td><span class="tag tag-orange">过户费</span></td><td class="amount">700.00</td></tr>
+                      <tr><td>—</td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td></td><td></td><td>广州天河服务中心</td><td><span class="tag tag-orange">过户费</span></td><td class="amount">700.00</td></tr>
                       <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td>广州区域</td><td>天河门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td></tr>
-                      <tr><td><b>粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td>广州区域</td><td>番禺门店</td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
+                      <tr><td>—</td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
                     </table>
                   </div>
                   <div class="alert alert-success" style="margin-top:12px">校验通过，无重复记录（查重维度：VIN码+费用类型；必填项校验：VIN码/费用类型/金额；服务费需含车牌+集团+门店；过户费/整理费需含服务中心）</div>
@@ -2846,8 +2846,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               </tr>
             </thead>
             <tbody>
-              <tr><td>服务费</td><td><span class="tag tag-blue" style="font-size:11px">服务费</span></td><td>64010102</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌</td></tr>
-              <tr><td>过户费</td><td><span class="tag tag-green" style="font-size:11px">过户费</span></td><td>64010103</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌</td></tr>
+              <tr><td>服务费</td><td><span class="tag tag-blue" style="font-size:11px">服务费</span></td><td>64010102</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌号（必有）</td></tr>
+              <tr><td>过户费</td><td><span class="tag tag-green" style="font-size:11px">过户费</span></td><td>64010103</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌号优先；无车牌号时回退为 VIN码</td></tr>
               <tr><td>整理费</td><td><span class="tag tag-orange" style="font-size:11px">整理费</span></td><td>64011209</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
               <tr style="background:#fffbe6"><td>进项税额</td><td>—</td><td>2221010101</td><td colspan="4" style="color:#999">汇总一行，按总进项税额计入</td></tr>
               <tr style="background:#fff0f6"><td>银行存款</td><td>—</td><td>10020101</td><td>现金流量项目</td><td>0007</td><td>购买商品、接受劳务支付的现金</td><td>04</td></tr>
@@ -2859,6 +2859,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <ul style="margin:0 0 12px 20px;padding:0;color:#555">
           <li><b>服务费 / 过户费</b>：以「项目」为辅助维度，<b>按车牌</b>逐行展开（一辆车 = 一条借方分录）。</li>
           <li><b>整理费</b>：以「部门」为辅助维度，<b>按 U8 部门</b>聚合（一个部门 = 一条借方分录），数据来自后台「部门编码映射」。</li>
+          <li><b>辅助信息回退规则（"辅助信息=车牌" 的科目）</b>：服务费车牌号已强制必填，始终推送车牌号；<b>过户费</b>车牌号非必填（仅服务中心必填），<b>若该明细未填车牌号，辅助信息自动回退为 VIN码 推送至 U8 自定义项1</b>。</li>
         </ul>
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">四、凭证状态流转</div>
@@ -3434,7 +3435,7 @@ new Vue({
           subjectCode:'64010103', auxName:'项目', auxCode:'0010', auxInfoLabel:'车牌',
           rows:[
             {desc:'付4月，过户费，好快帮（广州）科技有限公司（粤D·22222）', auxInfo:'粤D·22222', debit:'377.36', credit:''},
-            {desc:'付4月，过户费，好快帮（广州）科技有限公司（粤E·33333）', auxInfo:'粤E·33333', debit:'377.36', credit:''},
+            {desc:'付4月，过户费，好快帮（广州）科技有限公司（LFV3A2BM2N3xxxxx3）', auxInfo:'LFV3A2BM2N3xxxxx3', debit:'377.36', credit:''},
           ],
           taxAmt:'45.28', creditAmt:'800.00', payee:'好快帮（广州）科技有限公司',
         },
