@@ -1885,17 +1885,27 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="card-header"><span class="card-title">付款审批流配置</span></div>
             <div class="card-body">
               <div class="alert alert-info" style="margin-bottom:14px">三种 U8 费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
-              <div style="border:1px solid #d9d9d9;border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:12px;line-height:2">
-                <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:0;border-bottom:1px solid #f0f0f0;padding-bottom:6px;margin-bottom:6px;font-weight:600;color:#555">
-                  <span>审批节点</span><span>服务费</span><span>过户费 / 整理费-牌证及邮递费</span>
-                </div>
-                <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:0;padding:2px 0">
-                  <span style="color:#888">区域经理</span><span>黄帆</span><span>张伟林<span style="color:#888;font-size:11px">（正式为马宜颖，当前产假中，人资暂定张伟林）</span></span>
-                </div>
-                <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:0;padding:2px 0">
-                  <span style="color:#888">区域总监</span><span>陈晓瑾</span><span>惠钦</span>
-                </div>
-              </div>
+              <table style="width:100%;border-collapse:collapse;margin-bottom:14px;font-size:12px">
+                <thead>
+                  <tr style="background:#fafafa">
+                    <th style="border:1px solid #e8e8e8;padding:7px 10px;font-weight:600;color:#555;text-align:left">审批节点</th>
+                    <th style="border:1px solid #e8e8e8;padding:7px 10px;font-weight:600;color:#555;text-align:left">服务费</th>
+                    <th style="border:1px solid #e8e8e8;padding:7px 10px;font-weight:600;color:#555;text-align:left">过户费 / 整理费-牌证及邮递费</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border:1px solid #e8e8e8;padding:7px 10px;color:#888">区域经理（第1级）</td>
+                    <td style="border:1px solid #e8e8e8;padding:7px 10px">黄帆</td>
+                    <td style="border:1px solid #e8e8e8;padding:7px 10px">张伟林<span style="color:#999;font-size:11px;margin-left:4px">（正式为马宜颖，当前产假中，人资暂定张伟林）</span></td>
+                  </tr>
+                  <tr>
+                    <td style="border:1px solid #e8e8e8;padding:7px 10px;color:#888">区域总监（第3级）</td>
+                    <td style="border:1px solid #e8e8e8;padding:7px 10px">陈晓瑾</td>
+                    <td style="border:1px solid #e8e8e8;padding:7px 10px">惠钦</td>
+                  </tr>
+                </tbody>
+              </table>
               <div style="display:flex;gap:40px;padding:8px 0">
                 <div style="flex:1">
                   <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费、过户费、整理费-牌证及邮递费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
