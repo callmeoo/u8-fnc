@@ -283,7 +283,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <datalist id="feeType-list">
                       <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
                     </datalist>
-                    <div class="form-note" style="color:#cf1322">固定场地费选择「整理费-合作服务费」；服务费返佣选择「服务费」</div>
+                    <div class="form-note" style="color:#cf1322">服务费返佣选择「服务费」</div>
                   </div>
                 </div>
                 <div class="form-item">
@@ -682,7 +682,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <div style="margin-top:8px;font-size:12px;line-height:1.9;color:#555">
                         <div style="font-weight:600;color:#333;margin-bottom:2px">费用类型说明：</div>
                         <div><b style="color:#52c41a">整理费-牌证及邮递费</b>：牌证办理及邮寄产生的费用，需人工导入。</div>
-                        <div style="color:#999;font-size:11px">服务费和过户费由系统自动生成，无需导入；整理费-合作服务费通过申请单提交。</div>
+                        <div style="color:#999;font-size:11px">服务费和过户费由系统自动生成，无需导入。</div>
                       </div>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
@@ -1599,7 +1599,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <!-- 演示用：费用类型切换器（mock：3 种费用对应不同科目编码 / 辅助项目） -->
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 14px;background:#f0f7ff;border:1px solid #91d5ff;border-radius:4px;flex-wrap:wrap">
                   <span style="font-size:12px;color:#0050b3">演示模式 · 切换费用类型查看不同分录：</span>
-                  <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费','整理费-合作服务费']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
+                  <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
                   <span style="flex:1"></span>
                   <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="showTaxRule=true">进项税额功能说明</button>
                 </div>
@@ -1785,7 +1785,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span style="font-weight:500;color:#555">王财务</span>
                       <span style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;padding:2px 8px;border-left:1px dashed #d9d9d9">
                         <span style="font-size:11px;font-weight:400;color:#888">演示模式：</span>
-                        <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费','整理费-合作服务费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" style="padding:2px 8px;font-size:11px;font-weight:400" @click="voucherDetailFeeType=ft">{{ft}}</button>
+                        <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" style="padding:2px 8px;font-size:11px;font-weight:400" @click="voucherDetailFeeType=ft">{{ft}}</button>
                       </span>
                     </span>
                     <button class="btn btn-danger btn-sm" @click="showReturnVoucher=true">删除凭证</button>
@@ -2026,10 +2026,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div v-if="approvalSidebarTab==='config'" class="card" style="border-radius:0 4px 4px 4px">
             <div class="card-header"><span class="card-title">付款审批流配置</span></div>
             <div class="card-body">
-              <div class="alert alert-info" style="margin-bottom:14px">四种 U8 费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
+              <div class="alert alert-info" style="margin-bottom:14px">三种 U8 费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
               <div style="display:flex;gap:40px;padding:8px 0">
                 <div style="flex:1">
-                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费、过户费、整理费-牌证及邮递费、整理费-合作服务费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
+                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费、过户费、整理费-牌证及邮递费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
                   <div class="approval-flow">
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">申请人</div><div class="flow-role">BMS侧发起申请</div></div></div>
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理</div><div class="flow-role">第1级审批</div></div></div>
@@ -2525,7 +2525,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <table style="width:100%;font-size:12px;border-collapse:collapse">
                   <tr style="background:#f5f7fa"><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">字段</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:60px">必填</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">标题</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">申请单名称</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">费用类型</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">服务费 / 过户费 / 整理费-牌证及邮递费 / 整理费-合作服务费；同一申请选定一种 U8 费用类型</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">费用类型</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">服务费 / 过户费 / 整理费-牌证及邮递费；同一申请选定一种 U8 费用类型</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">结算年月</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">用于结算说明自动生成</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">结算说明</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">系统预填：付X月，[费用类型]，[收款方名称]；可手动修改</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">付款方</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">唯普汽车 / 唯普云（下拉）；选择后关联银行账户自动带出</td></tr>
@@ -2632,7 +2632,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                 <div class="section-title" style="margin-bottom:12px">4.2 操作流程（两步骤）</div>
                 <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:6px;padding:14px 16px;margin-bottom:16px;font-size:12px;line-height:2.6">
-                  <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 1</span>选择 U8 费用类型（服务费 / 过户费 / 整理费-牌证及邮递费 / 整理费-合作服务费）+ 结算年月，勾选"已结算"申请</div>
+                  <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 1</span>选择 U8 费用类型（服务费 / 过户费 / 整理费-牌证及邮递费）+ 结算年月，勾选"已结算"申请</div>
                   <div style="margin-left:60px;font-size:11px;color:#999;margin-top:-6px">（含整理费类科目时，U8部门编码为必填下拉）</div>
                   <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 2</span>系统自动生成凭证分录预览（含进项税额 6%）→ 财务核查 → 确认 → 凭证创建（待开具）</div>
                   <div><span style="display:inline-block;width:60px;color:#52c41a;font-weight:700">开具</span>列表点击"开具" → 推送U8 → 凭证号回写FNC</div>
@@ -2650,7 +2650,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">服务费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">进项税额 = 含税金额 × 6 / 106；不含税金额 = 含税金额 − 税额</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">过户费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费-牌证及邮递费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费-合作服务费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
                 </table>
 
                 <div class="section-title" style="margin-bottom:10px">4.5 凭证管理列表字段</div>
@@ -2875,7 +2874,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <tr><td>服务费</td><td><span class="tag tag-blue" style="font-size:11px">服务费</span></td><td>64010102</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌号（必有）</td></tr>
               <tr><td>过户费</td><td><span class="tag tag-green" style="font-size:11px">过户费</span></td><td>64010103</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌号优先；无车牌号时回退为 VIN码</td></tr>
               <tr><td>整理费-牌证及邮递费</td><td><span class="tag tag-orange" style="font-size:11px">整理费-牌证及邮递费</span></td><td>64011209</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
-              <tr><td>整理费-合作服务费</td><td><span class="tag tag-orange" style="font-size:11px">整理费-合作服务费</span></td><td>64011212</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
               <tr style="background:#fffbe6"><td>进项税额</td><td>—</td><td>2221010101</td><td colspan="4" style="color:#999">汇总一行，按总进项税额计入</td></tr>
               <tr style="background:#fff0f6"><td>银行存款</td><td>—</td><td>10020101</td><td>现金流量项目</td><td>0007</td><td>购买商品、接受劳务支付的现金</td><td>04</td></tr>
             </tbody>
@@ -2971,11 +2969,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
     <div class="modal-body">
       <div style="font-size:13px;line-height:1.9;color:#333">
 
-        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、名词说明（4 类 U8 费用类型）</div>
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、名词说明（3 类 U8 费用类型）</div>
         <ul style="margin:0 0 14px 20px;padding:0;color:#555">
           <li><b style="color:#1890ff">服务费</b>（业务合作费）：用于合作返利，<b>由系统自动生成</b>。数据源：人资绩效表「业务合作费」。</li>
           <li><b style="color:#52c41a">整理费-牌证及邮递费</b>（科目 64011209）：牌证办理及邮寄费，费用基本由<b>服务中心</b>产生，需人工导入。</li>
-          <li><b style="color:#52c41a">整理费-合作服务费</b>（科目 64011212）：固定场地费等合作服务费用，通过申请单提交，无需导入。</li>
           <li><b style="color:#fa8c16">过户费</b>：代办过户费，费用基本由<b>服务中心</b>产生，<b>由系统自动生成</b>。</li>
         </ul>
 
@@ -2984,7 +2981,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li>服务费：订单清分完成后系统自动生成，落入「待提交」tab 列表，<b>无需人工导入</b>。</li>
           <li>过户费：一般是衍生订单内的代办过户费和发票代开及过户任务单中的其他机构过户费用结算；<b>无需人工导入</b>。</li>
           <li>整理费-牌证及邮递费：<b>需人工通过「导入结算明细」上传</b>到「待提交」tab；标准模板请在弹窗中下载。</li>
-          <li>整理费-合作服务费：勾选待提交明细后在申请表单中选择此 U8 费用类型提交，无需单独导入。</li>
           <li>对账核对：服务费支持上传合作商外部对账单，系统按车牌 / VIN 自动匹配并勾选完全一致项；不匹配项会单独列出供人工核实。</li>
         </ul>
 
@@ -3127,7 +3123,7 @@ new Vue({
       formPayer: 'weipu',
       formSummaryMonth: '4月',
       formFeeType: '服务费',
-      feeTypeOptions: ['服务费', '过户费', '整理费-牌证及邮递费', '整理费-合作服务费'],
+      feeTypeOptions: ['服务费', '过户费', '整理费-牌证及邮递费'],
       formBipDept: '',
       formPayee: '常有（天津）信息技术有限公司',
       formInvoiceType: '',
@@ -3389,7 +3385,7 @@ new Vue({
       return d ? d.name : ''
     },
     step2SubjectCode() {
-      const map = { '服务费':'64010102', '过户费':'64010103', '整理费-牌证及邮递费':'64011209', '整理费-合作服务费':'64011212' }
+      const map = { '服务费':'64010102', '过户费':'64010103', '整理费-牌证及邮递费':'64011209' }
       return map[this.step2FeeType] || '64010102'
     },
     step2RateNum() {
@@ -3479,14 +3475,6 @@ new Vue({
             {desc:'付4月，整理费-牌证及邮递费，常有（天津）信息技术有限公司（越秀车管）', auxInfo:'越秀车管', auxInfoExt:'7402', debit:'471.70', credit:''},
           ],
           taxAmt:'56.60', creditAmt:'1,000.00', payee:'常有（天津）信息技术有限公司',
-        },
-        '整理费-合作服务费': {
-          subjectCode:'64011212', auxName:'部门', auxCode:'0001', auxInfoLabel:'U8部门名称',
-          rows:[
-            {desc:'付4月，整理费-合作服务费，好快帮（广州）科技有限公司（广州天河服务中心）', auxInfo:'广州天河服务中心', auxInfoExt:'7401', debit:'530.66', credit:''},
-            {desc:'付4月，整理费-合作服务费，好快帮（广州）科技有限公司（广州番禺服务中心）', auxInfo:'广州番禺服务中心', auxInfoExt:'7402', debit:'530.66', credit:''},
-          ],
-          taxAmt:'63.68', creditAmt:'1,125.00', payee:'好快帮（广州）科技有限公司',
         },
       }
       return base[ft] || base['服务费']
