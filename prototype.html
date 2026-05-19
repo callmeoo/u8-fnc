@@ -1397,7 +1397,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-header"><span class="modal-title">新增凭证(成本) — 第1步：选择批量结算记录</span><span class="modal-close" @click="voucherNewStep=0">✕</span></div>
               <div class="modal-body">
                 <div class="filter-bar">
-                  <div class="filter-item"><label>费用类型</label><select class="sel" style="width:130px"><option>全部</option><option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option></select></div>
+                  <div class="filter-item"><label>U8费用类型</label><select class="sel" style="width:130px"><option>全部</option><option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option></select></div>
                   <div class="filter-item">
                     <label>BIP部门名称</label>
                     <select class="sel" style="width:140px" v-model="step1Dept">
