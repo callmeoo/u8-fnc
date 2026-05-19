@@ -2327,7 +2327,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="stab" :class="{active:prdTab==='origin'}"  @click="prdTab='origin'">① 原始需求</span>
                 <span class="stab" :class="{active:prdTab==='bg'}"      @click="prdTab='bg'">② 现状痛点和改造目标</span>
                 <span class="stab" :class="{active:prdTab==='points'}"  @click="prdTab='points'">③ 需求要点罗列</span>
-                <span class="stab" :class="{active:prdTab==='pending'}" @click="prdTab='pending'" style="color:#d46b08">④ 待定</span>
+                <span class="stab" :class="{active:prdTab==='pending'}" @click="prdTab='pending'">④ U8部门初始化数据</span>
               </div>
 
               <!-- ① 原始需求（附件原文） -->
@@ -2707,26 +2707,55 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
               </div>
 
-              <!-- ④ 待定 -->
+              <!-- ④ U8部门初始化数据 -->
               <div v-if="prdTab==='pending'">
-                <div style="padding:16px 20px;background:#fff7e6;border:1px solid #ffd591;border-radius:6px;font-size:12px;line-height:2.2;margin-bottom:16px">
-                  <div style="font-weight:600;color:#d46b08;font-size:13px;margin-bottom:8px">待业务方提供初始化的部门编码映射表</div>
-                  <div style="color:#555;margin-bottom:10px">
-                    <b>数据来源已确认</b>：所有 U8部门名称下拉选项（BMS列表筛选、BMS申请表单、FNC列表筛选、FNC凭证新增）统一从后台配置 &gt; <b>部门编码映射</b>中读取，仅显示已启用的部门。<br>
-                    <b>待补充</b>：当前映射表中仅有部分示例数据，<b>业务方尚未提供完整的BIP部门编码与U8部门名称对照表</b>。<br>在业务方补充完整数据前，原型中部门选项为示例，实际数据以业务方最终确认的映射表为准。
-                  </div>
-                  <div style="background:#fff;border:1px solid #ffe58f;border-radius:4px;padding:10px 14px;font-size:11px;color:#666">
-                    <b>影响范围：</b><br>
-                    · BMS 列表 &gt; U8部门名称筛选下拉<br>
-                    · BMS 申请表单 &gt; U8部门名称输入（datalist）<br>
-                    · FNC 列表 &gt; U8部门名称筛选下拉<br>
-                    · FNC 凭证管理 &gt; 新增(成本) &gt; Step 1 整理费类科目 U8部门编码下拉<br>
-                    · 后台配置 &gt; 部门编码映射 表中的数据是否完整<br>
-                    <b>负责人：</b>业务方（待提供）
-                  </div>
+                <div style="font-size:12px;color:#555;margin-bottom:12px">以下为 U8 部门初始化数据（来源：《U8部门初始化数据》，共 38 条），已同步至原型各模块部门下拉选项。</div>
+                <div class="table-wrap">
+                  <table style="font-size:12px">
+                    <tr style="background:#f5f7fa"><th style="padding:7px 16px;text-align:left;border:1px solid #e8e8e8;width:100px">部门编码</th><th style="padding:7px 16px;text-align:left;border:1px solid #e8e8e8">部门名称</th></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">01</td><td style="padding:6px 16px;border:1px solid #f0f0f0">财务部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">02</td><td style="padding:6px 16px;border:1px solid #f0f0f0">综合部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">04</td><td style="padding:6px 16px;border:1px solid #f0f0f0">人力资源部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">14</td><td style="padding:6px 16px;border:1px solid #f0f0f0">销售部门</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">25</td><td style="padding:6px 16px;border:1px solid #f0f0f0">审计部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">64</td><td style="padding:6px 16px;border:1px solid #f0f0f0">经营发展部-中控中心</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">65</td><td style="padding:6px 16px;border:1px solid #f0f0f0">平台产品部（产品分析组）</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">68</td><td style="padding:6px 16px;border:1px solid #f0f0f0">平台产品部（用户运营组）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7401</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（广州）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7402</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（武汉）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7403</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（长沙）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7404</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（成都）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7405</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（深圳）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7406</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（东莞）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7407</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（中山）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7409</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（太原）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7410</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（南宁）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7411</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部 广西-南宁</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7412</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（佛山）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7413</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（惠州）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7414</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（本部）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7415</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（北京）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7416</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（贵阳）</td></tr>
+                    <tr style="background:#f0f7ff"><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">7417</td><td style="padding:6px 16px;border:1px solid #f0f0f0">车源生态事业部（海口）</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">75</td><td style="padding:6px 16px;border:1px solid #f0f0f0">创新产品研发部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">76</td><td style="padding:6px 16px;border:1px solid #f0f0f0">平台研发部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">77</td><td style="padding:6px 16px;border:1px solid #f0f0f0">检测评估中心</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">78</td><td style="padding:6px 16px;border:1px solid #f0f0f0">平台产品部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">79</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—东莞服务</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">80</td><td style="padding:6px 16px;border:1px solid #f0f0f0">国际事业部-国际事业部-本部</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">82</td><td style="padding:6px 16px;border:1px solid #f0f0f0">经营发展部-经营发展部（本部）</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">85</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—东涌便民</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">86</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—佛山服务</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">87</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—黄阁便民</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">88</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—白云服务</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">89</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—南沙服务</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">90</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—深圳服务</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">91</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—惠州服务</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">92</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心—长沙服务</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">93</td><td style="padding:6px 16px;border:1px solid #f0f0f0">国际事业部-国际事业部-政企</td></tr>
+                    <tr><td style="padding:6px 16px;border:1px solid #f0f0f0;font-family:monospace">96</td><td style="padding:6px 16px;border:1px solid #f0f0f0">商户运营中心-商户运营中心-本部</td></tr>
+                  </table>
                 </div>
-
-                <div style="font-size:11px;color:#aaa">确认后请更新至各模块需求文档，并同步研发同学。</div>
               </div>
 
             </div>
@@ -3345,40 +3374,47 @@ new Vue({
         {plate:'粤J·77777', withTax:360},
       ],
       deptMappingData: [
-        {code:'01',  name:'财务部',                          remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'64',  name:'经营发展部-中控中心',              remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'65',  name:'平台产品部（产品分析组）',         remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'66',  name:'总经办',                          remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'67',  name:'产品运营部-产品运营部（核身项目组）',remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'68',  name:'平台产品部（用户运营组）',         remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'69',  name:'交易中心（销售）',                 remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'70',  name:'交易中心（广州）',                 remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'71',  name:'交易中心（出口）',                 remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'73',  name:'车源生态事业部（政企）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7401',name:'车源生态事业部（广州）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7402',name:'车源生态事业部（武汉）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7403',name:'车源生态事业部（长沙）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7404',name:'车源生态事业部（成都）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7405',name:'车源生态事业部（深圳）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7406',name:'车源生态事业部（东莞）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7407',name:'车源生态事业部（中山）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7409',name:'车源生态事业部（太原）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7410',name:'车源生态事业部（南宁）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7411',name:'车源生态事业部 广西-南宁',         remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7412',name:'车源生态事业部（佛山）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7413',name:'车源生态事业部（惠州）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7414',name:'车源生态事业部（本部）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7415',name:'车源生态事业部（北京）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7416',name:'车源生态事业部（贵阳）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'7417',name:'车源生态事业部（海口）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'75',  name:'创新产品研发部',                   remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'76',  name:'平台研发部',                       remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'77',  name:'检测评估中心',                     remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'78',  name:'平台产品部',                       remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'79',  name:'商户运营中心-商户运营中心—东莞服务',remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'82',  name:'经营发展部-经营发展部（本部）',     remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'83',  name:'服务中心—便民站（东涌）',           remark:'',active:true,updatedAt:'2026-04-10'},
-        {code:'84',  name:'服务中心—便民站（黄阁）',           remark:'',active:true,updatedAt:'2026-04-10'},
+        {code:'01',  name:'财务部',                                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'02',  name:'综合部',                                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'04',  name:'人力资源部',                                remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'14',  name:'销售部门',                                  remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'25',  name:'审计部',                                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'64',  name:'经营发展部-中控中心',                       remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'65',  name:'平台产品部（产品分析组）',                  remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'68',  name:'平台产品部（用户运营组）',                  remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7401',name:'车源生态事业部（广州）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7402',name:'车源生态事业部（武汉）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7403',name:'车源生态事业部（长沙）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7404',name:'车源生态事业部（成都）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7405',name:'车源生态事业部（深圳）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7406',name:'车源生态事业部（东莞）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7407',name:'车源生态事业部（中山）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7409',name:'车源生态事业部（太原）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7410',name:'车源生态事业部（南宁）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7411',name:'车源生态事业部 广西-南宁',                  remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7412',name:'车源生态事业部（佛山）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7413',name:'车源生态事业部（惠州）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7414',name:'车源生态事业部（本部）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7415',name:'车源生态事业部（北京）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7416',name:'车源生态事业部（贵阳）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'7417',name:'车源生态事业部（海口）',                    remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'75',  name:'创新产品研发部',                            remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'76',  name:'平台研发部',                                remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'77',  name:'检测评估中心',                              remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'78',  name:'平台产品部',                                remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'79',  name:'商户运营中心-商户运营中心—东莞服务',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'80',  name:'国际事业部-国际事业部-本部',                remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'82',  name:'经营发展部-经营发展部（本部）',             remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'85',  name:'商户运营中心-商户运营中心—东涌便民',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'86',  name:'商户运营中心-商户运营中心—佛山服务',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'87',  name:'商户运营中心-商户运营中心—黄阁便民',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'88',  name:'商户运营中心-商户运营中心—白云服务',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'89',  name:'商户运营中心-商户运营中心—南沙服务',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'90',  name:'商户运营中心-商户运营中心—深圳服务',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'91',  name:'商户运营中心-商户运营中心—惠州服务',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'92',  name:'商户运营中心-商户运营中心—长沙服务',        remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'93',  name:'国际事业部-国际事业部-政企',                remark:'',active:true,updatedAt:'2026-05-19'},
+        {code:'96',  name:'商户运营中心-商户运营中心-本部',            remark:'',active:true,updatedAt:'2026-05-19'},
       ],
       // FNC Voucher
       voucherNewStep: 0,
