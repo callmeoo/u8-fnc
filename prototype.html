@@ -1897,7 +1897,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <tr>
                     <td style="border:1px solid #e8e8e8;padding:7px 10px;color:#888">区域经理（第1级）</td>
                     <td style="border:1px solid #e8e8e8;padding:7px 10px">黄帆</td>
-                    <td style="border:1px solid #e8e8e8;padding:7px 10px">张伟林<span style="color:#999;font-size:11px;margin-left:4px">（正式为马宜颖，当前产假中，人资暂定张伟林）</span></td>
+                    <td style="border:1px solid #e8e8e8;padding:7px 10px">
+                      <span v-if="!leaveSubRemoved" style="display:inline-flex;align-items:center;gap:6px">
+                        <span>张伟林</span>
+                        <span style="display:inline-flex;align-items:center;gap:3px;background:#fff7e6;border:1px solid #ffd591;color:#d46b08;font-size:11px;padding:0 5px;border-radius:3px;line-height:18px">产假中</span>
+                        <button @click="leaveSubRemoved=true" style="border:none;background:none;cursor:pointer;color:#bbb;font-size:13px;line-height:1;padding:0 2px" title="删除代理人">✕</button>
+                      </span>
+                      <span v-else style="display:inline-flex;align-items:center;gap:6px;color:#bbb;font-size:12px">
+                        <span style="color:#555">马宜颖</span>
+                        <span style="display:inline-flex;align-items:center;gap:3px;background:#f6ffed;border:1px solid #b7eb8f;color:#52c41a;font-size:11px;padding:0 5px;border-radius:3px;line-height:18px">已返岗</span>
+                      </span>
+                    </td>
                   </tr>
                   <tr>
                     <td style="border:1px solid #e8e8e8;padding:7px 10px;color:#888">区域总监（第3级）</td>
@@ -2933,6 +2943,7 @@ new Vue({
         {id:'V2025080',period:'2025-8',summary:'付8月服务费，好快帮（广州）科技有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2025-08-20',user:'王财务',debit:'2,600.00',credit:'2,600.00',statusKey:'deleted',status:'已删除',tagClass:'tag-gray',fromBatch:true},
       ],
       // Approval
+      leaveSubRemoved: false,
       approvalSidebarTab: 'desc',
       approvalDetailVisible: false,
       approvalFeeTab: 'service',
