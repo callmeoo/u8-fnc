@@ -2971,7 +2971,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">一、名词说明（3 类 U8 费用类型）</div>
         <ul style="margin:0 0 14px 20px;padding:0;color:#555">
-          <li><b style="color:#1890ff">服务费</b>（业务合作费）：用于合作返利，<b>由系统自动生成</b>。数据源：人资绩效表「业务合作费」。</li>
+          <li><b style="color:#1890ff">服务费</b>（业务合作费）：用于合作返利，<b>由系统自动生成</b>。<span style="color:#cf1322">其中门店的固定场地费数据不需流入待提交tab中，门店全称桂林长久鑫广达二手车销售有限公司，车牌虚A000001和广西长久二手车销售有限公司的虚A000002，月度固定费用，不需要流入，财务说他们单独通过BIP系统申请结算。</span>数据源：人资绩效表「业务合作费」。</li>
           <li><b style="color:#52c41a">整理费-牌证及邮递费</b>（科目 64011209）：牌证办理及邮寄费，费用基本由<b>服务中心</b>产生，需人工导入。</li>
           <li><b style="color:#fa8c16">过户费</b>：代办过户费，费用基本由<b>服务中心</b>产生，<b>由系统自动生成</b>。</li>
         </ul>
@@ -2983,6 +2983,59 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li>整理费-牌证及邮递费：<b>需人工通过「导入结算明细」上传</b>到「待提交」tab；标准模板请在弹窗中下载。</li>
           <li>对账核对：服务费支持上传合作商外部对账单，系统按车牌 / VIN 自动匹配并勾选完全一致项；不匹配项会单独列出供人工核实。</li>
         </ul>
+
+        <!-- 数据来源示意 -->
+        <div style="margin-bottom:16px;border:1px solid #d9d9d9;border-radius:4px;overflow:hidden;font-size:11px">
+          <div style="background:#f0f5ff;padding:5px 12px;border-bottom:1px solid #d9d9d9;color:#0050b3;font-weight:600;font-size:11px">过户费数据来源示意</div>
+          <!-- 数据源1 -->
+          <div style="padding:10px 12px;border-bottom:1px solid #f0f0f0">
+            <div style="color:#cf1322;font-weight:600;margin-bottom:6px">数据源1：衍生服务订单（项目与服务商管理）</div>
+            <div style="background:#fafafa;border:1px solid #e8e8e8;border-radius:3px;padding:8px 10px">
+              <div style="font-size:10px;color:#666;margin-bottom:5px;font-weight:500">项目与服务商管理 &gt; 准菜员服务</div>
+              <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:6px">
+                <span style="background:#e6f7ff;color:#1890ff;border:1px solid #91d5ff;padding:1px 6px;border-radius:2px;font-size:10px">年检代办</span>
+                <span style="background:#e6f7ff;color:#1890ff;border:1px solid #91d5ff;padding:1px 6px;border-radius:2px;font-size:10px">过户代办</span>
+                <span style="background:#f5f5f5;color:#555;border:1px solid #d9d9d9;padding:1px 6px;border-radius:2px;font-size:10px">改装修复</span>
+                <span style="background:#f5f5f5;color:#555;border:1px solid #d9d9d9;padding:1px 6px;border-radius:2px;font-size:10px">物流收办</span>
+                <span style="background:#f5f5f5;color:#555;border:1px solid #d9d9d9;padding:1px 6px;border-radius:2px;font-size:10px">服务执行-过户</span>
+                <span style="background:#f5f5f5;color:#555;border:1px solid #d9d9d9;padding:1px 6px;border-radius:2px;font-size:10px">第三方发票代开</span>
+                <span style="color:#999;font-size:10px;line-height:20px">……</span>
+              </div>
+              <div style="font-size:10px;color:#666;margin-bottom:4px">服务合作商（示例）：</div>
+              <table style="width:100%;border-collapse:collapse;font-size:10px">
+                <tr style="background:#f0f0f0"><th style="padding:2px 6px;border:1px solid #e0e0e0;text-align:left">服务商名称</th><th style="padding:2px 6px;border:1px solid #e0e0e0">收费模式</th><th style="padding:2px 6px;border:1px solid #e0e0e0">成本活跃模式</th></tr>
+                <tr><td style="padding:2px 6px;border:1px solid #e8e8e8;color:#1890ff">广州生之家年检服务</td><td style="padding:2px 6px;border:1px solid #e8e8e8;text-align:center">固定收费0元</td><td style="padding:2px 6px;border:1px solid #e8e8e8">按每单报价400元</td></tr>
+                <tr><td style="padding:2px 6px;border:1px solid #e8e8e8;color:#1890ff">广州淘淘年检服务</td><td style="padding:2px 6px;border:1px solid #e8e8e8;text-align:center">固定收费0元</td><td style="padding:2px 6px;border:1px solid #e8e8e8">按每单报价398元</td></tr>
+              </table>
+            </div>
+          </div>
+          <!-- 数据源2 -->
+          <div style="padding:10px 12px">
+            <div style="color:#cf1322;font-weight:600;margin-bottom:6px">数据源2：过户任务单（服务中心 &gt; 过户服务 &gt; 过户任务）</div>
+            <div style="background:#fafafa;border:1px solid #e8e8e8;border-radius:3px;padding:8px 10px">
+              <div style="font-size:10px;color:#666;margin-bottom:4px;font-weight:500">过户任务 &gt; 入场资料 — 第三步：费用与服务</div>
+              <div style="font-size:10px;color:#555;margin-bottom:6px">车辆：粤QHD612 &nbsp;大众POLO 2014款 1.6L 自动舒适版</div>
+              <div style="font-weight:600;font-size:10px;color:#333;margin-bottom:4px">服务支出</div>
+              <table style="width:100%;border-collapse:collapse;font-size:10px">
+                <tr style="background:#f0f0f0">
+                  <th style="padding:3px 8px;border:1px solid #e0e0e0;text-align:left">费用类型</th>
+                  <th style="padding:3px 8px;border:1px solid #e0e0e0;text-align:left">结算机构</th>
+                  <th style="padding:3px 8px;border:1px solid #e0e0e0;text-align:center">费用金额</th>
+                  <th style="padding:3px 8px;border:1px solid #e0e0e0;text-align:left">记账类型</th>
+                  <th style="padding:3px 8px;border:1px solid #e0e0e0;text-align:left">费用产生时间</th>
+                </tr>
+                <tr>
+                  <td style="padding:3px 8px;border:1px solid #e8e8e8">过户代办费</td>
+                  <td style="padding:3px 8px;border:1px solid #e8e8e8">柠檬车服</td>
+                  <td style="padding:3px 8px;border:1px solid #e8e8e8;text-align:center">295</td>
+                  <td style="padding:3px 8px;border:1px solid #e8e8e8">挂账</td>
+                  <td style="padding:3px 8px;border:1px solid #e8e8e8;color:#999">2026-05-15 11:52:58</td>
+                </tr>
+              </table>
+              <div style="margin-top:4px;font-size:10px;color:#f5222d;font-weight:500">合计：295</div>
+            </div>
+          </div>
+        </div>
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、申请流程</div>
         <ol style="margin:0 0 14px 20px;padding:0;color:#555">
