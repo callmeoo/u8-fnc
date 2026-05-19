@@ -26,10 +26,13 @@
       "Bash(sed -i '' 's|// 手动导入（整理费）|// 手动导入（整理费-牌证及邮递费）|g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/prototype.html)",
       "Bash(sed -i '' 's/整理费 U8部门编码下拉/整理费类科目 U8部门编码下拉/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/prototype.html)",
       "Bash(sed -i '' 's/整理费，常有（天津）/整理费-牌证及邮递费，常有（天津）/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/prototype.html)",
-      "Bash(sed -i '' 's/可选值：服务费 \\\\/ 过户费 \\\\/ 整理费，必填/可选值：整理费-牌证及邮递费（服务费和过户费由系统自动生成），必填/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/prototype.html)"
+      "Bash(sed -i '' 's/可选值：服务费 \\\\/ 过户费 \\\\/ 整理费，必填/可选值：整理费-牌证及邮递费（服务费和过户费由系统自动生成），必填/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/prototype.html)",
+      "Bash(ls -la /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/.claude/hooks/ 2>/dev/null; echo \"---\"; ls -la /Users/yuanlijuan/.claude/hooks/ 2>/dev/null)",
+      "Read(//Users/yuanlijuan/.claude/**)"
     ],
     "additionalDirectories": [
-      "/Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证"
+      "/Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证",
+      "/Users/yuanlijuan/.claude"
     ]
   }
 }
