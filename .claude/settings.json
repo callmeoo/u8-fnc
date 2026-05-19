@@ -6,7 +6,11 @@
       "Bash(sed -i '' 's/<span class=\"tag tag-green\">整理费<\\\\/span>/<span class=\"tag tag-green\">整理费-牌证及邮递费<\\\\/span>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
       "Bash(sed -i '' 's/<span class=\"tag tag-orange\" style=\"font-size:11px\">整理费<\\\\/span>/<span class=\"tag tag-orange\" style=\"font-size:11px\">整理费-牌证及邮递费<\\\\/span>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
       "Bash(sed -i '' 's/整理费需通过「导入结算明细」上传/整理费-牌证及邮递费需通过「导入结算明细」上传/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
-      "Bash(sed -i '' 's/导入模板仅适用于<b>整理费<\\\\/b>/导入模板仅适用于<b>整理费-牌证及邮递费<\\\\/b>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)"
+      "Bash(sed -i '' 's/导入模板仅适用于<b>整理费<\\\\/b>/导入模板仅适用于<b>整理费-牌证及邮递费<\\\\/b>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
+      "Bash(sed -i '' 's/三种费用类型共用/四种 U8 费用类型共用/g; s/三种费用类型对应/四种 U8 费用类型对应/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
+      "Bash(sed -i '' 's/服务费、过户费、整理费\\\\&nbsp;/服务费、过户费、整理费-牌证及邮递费、整理费-合作服务费\\\\&nbsp;/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
+      "Bash(sed -i '' 's/服务费 \\\\/ 过户费 \\\\/ 整理费；同一申请只能一种/服务费 \\\\/ 过户费 \\\\/ 整理费-牌证及邮递费 \\\\/ 整理费-合作服务费；同一申请选定一种 U8 费用类型/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
+      "Bash(sed -i '' 's/选择费用类型（服务费 \\\\/ 过户费 \\\\/ 整理费）/选择 U8 费用类型（服务费 \\\\/ 过户费 \\\\/ 整理费-牌证及邮递费 \\\\/ 整理费-合作服务费）/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)"
     ],
     "additionalDirectories": [
       "/Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证"
