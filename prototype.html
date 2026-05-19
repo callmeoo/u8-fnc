@@ -2190,7 +2190,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="stab" :class="{active:prdTab==='origin'}"  @click="prdTab='origin'">① 原始需求</span>
                 <span class="stab" :class="{active:prdTab==='bg'}"      @click="prdTab='bg'">② 现状痛点和改造目标</span>
                 <span class="stab" :class="{active:prdTab==='points'}"  @click="prdTab='points'">③ 需求要点罗列</span>
-                <span class="stab" :class="{active:prdTab==='pending'}" @click="prdTab='pending'" style="color:#d46b08">④ 待定</span>
+                <span class="stab" :class="{active:prdTab==='pending'}" @click="prdTab='pending'">④ U8部门初始化数据</span>
+                <span class="stab" :class="{active:prdTab==='changes'}" @click="prdTab='changes'" style="color:#d46b08">⑤ 需求变动点说明</span>
               </div>
 
               <!-- ① 原始需求（附件原文） -->
@@ -2589,6 +2590,55 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
 
                 <div style="font-size:11px;color:#aaa">确认后请更新至各模块需求文档，并同步研发同学。</div>
+              </div>
+
+              <!-- ⑤ 需求变动点说明 -->
+              <div v-if="prdTab==='changes'">
+                <div style="font-weight:600;font-size:13px;color:#333;margin-bottom:14px;border-bottom:1px solid #f0f0f0;padding-bottom:8px">2026.5.19 更新内容</div>
+
+                <!-- 1. 审批流 -->
+                <div style="margin-bottom:20px">
+                  <div style="font-weight:600;font-size:13px;color:#1890ff;margin-bottom:10px">1. 审批流</div>
+                  <div style="margin-bottom:8px;font-size:13px"><b>1.1 新增审批人说明</b></div>
+                  <div style="font-size:12px;color:#555;line-height:1.9;margin-bottom:12px">在审批流配置中新增审批人角色说明，明确各节点审批人的职责范围。</div>
+
+                  <div style="margin-bottom:8px;font-size:13px"><b>1.2 增加差异项</b></div>
+                  <div style="font-size:12px;color:#555;line-height:1.9;margin-bottom:6px">差异项分为两类：</div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+                    <div>① <b>系统无</b>：人工手动导入数据，系统内无此数据</div>
+                    <div>② <b>曾已结算</b>：这台车曾经结算过</div>
+                  </div>
+                </div>
+
+                <!-- 2. BMS 批量结算 -->
+                <div style="margin-bottom:20px">
+                  <div style="font-weight:600;font-size:13px;color:#1890ff;margin-bottom:10px">2. BMS 批量结算</div>
+
+                  <div style="margin-bottom:8px;font-size:13px"><b>2.1 导入结算明细</b></div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px;margin-bottom:10px">
+                    <div>· 必填项：车牌 + VIN + U8费用项</div>
+                    <div>· 重复项唯一标识：车牌 + VIN + U8费用项</div>
+                    <div>· "下载模板"有更新</div>
+                  </div>
+
+                  <div style="margin-bottom:8px;font-size:13px"><b>2.2 查询项和展示项</b></div>
+                  <div style="font-size:12px;color:#555;line-height:1.9;padding-left:16px;margin-bottom:10px">原"费用类型"改为"U8费用类型"</div>
+
+                  <div style="margin-bottom:8px;font-size:13px"><b>2.3 待提交 tab</b></div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px;margin-bottom:4px">
+                    <div>① 新增费用类型查询项和展示项</div>
+                    <div>② <b>服务费（业务合作费）</b>：将门店固定场地费的此类删除，不流入</div>
+                    <div>③ 补充数据流入源：衍生服务订单（项目与服务商管理）和原有的过户单的第三方机构结算单</div>
+                  </div>
+                </div>
+
+                <!-- 3. U8 费用项名称改名 -->
+                <div style="margin-bottom:20px">
+                  <div style="font-weight:600;font-size:13px;color:#1890ff;margin-bottom:10px">3. U8 费用项名称改名</div>
+                  <div style="font-size:12px;color:#555;line-height:1.9;padding-left:16px">
+                    <div>整理费改名为 <b>"整理费-牌证及邮递费"</b>，凭证推送内容不变</div>
+                  </div>
+                </div>
               </div>
 
             </div>
