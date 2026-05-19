@@ -4,7 +4,9 @@
       "Bash(sed -i '' \"s/feeType:'整理费'/feeType:'整理费-牌证及邮递费'/g\" /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
       "Bash(sed -i '' 's/如「整理费」等需手动/如「整理费-牌证及邮递费」等需手动/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
       "Bash(sed -i '' 's/<span class=\"tag tag-green\">整理费<\\\\/span>/<span class=\"tag tag-green\">整理费-牌证及邮递费<\\\\/span>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
-      "Bash(sed -i '' 's/<span class=\"tag tag-orange\" style=\"font-size:11px\">整理费<\\\\/span>/<span class=\"tag tag-orange\" style=\"font-size:11px\">整理费-牌证及邮递费<\\\\/span>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)"
+      "Bash(sed -i '' 's/<span class=\"tag tag-orange\" style=\"font-size:11px\">整理费<\\\\/span>/<span class=\"tag tag-orange\" style=\"font-size:11px\">整理费-牌证及邮递费<\\\\/span>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
+      "Bash(sed -i '' 's/整理费需通过「导入结算明细」上传/整理费-牌证及邮递费需通过「导入结算明细」上传/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)",
+      "Bash(sed -i '' 's/导入模板仅适用于<b>整理费<\\\\/b>/导入模板仅适用于<b>整理费-牌证及邮递费<\\\\/b>/g' /Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证/index.html)"
     ],
     "additionalDirectories": [
       "/Users/yuanlijuan/Desktop/AI应用/碎片化需求/财务批量结算和U8凭证"

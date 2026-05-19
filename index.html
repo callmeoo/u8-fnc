@@ -682,8 +682,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       </div>
                       <div style="margin-top:8px;font-size:12px;line-height:1.9;color:#555">
                         <div style="font-weight:600;color:#333;margin-bottom:2px">费用类型说明：</div>
-                        <div><b style="color:#52c41a">整理费</b>：牌证整理过程中产生的费用，需人工导入。</div>
-                        <div style="color:#999;font-size:11px">服务费和过户费由系统自动生成，无需导入。</div>
+                        <div><b style="color:#52c41a">整理费-牌证及邮递费</b>：牌证办理及邮寄产生的费用，需人工导入。</div>
+                        <div style="color:#999;font-size:11px">服务费和过户费由系统自动生成，无需导入；整理费-合作服务费通过申请单提交。</div>
                       </div>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
@@ -849,7 +849,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:13px;color:#333">
                   <li>以下为待结算的车辆明细，点击勾选后，需点击右上角「马上结算」以进行填写申请表单。</li>
                   <li>勾选时，所选车辆须属于<b>同一服务中心</b>或<b>同一集团</b>；可跨费用类型勾选，提交时统一选择 <b>U8 费用类型</b>进行申请。</li>
-                  <li>服务费（业务合作费）和过户费由系统自动生成，无需人工导入；整理费需通过「导入结算明细」上传。</li>
+                  <li>服务费（业务合作费）和过户费由系统自动生成，无需人工导入；整理费-牌证及邮递费需通过「导入结算明细」上传。</li>
                 </ol>
               </div>
               <div class="modal-footer">
@@ -3032,7 +3032,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <ul style="margin:0 0 6px 20px;padding:0;color:#555">
           <li>所有「U8部门名称」下拉数据来自后台「部门编码映射」，仅展示已启用部门。</li>
           <li>导入查重维度：<b>车牌 + VIN码 + 费用项</b>；存在重复时高亮标记，确认导入后可在待提交列表手动移除多余项。</li>
-          <li>导入模板仅适用于<b>整理费</b>；服务费和过户费由系统自动生成，无需导入。必填字段：车牌号 / VIN码 / 费用类型 / 实际结算金额(含税)。</li>
+          <li>导入模板仅适用于<b>整理费-牌证及邮递费</b>；服务费和过户费由系统自动生成，无需导入。必填字段：车牌号 / VIN码 / 费用类型 / 实际结算金额(含税)。</li>
           <li>申请提交后底层明细被锁定，废弃 / 驳回后会自动释放，可重新勾选申请。</li>
         </ul>
       </div>
@@ -3857,7 +3857,7 @@ new Vue({
         '建议填写，便于归账核对',
         '建议填写，便于归账核对',
       ]
-      const exampleArrange  = ['粤B·67890','LFV3A2BM2N3xxxxx2','整理费','500.00','','','广州番禺服务中心']
+      const exampleArrange  = ['粤B·67890','LFV3A2BM2N3xxxxx2','整理费-牌证及邮递费','500.00','','','广州番禺服务中心']
       const csv = [headers, note, exampleArrange].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
