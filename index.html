@@ -283,7 +283,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <datalist id="feeType-list">
                       <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
                     </datalist>
-                    <div class="form-note">可跨业务费用类型勾选，统一指定一个 U8 费用类型开具凭证</div>
+                    <div class="form-note" style="color:#cf1322">固定场地费选择「整理费-合作服务费」；服务费返佣选择「服务费」</div>
                   </div>
                 </div>
                 <div class="form-item">
@@ -662,7 +662,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;color:#d46b08;margin-bottom:4px">导入说明</div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">①</span>
-                      <span>适用于系统内<b>未自动创建</b>的订单，如「整理费」等需手动录入的费用。</span>
+                      <span>适用于系统内<b>未自动创建</b>的订单，如「整理费-牌证及邮递费」等需手动录入的费用。</span>
                     </div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">②</span>
@@ -706,8 +706,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td></tr>
                       <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td></tr>
                       <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td>汽贸集团</td><td>天河门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td></tr>
-                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
-                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b> <span style="font-size:10px;background:#fff7e6;color:#d46b08;border:1px solid #ffd591;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
+                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td></tr>
+                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b> <span style="font-size:10px;background:#fff7e6;color:#d46b08;border:1px solid #ffd591;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td></tr>
                     </table>
                   </div>
                   <div class="alert alert-error" style="margin-top:12px">发现 <b>1 条重复记录</b>（查重维度：车牌+VIN码+费用项），已高亮标出，请确认后保留其中一条：<span style="margin-left:8px;color:#555">可在下方确认导入后，进入待提交列表手动移除多余项。</span></div>
@@ -1560,11 +1560,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <td>好快帮（广州）科技有限公司</td>
                       <td class="amount">3,800.00</td><td>9</td><td>2026-01-17</td>
                     </tr>
-                    <tr @click="step2FeeType='整理费';step2Payee='常有（天津）信息技术有限公司';voucherDeptCode='7403'" style="cursor:pointer">
+                    <tr @click="step2FeeType='整理费-牌证及邮递费';step2Payee='常有（天津）信息技术有限公司';voucherDeptCode='7403'" style="cursor:pointer">
                       <td class="check-col"><input type="radio" name="batchStep1"></td>
                       <td style="max-width:160px;white-space:normal">2026年1月整理费结算申请</td>
                       <td>{{deptNameByCode('7403')}}</td>
-                      <td><span class="tag tag-orange" style="font-size:11px">整理费</span></td>
+                      <td><span class="tag tag-orange" style="font-size:11px">整理费-牌证及邮递费</span></td>
                       <td>常有（天津）信息技术有限公司</td>
                       <td class="amount">1,800.00</td><td>4</td><td>2026-01-17</td>
                     </tr>
@@ -1600,7 +1600,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <!-- 演示用：费用类型切换器（mock：3 种费用对应不同科目编码 / 辅助项目） -->
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 14px;background:#f0f7ff;border:1px solid #91d5ff;border-radius:4px;flex-wrap:wrap">
                   <span style="font-size:12px;color:#0050b3">演示模式 · 切换费用类型查看不同分录：</span>
-                  <button v-for="ft in ['服务费','过户费','整理费']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
+                  <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费','整理费-合作服务费']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
                   <span style="flex:1"></span>
                   <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="showTaxRule=true">进项税额功能说明</button>
                 </div>
@@ -1786,7 +1786,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span style="font-weight:500;color:#555">王财务</span>
                       <span style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;padding:2px 8px;border-left:1px dashed #d9d9d9">
                         <span style="font-size:11px;font-weight:400;color:#888">演示模式：</span>
-                        <button v-for="ft in ['服务费','过户费','整理费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" style="padding:2px 8px;font-size:11px;font-weight:400" @click="voucherDetailFeeType=ft">{{ft}}</button>
+                        <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费','整理费-合作服务费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" style="padding:2px 8px;font-size:11px;font-weight:400" @click="voucherDetailFeeType=ft">{{ft}}</button>
                       </span>
                     </span>
                     <button class="btn btn-danger btn-sm" @click="showReturnVoucher=true">删除凭证</button>
@@ -1828,8 +1828,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td style="text-align:right">{{row.debit}}</td><td style="color:#bbb">—</td>
                           <td>{{voucherDetailScenario.auxName}}</td>
                           <td>{{voucherDetailScenario.auxCode}}</td>
-                          <td>{{voucherDetailFeeType==='整理费' ? voucherDetailScenario.auxInfoLabel : row.auxInfo}}</td>
-                          <td>{{voucherDetailFeeType==='整理费' ? (row.auxInfoExt||row.auxInfo) : row.auxInfo}}</td>
+                          <td>{{voucherDetailFeeType.startsWith('整理费') ? voucherDetailScenario.auxInfoLabel : row.auxInfo}}</td>
+                          <td>{{voucherDetailFeeType.startsWith('整理费') ? (row.auxInfoExt||row.auxInfo) : row.auxInfo}}</td>
                           <td></td><td></td>
                           <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
@@ -2874,7 +2874,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <tbody>
               <tr><td>服务费</td><td><span class="tag tag-blue" style="font-size:11px">服务费</span></td><td>64010102</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌号（必有）</td></tr>
               <tr><td>过户费</td><td><span class="tag tag-green" style="font-size:11px">过户费</span></td><td>64010103</td><td>项目</td><td>0010</td><td>车牌</td><td>车牌号优先；无车牌号时回退为 VIN码</td></tr>
-              <tr><td>整理费</td><td><span class="tag tag-orange" style="font-size:11px">整理费</span></td><td>64011209</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
+              <tr><td>整理费-牌证及邮递费</td><td><span class="tag tag-orange" style="font-size:11px">整理费-牌证及邮递费</span></td><td>64011209</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
+              <tr><td>整理费-合作服务费</td><td><span class="tag tag-orange" style="font-size:11px">整理费-合作服务费</span></td><td>64011212</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
               <tr style="background:#fffbe6"><td>进项税额</td><td>—</td><td>2221010101</td><td colspan="4" style="color:#999">汇总一行，按总进项税额计入</td></tr>
               <tr style="background:#fff0f6"><td>银行存款</td><td>—</td><td>10020101</td><td>现金流量项目</td><td>0007</td><td>购买商品、接受劳务支付的现金</td><td>04</td></tr>
             </tbody>
@@ -3124,7 +3125,7 @@ new Vue({
       formPayer: 'weipu',
       formSummaryMonth: '4月',
       formFeeType: '服务费',
-      feeTypeOptions: ['服务费', '过户费', '整理费'],
+      feeTypeOptions: ['服务费', '过户费', '整理费-牌证及邮递费', '整理费-合作服务费'],
       formBipDept: '',
       formPayee: '常有（天津）信息技术有限公司',
       formInvoiceType: '',
@@ -3154,8 +3155,8 @@ new Vue({
       // 待提交：车辆级别数据（独立于申请单列表）
       bmsVehicleData: [
         // 手动导入（整理费）
-        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',bizFeeType:'维修费',feeType:'整理费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
-        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',bizFeeType:'维修费',feeType:'整理费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
+        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
+        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
         // 系统自动添加（代办过户费，衍生订单）
         {clearTime:'2026-04-06',plate:'粤K·00001',vin:'LFV3A2BM2N3000010',bizFeeType:'代办过户费',feeType:'过户费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'750.00'},
         {clearTime:'2026-04-07',plate:'粤K·00002',vin:'LFV3A2BM2N3000011',bizFeeType:'发票代开',feeType:'过户费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'680.00'},
@@ -3174,19 +3175,19 @@ new Vue({
         // 待审批
         {id:'BS202601001',title:'2026年1月服务费结算申请',org:'车源生态事业部（广州）',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15 23:45',settleDesc:'付1月，服务费，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批',settledPlates:['粤A·12345','粤C·11111'],remark:'粤C·11111 曾于上月已结算（BS202512001），本次申请为补充结算，已与财务确认可再次提交。'},
         {id:'BS202512003',title:'2025年12月过户费结算申请',org:'车源生态事业部（武汉）',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'过户费',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10 18:10',settleDesc:'付12月，过户费，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
-        {id:'BS202601007',title:'2026年1月整理费结算申请',org:'车源生态事业部（长沙）',serviceCenter:'广州花都服务中心',group:'广州区域',feeType:'整理费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:2,amount:'400.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'王芳',time:'2026-01-18 02:06',settleDesc:'付1月，整理费，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
+        {id:'BS202601007',title:'2026年1月整理费结算申请',org:'车源生态事业部（长沙）',serviceCenter:'广州花都服务中心',group:'广州区域',feeType:'整理费-牌证及邮递费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:2,amount:'400.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'王芳',time:'2026-01-18 02:06',settleDesc:'付1月，整理费-牌证及邮递费，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
         // 待支付
         {id:'BS202601002',title:'2026年1月服务费结算申请',org:'交易中心（广州）',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:6,amount:'2,400.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'张三',time:'2026-01-16 00:52',settleDesc:'付1月，服务费，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         {id:'BS202601005',title:'2026年1月服务费结算申请',org:'交易中心（广州）',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:12,amount:'4,200.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'李明',time:'2026-01-18 02:06',settleDesc:'付1月，服务费，好快帮（广州）科技有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         // 已结算
         {id:'BS202601004',title:'2026年1月过户费结算申请',org:'车源生态事业部（广州）',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'过户费',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:4,amount:'1,200.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'张三',time:'2026-01-20 04:20',settleDesc:'付1月，过户费，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
-        {id:'BS202601006',title:'2026年1月整理费结算申请',org:'车源生态事业部（武汉）',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'整理费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:8,amount:'1,600.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'李明',time:'2026-01-22 06:34',settleDesc:'付1月，整理费，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
+        {id:'BS202601006',title:'2026年1月整理费结算申请',org:'车源生态事业部（武汉）',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'整理费-牌证及邮递费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:8,amount:'1,600.00',status:'settled',statusLabel:'已结算',tagClass:'tag-cyan',applicant:'李明',time:'2026-01-22 06:34',settleDesc:'付1月，整理费-牌证及邮递费，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         // 已驳回
-        {id:'BS202512004',title:'2025年12月整理费结算申请',org:'车源生态事业部（广州）',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'整理费',settleMonth:'2025-12',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'张三',time:'2026-01-08 16:56',rejectReason:'发票与明细不符，请重新上传正确发票后再次提交。',rejectBy:'王财务',rejectTime:'2026-01-09 11:24',settleDesc:'付12月，整理费，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'驳回',approvalTagClass:'tag-red'},
+        {id:'BS202512004',title:'2025年12月整理费结算申请',org:'车源生态事业部（广州）',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'整理费-牌证及邮递费',settleMonth:'2025-12',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'张三',time:'2026-01-08 16:56',rejectReason:'发票与明细不符，请重新上传正确发票后再次提交。',rejectBy:'王财务',rejectTime:'2026-01-09 11:24',settleDesc:'付12月，整理费-牌证及邮递费，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'驳回',approvalTagClass:'tag-red'},
         {id:'BS202601009',title:'2026年1月服务费结算申请',org:'车源生态事业部（深圳）',serviceCenter:'广州南沙服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:7,amount:'2,100.00',status:'rejected',statusLabel:'已驳回',tagClass:'tag-red',applicant:'赵华',time:'2026-01-19 03:13',rejectReason:'付款信息有误，收款方与合同约定不符，请核实后重新提交。',rejectBy:'李四（部门负责人）',rejectTime:'2026-01-20 09:05',settleDesc:'付1月，服务费，好快帮（广州）科技有限公司',handler:'李四',approvalStatus:'驳回',approvalTagClass:'tag-red'},
         // 已废弃
         {id:'BS202512005',title:'2025年12月过户费结算申请',org:'车源生态事业部（广州）',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'过户费',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:5,amount:'1,800.00',status:'discarded',statusLabel:'已废弃',tagClass:'tag-gray',applicant:'张三',time:'2026-01-05 13:35',discardReason:'重复提交，明细已合并到 BS202601001 中。',discardBy:'张三',discardTime:'2026-01-06 10:12',settleDesc:'付12月，过户费，好快帮（广州）科技有限公司',handler:'—',approvalStatus:'—',approvalTagClass:'tag-gray'},
-        {id:'BS202601010',title:'2026年1月整理费结算申请',org:'车源生态事业部（武汉）',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'整理费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'600.00',status:'discarded',statusLabel:'已废弃',tagClass:'tag-gray',applicant:'王芳',time:'2026-01-21 19:27',discardReason:'部门信息填写有误，废弃后已重新发起。',discardBy:'王芳',discardTime:'2026-01-22 09:30',settleDesc:'付1月，整理费，常有（天津）信息技术有限公司',handler:'—',approvalStatus:'—',approvalTagClass:'tag-gray'},
+        {id:'BS202601010',title:'2026年1月整理费结算申请',org:'车源生态事业部（武汉）',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'整理费-牌证及邮递费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'600.00',status:'discarded',statusLabel:'已废弃',tagClass:'tag-gray',applicant:'王芳',time:'2026-01-21 19:27',discardReason:'部门信息填写有误，废弃后已重新发起。',discardBy:'王芳',discardTime:'2026-01-22 09:30',settleDesc:'付1月，整理费-牌证及邮递费，常有（天津）信息技术有限公司',handler:'—',approvalStatus:'—',approvalTagClass:'tag-gray'},
       ],
       showVoucherGroupNew: false,
       vgForm: { periodStart:'', periodEnd:'', makeDate:'', ledger:'', inSummary:'', outSummary:'', tradeSummary:'' },
@@ -3257,7 +3258,7 @@ new Vue({
         // 已结算
         {id:'BS202601004',title:'2026年1月过户费结算申请',org:'车源生态事业部（广州）',group:'广州区域',storeName:'广州番禺门店',serviceCenter:'广州番禺服务中心',feeType:'过户费',settleMonth:'2026-01',settleDesc:'付1月，过户费，好快帮（广州）科技有限公司',payee:'好快帮（广州）科技有限公司',count:4,amount:'1,200.00',status:'fnc-settled',statusLabel:'已结算',tagClass:'tag-cyan',approvalStatus:'通过',approvalTagClass:'tag-green',applicant:'张三',time:'2026-01-20 04:20'},
         // 已驳回
-        {id:'BS202512004',title:'2025年12月整理费结算申请',org:'车源生态事业部（广州）',group:'广州区域',storeName:'广州番禺门店',serviceCenter:'广州番禺服务中心',feeType:'整理费',settleMonth:'2025-12',settleDesc:'付12月，整理费，常有（天津）信息技术有限公司',payee:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'fnc-rejected',statusLabel:'已驳回',tagClass:'tag-red',approvalStatus:'驳回',approvalTagClass:'tag-red',applicant:'张三',time:'2026-01-08 16:56'},
+        {id:'BS202512004',title:'2025年12月整理费结算申请',org:'车源生态事业部（广州）',group:'广州区域',storeName:'广州番禺门店',serviceCenter:'广州番禺服务中心',feeType:'整理费-牌证及邮递费',settleMonth:'2025-12',settleDesc:'付12月，整理费-牌证及邮递费，常有（天津）信息技术有限公司',payee:'常有（天津）信息技术有限公司',count:4,amount:'560.00',status:'fnc-rejected',statusLabel:'已驳回',tagClass:'tag-red',approvalStatus:'驳回',approvalTagClass:'tag-red',applicant:'张三',time:'2026-01-08 16:56'},
       ],
       // FNC Voucher Detail
       voucherDetailVisible: false,
@@ -3334,7 +3335,7 @@ new Vue({
         // 待开具 (BMS新流程)
         {id:'V2026001',period:'2026-4',summary:'付4月服务费，常有（天津）信息技术有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2026-04-10',user:'王财务',debit:'3,460.00',credit:'3,460.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
         {id:'V2026004',period:'2026-4',summary:'付4月过户费，好快帮（广州）科技有限公司',subjectDebit:'64010103',subjectCredit:'10020101',date:'2026-04-10',user:'王财务',debit:'3,800.00',credit:'3,800.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
-        {id:'V2026007',period:'2026-4',summary:'付4月整理费，常有（天津）信息技术有限公司',subjectDebit:'64011209',subjectCredit:'10020101',date:'2026-04-10',user:'李会计',debit:'1,800.00',credit:'1,800.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
+        {id:'V2026007',period:'2026-4',summary:'付4月整理费-牌证及邮递费，常有（天津）信息技术有限公司',subjectDebit:'64011209',subjectCredit:'10020101',date:'2026-04-10',user:'李会计',debit:'1,800.00',credit:'1,800.00',statusKey:'pending',status:'待开具',tagClass:'tag-blue',fromBatch:true},
         // 开具中
         {id:'V2026006',period:'2026-3',summary:'付3月过户费，好快帮（广州）科技有限公司',subjectDebit:'64010103',subjectCredit:'10020101',date:'2026-03-25',user:'王财务',debit:'2,700.00',credit:'2,700.00',statusKey:'issuing',status:'开具中',tagClass:'tag-cyan',fromBatch:true},
         // 已开具 (U8同步真实样例)
@@ -3348,7 +3349,7 @@ new Vue({
         {id:'记0063',period:'2026-3',summary:'wpybmz3月29-31日流水',subjectDebit:'10020402',subjectCredit:'22410103',date:'2026-03-31',user:'陈霞',debit:'52,365.5',credit:'52,365.5',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
         {id:'记0062',period:'2026-3',summary:'wpybmz3月收益提现',subjectDebit:'10020402',subjectCredit:'10020101',date:'2026-03-31',user:'陈霞',debit:'79,091.2',credit:'79,091.2',statusKey:'issued',status:'已开具',tagClass:'tag-green',fromBatch:false},
         // 开具失败
-        {id:'V2026002',period:'2026-3',summary:'付3月整理费，常有（天津）信息技术有限公司',subjectDebit:'64011209',subjectCredit:'10020101',date:'2026-03-21',user:'王财务',debit:'2,100.00',credit:'2,100.00',statusKey:'failed',status:'开具失败',tagClass:'tag-red',fromBatch:true,failReason:'2026-03-21 14:23 失败原因：会计期间早于开账日期'},
+        {id:'V2026002',period:'2026-3',summary:'付3月整理费-牌证及邮递费，常有（天津）信息技术有限公司',subjectDebit:'64011209',subjectCredit:'10020101',date:'2026-03-21',user:'王财务',debit:'2,100.00',credit:'2,100.00',statusKey:'failed',status:'开具失败',tagClass:'tag-red',fromBatch:true,failReason:'2026-03-21 14:23 失败原因：会计期间早于开账日期'},
         {id:'V2025085',period:'2025-9',summary:'付9月服务费，常有（天津）信息技术有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2025-09-25',user:'李会计',debit:'1,500.00',credit:'1,500.00',statusKey:'failed',status:'开具失败',tagClass:'tag-red',fromBatch:true,failReason:'2025-09-25 10:45 失败原因：账套未找到对应科目编码'},
         // 已删除
         {id:'V2025080',period:'2025-8',summary:'付8月服务费，好快帮（广州）科技有限公司',subjectDebit:'64010102',subjectCredit:'10020101',date:'2025-08-20',user:'王财务',debit:'2,600.00',credit:'2,600.00',statusKey:'deleted',status:'已删除',tagClass:'tag-gray',fromBatch:true},
@@ -3386,7 +3387,7 @@ new Vue({
       return d ? d.name : ''
     },
     step2SubjectCode() {
-      const map = { '服务费':'64010102', '过户费':'64010103', '整理费':'64011209' }
+      const map = { '服务费':'64010102', '过户费':'64010103', '整理费-牌证及邮递费':'64011209', '整理费-合作服务费':'64011212' }
       return map[this.step2FeeType] || '64010102'
     },
     step2RateNum() {
@@ -3469,13 +3470,21 @@ new Vue({
           ],
           taxAmt:'45.28', creditAmt:'800.00', payee:'好快帮（广州）科技有限公司',
         },
-        '整理费': {
+        '整理费-牌证及邮递费': {
           subjectCode:'64011209', auxName:'部门', auxCode:'0001', auxInfoLabel:'U8部门名称',
           rows:[
-            {desc:'付4月，整理费，常有（天津）信息技术有限公司（番禺车管分所）', auxInfo:'番禺车管分所', auxInfoExt:'7401', debit:'471.70', credit:''},
-            {desc:'付4月，整理费，常有（天津）信息技术有限公司（越秀车管）', auxInfo:'越秀车管', auxInfoExt:'7402', debit:'471.70', credit:''},
+            {desc:'付4月，整理费-牌证及邮递费，常有（天津）信息技术有限公司（番禺车管分所）', auxInfo:'番禺车管分所', auxInfoExt:'7401', debit:'471.70', credit:''},
+            {desc:'付4月，整理费-牌证及邮递费，常有（天津）信息技术有限公司（越秀车管）', auxInfo:'越秀车管', auxInfoExt:'7402', debit:'471.70', credit:''},
           ],
           taxAmt:'56.60', creditAmt:'1,000.00', payee:'常有（天津）信息技术有限公司',
+        },
+        '整理费-合作服务费': {
+          subjectCode:'64011212', auxName:'部门', auxCode:'0001', auxInfoLabel:'U8部门名称',
+          rows:[
+            {desc:'付4月，整理费-合作服务费，好快帮（广州）科技有限公司（广州天河服务中心）', auxInfo:'广州天河服务中心', auxInfoExt:'7401', debit:'530.66', credit:''},
+            {desc:'付4月，整理费-合作服务费，好快帮（广州）科技有限公司（广州番禺服务中心）', auxInfo:'广州番禺服务中心', auxInfoExt:'7402', debit:'530.66', credit:''},
+          ],
+          taxAmt:'63.68', creditAmt:'1,125.00', payee:'好快帮（广州）科技有限公司',
         },
       }
       return base[ft] || base['服务费']
@@ -3868,7 +3877,7 @@ new Vue({
         {clearTime:'2026-04-12',plate:'粤L·33445',vin:'LFVBBAKJ5N5xxxxx2',feeType:'服务费',serviceCenter:'广州越秀服务中心',org:'越秀车管',group:'广州区域',bipCode:'',actualAmt:'600.00'},
         {clearTime:'2026-04-12',plate:'粤M·55667',vin:'LFVBBAKJ5N5xxxxx3',feeType:'过户费',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'',actualAmt:'700.00'},
         {clearTime:'2026-04-12',plate:'粤N·77889',vin:'LFVBBAKJ5N5xxxxx4',feeType:'服务费',serviceCenter:'广州天河服务中心',org:'天河车管',group:'广州区域',bipCode:'',actualAmt:'500.00'},
-        {clearTime:'2026-04-12',plate:'粤P·99001',vin:'LFVBBAKJ5N5xxxxx5',feeType:'整理费',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'',actualAmt:'500.00'},
+        {clearTime:'2026-04-12',plate:'粤P·99001',vin:'LFVBBAKJ5N5xxxxx5',feeType:'整理费-牌证及邮递费',serviceCenter:'广州番禺服务中心',org:'番禺车管分所',group:'广州区域',bipCode:'',actualAmt:'500.00'},
       ]
       imported.forEach(v => {
         if (!this.bmsVehicleData.find(x => x.plate === v.plate)) {
