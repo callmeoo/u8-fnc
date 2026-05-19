@@ -676,10 +676,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="flex:1">
                       <b>标准模板字段：</b>
                       <div style="margin-top:6px;font-size:12px;line-height:1.9;color:#555">
-                        <div><b style="color:#cf1322">必填：</b>车牌号 / VIN码 / 费用类型 / 实际结算金额(含税，单位：元)</div>
+                        <div><b style="color:#cf1322">必填：</b>车牌号 / VIN码 / U8费用类型 / 实际结算金额(含税，单位：元)</div>
                         <div><b style="color:#888">选填：</b>集团 / 门店 / 服务中心（建议填写，便于归账核对）</div>
                       </div>
-                      <span style="font-size:11px;color:#888;margin-top:4px;display:block">费用类型下拉值：服务费、过户费、整理费-牌证及邮递费、整理费-合作服务费</span>
+                      <span style="font-size:11px;color:#888;margin-top:4px;display:block">U8费用类型可选值：服务费、过户费、整理费-牌证及邮递费、整理费-合作服务费</span>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
                   </div>
@@ -694,7 +694,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th>车牌号</th><th>VIN码</th><th>费用类型</th><th>实际结算金额(含税)</th>
+                        <th>车牌号</th><th>VIN码</th><th>U8费用类型</th><th>实际结算金额(含税)</th>
                         <th>集团</th><th>门店</th><th>服务中心</th>
                       </tr>
                       <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td></tr>
@@ -961,7 +961,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </select>
                 </div>
                 <div class="filter-item">
-                  <label>费用类型</label>
+                  <label>U8费用类型</label>
                   <select class="sel" @change="fncFilterChanged=true">
                     <option>全部</option>
                     <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
@@ -977,7 +977,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="table-wrap">
                 <table>
                   <tr>
-                    <th>U8部门名称</th><th>费用类型</th><th>标题</th><th>结算说明</th><th>明细数</th>
+                    <th>U8部门名称</th><th>U8费用类型</th><th>标题</th><th>结算说明</th><th>明细数</th>
                     <th>集团</th><th>门店名称</th><th>服务中心</th><th>审批状态</th><th>结算状态</th>
                     <th>申请人</th><th>申请时间</th><th>操作</th>
                   </tr>
