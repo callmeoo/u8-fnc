@@ -2036,7 +2036,30 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div v-if="approvalSidebarTab==='config'" class="card" style="border-radius:0 4px 4px 4px">
             <div class="card-header"><span class="card-title">付款审批流配置</span></div>
             <div class="card-body">
-              <div class="alert alert-info" style="margin-bottom:14px">三种 U8 费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
+              <div class="alert alert-info" style="margin-bottom:14px">
+                <div style="margin-bottom:10px">三种 U8 费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
+                <table style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:4px;overflow:hidden">
+                  <thead>
+                    <tr style="background:#e6f4ff">
+                      <th style="padding:7px 12px;text-align:left;border:1px solid #bae0ff;font-weight:600;color:#1677ff">审批节点</th>
+                      <th style="padding:7px 12px;text-align:left;border:1px solid #bae0ff;font-weight:600;color:#1677ff">服务费</th>
+                      <th style="padding:7px 12px;text-align:left;border:1px solid #bae0ff;font-weight:600;color:#1677ff">过户费·整理费</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding:7px 12px;border:1px solid #bae0ff;color:#333">区域经理</td>
+                      <td style="padding:7px 12px;border:1px solid #bae0ff;color:#333">黄帆</td>
+                      <td style="padding:7px 12px;border:1px solid #bae0ff;color:#333">张伟林<span style="color:#fa8c16;margin-left:4px;font-size:11px">（产假中）</span></td>
+                    </tr>
+                    <tr style="background:#f0f7ff">
+                      <td style="padding:7px 12px;border:1px solid #bae0ff;color:#333">区域总监</td>
+                      <td style="padding:7px 12px;border:1px solid #bae0ff;color:#333">陈晓瑾</td>
+                      <td style="padding:7px 12px;border:1px solid #bae0ff;color:#333">惠钦</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               <div style="display:flex;gap:40px;padding:8px 0">
                 <div style="flex:1">
                   <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费、过户费、整理费-牌证及邮递费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
