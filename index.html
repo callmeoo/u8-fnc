@@ -2445,7 +2445,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
                   </tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">U8部门编码映射</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS列表筛选 / BMS表单 / FNC列表筛选 / 凭证新增整理费 共用</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算 &gt; 部门编码映射 tab</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">U8部门编码映射</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS列表筛选 / BMS表单 / FNC列表筛选 / 凭证新增整理费类科目 共用</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算 &gt; 部门编码映射 tab</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">科目映射规则</td><td style="padding:8px 12px;border:1px solid #e8e8e8">按费用类型 / 部门 / 项目自动匹配借贷方科目（财务部提供模板）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">后台配置（评审后实施）</td></tr>
                 </table>
               </div>
@@ -2634,7 +2634,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="section-title" style="margin-bottom:12px">4.2 操作流程（两步骤）</div>
                 <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:6px;padding:14px 16px;margin-bottom:16px;font-size:12px;line-height:2.6">
                   <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 1</span>选择 U8 费用类型（服务费 / 过户费 / 整理费-牌证及邮递费 / 整理费-合作服务费）+ 结算年月，勾选"已结算"申请</div>
-                  <div style="margin-left:60px;font-size:11px;color:#999;margin-top:-6px">（含整理费时，U8部门编码为必填下拉）</div>
+                  <div style="margin-left:60px;font-size:11px;color:#999;margin-top:-6px">（含整理费类科目时，U8部门编码为必填下拉）</div>
                   <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 2</span>系统自动生成凭证分录预览（含进项税额 6%）→ 财务核查 → 确认 → 凭证创建（待开具）</div>
                   <div><span style="display:inline-block;width:60px;color:#52c41a;font-weight:700">开具</span>列表点击"开具" → 推送U8 → 凭证号回写FNC</div>
                 </div>
@@ -2650,7 +2650,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <tr style="background:#f5f7fa"><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">费用类型</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:60px">税率</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">计算公式</th></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">服务费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">进项税额 = 含税金额 × 6 / 106；不含税金额 = 含税金额 − 税额</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">过户费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费-牌证及邮递费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费-合作服务费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
                 </table>
 
                 <div class="section-title" style="margin-bottom:10px">4.5 凭证管理列表字段</div>
@@ -2711,7 +2712,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     · BMS 列表 &gt; U8部门名称筛选下拉<br>
                     · BMS 申请表单 &gt; U8部门名称输入（datalist）<br>
                     · FNC 列表 &gt; U8部门名称筛选下拉<br>
-                    · FNC 凭证管理 &gt; 新增(成本) &gt; Step 1 整理费 U8部门编码下拉<br>
+                    · FNC 凭证管理 &gt; 新增(成本) &gt; Step 1 整理费类科目 U8部门编码下拉<br>
                     · 后台配置 &gt; 部门编码映射 表中的数据是否完整<br>
                     <b>负责人：</b>业务方（待提供）
                   </div>
@@ -2885,7 +2886,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、辅助维度差异</div>
         <ul style="margin:0 0 12px 20px;padding:0;color:#555">
           <li><b>服务费 / 过户费</b>：以「项目」为辅助维度，<b>按车牌</b>逐行展开（一辆车 = 一条借方分录）。</li>
-          <li><b>整理费</b>：以「部门」为辅助维度，<b>按 U8 部门</b>聚合（一个部门 = 一条借方分录），数据来自后台「部门编码映射」。</li>
+          <li><b>整理费（两类）</b>：以「部门」为辅助维度，<b>按 U8 部门</b>聚合（一个部门 = 一条借方分录），数据来自后台「部门编码映射」。</li>
           <li><b>辅助信息回退规则（"辅助信息=车牌" 的科目）</b>：服务费车牌号已强制必填，始终推送车牌号；<b>过户费</b>车牌号非必填（仅服务中心必填），<b>若该明细未填车牌号，辅助信息自动回退为 VIN码 推送至 U8 自定义项1</b>。</li>
         </ul>
 
@@ -3055,7 +3056,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <ul style="margin:0 0 14px 20px;padding:0;color:#555">
           <li>U8 系统未对外提供「部门编码查询接口」，BMS / FNC 无法实时拉取部门编码，需在此处人工维护编码与名称的映射关系。</li>
           <li>初始化数据来自<b>陈霞提供的 Excel 文件</b>，导入后由财务在本页面持续维护增删改启停。</li>
-          <li>BMS 申请表单、FNC 凭证管理「整理费」凭证生成等场景下的「U8部门名称」下拉选项，统一从本表读取（仅展示已启用部门）。</li>
+          <li>BMS 申请表单、FNC 凭证管理「整理费类」凭证生成等场景下的「U8部门名称」下拉选项，统一从本表读取（仅展示已启用部门）。</li>
         </ul>
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">二、停用后历史数据的处理</div>
@@ -3156,7 +3157,7 @@ new Vue({
       ],
       // 待提交：车辆级别数据（独立于申请单列表）
       bmsVehicleData: [
-        // 手动导入（整理费）
+        // 手动导入（整理费-牌证及邮递费）
         {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
         {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
         // 系统自动添加（代办过户费，衍生订单）
@@ -3365,7 +3366,7 @@ new Vue({
       approvalListPC: [
         {id:1,name:'张三',dept:'业务部',summary:'2026年1月服务费，常有（天津）信息技术有限公司',amount:'1,060.00',time:'2026-01-15 10:23',level:'财务审批（第二级）'},
         {id:2,name:'李明',dept:'运营部',summary:'2026年1月过户费，好快帮（广州）科技有限公司',amount:'2,400.00',time:'2026-01-16 09:15',level:'部门审批（第一级）'},
-        {id:3,name:'赵华',dept:'业务部',summary:'2026年1月整理费，常有（天津）信息技术有限公司',amount:'3,800.00',time:'2026-01-16 14:40',level:'领导审批（第三级）'},
+        {id:3,name:'赵华',dept:'业务部',summary:'2026年1月整理费-牌证及邮递费，常有（天津）信息技术有限公司',amount:'3,800.00',time:'2026-01-16 14:40',level:'领导审批（第三级）'},
       ],
       // Lightbox
       lightboxVisible: false,
@@ -3853,7 +3854,7 @@ new Vue({
       const note = [
         '标准车牌格式，必填',
         '17位车架号，必填',
-        '可选值：整理费，必填（服务费和过户费由系统自动生成，无需导入）',
+        '可选值：整理费-牌证及邮递费，必填（服务费和过户费由系统自动生成，无需导入）',
         '请以元为单位填写，保留两位小数，必填',
         '建议填写，便于归账核对',
         '建议填写，便于归账核对',

@@ -558,7 +558,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
                 <div v-if="bmsStatusTab==='draft'">
-                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。须勾选<b>同一服务中心</b>或<b>同一集团</b>的车辆；可跨费用类型，提交时统一选择 <b>U8 费用类型</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费需通过「导入结算明细」上传。</span></div>
+                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。须勾选<b>同一服务中心</b>或<b>同一集团</b>的车辆；可跨费用类型，提交时统一选择 <b>U8 费用类型</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费-牌证及邮递费需通过「导入结算明细」上传。</span></div>
                   <div v-if="bmsApplyError" class="alert alert-error" style="margin-bottom:10px"> {{bmsApplyError}}</div>
                   <div class="table-wrap">
                     <table>
@@ -680,7 +680,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <div><b style="color:#cf1322">必填：</b>车牌号 / VIN码 / 费用类型 / 实际结算金额(含税，单位：元)</div>
                         <div><b style="color:#888">选填：</b>集团 / 门店 / 服务中心（建议填写，便于归账核对）</div>
                       </div>
-                      <span style="font-size:11px;color:#888;margin-top:4px;display:block">费用类型下拉值：服务费、过户费、整理费</span>
+                      <span style="font-size:11px;color:#888;margin-top:4px;display:block">费用类型下拉值：服务费、过户费、整理费-牌证及邮递费、整理费-合作服务费</span>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
                   </div>
@@ -1361,7 +1361,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
               <!-- 部门编码映射 tab -->
               <div v-if="voucherTab==='mapping'">
-                <div class="alert alert-info" style="margin-top:12px"> <b>方案二：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</div>
+                <div class="alert alert-info" style="margin-top:12px"> <b>方案二：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费类科目凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</div>
                 <div class="filter-bar">
                   <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
                   <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
@@ -1799,7 +1799,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <button class="btn btn-primary" @click="deptMappingDialog=true">＋ 新增</button>
             </div>
             <div class="card-body">
-              <div class="alert alert-info"> <b>说明：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</div>
+              <div class="alert alert-info"> <b>说明：</b>U8无部门查询接口，由此处维护U8部门编码与部门名称。生成整理费类科目凭证时，财务在凭证预览弹窗中手动选择部门编码，<b>不可为空</b>。</div>
               <div class="filter-bar">
                 <div class="filter-item"><label>U8部门编码</label><input class="inp" placeholder="搜索编码..." style="width:140px"></div>
                 <div class="filter-item"><label>U8部门名称</label><input class="inp" placeholder="搜索名称..." style="width:180px"></div>
@@ -1888,7 +1888,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="alert alert-info" style="margin-bottom:14px">四种 U8 费用类型对应的审批流：区域经理 → 财务人员（麦经理）→ 区域总监 → 财务负责人 → 总经理</div>
               <div style="display:flex;gap:40px;padding:8px 0">
                 <div style="flex:1">
-                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费、过户费、整理费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
+                  <div class="info-block" style="margin-bottom:12px"><b>适用费用类型：</b>服务费、过户费、整理费-牌证及邮递费、整理费-合作服务费&nbsp;&nbsp;<b>审批层级数：</b>5级</div>
                   <div class="approval-flow">
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot done"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">申请人</div><div class="flow-role">BMS侧发起申请</div></div></div>
                     <div class="flow-node"><div class="flow-left"><div class="flow-dot pending"></div><div class="flow-line"></div></div><div class="flow-content"><div class="flow-name">区域经理</div><div class="flow-role">第1级审批</div></div></div>
@@ -2297,7 +2297,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
                   </tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">U8部门编码映射</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS列表筛选 / BMS表单 / FNC列表筛选 / 凭证新增整理费 共用</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算 &gt; 部门编码映射 tab</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">U8部门编码映射</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS列表筛选 / BMS表单 / FNC列表筛选 / 凭证新增整理费类科目 共用</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算 &gt; 部门编码映射 tab</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">科目映射规则</td><td style="padding:8px 12px;border:1px solid #e8e8e8">按费用类型 / 部门 / 项目自动匹配借贷方科目（财务部提供模板）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">后台配置（评审后实施）</td></tr>
                 </table>
               </div>
@@ -2378,7 +2378,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <table style="width:100%;font-size:12px;border-collapse:collapse">
                   <tr style="background:#f5f7fa"><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">字段</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:60px">必填</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">标题</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">申请单名称</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">费用类型</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">服务费 / 过户费 / 整理费；同一申请只能一种</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">费用类型</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">服务费 / 过户费 / 整理费-牌证及邮递费 / 整理费-合作服务费；同一申请选定一种 U8 费用类型</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">结算年月</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">用于结算说明自动生成</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">结算说明</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">系统预填：付X月，[费用类型]，[收款方名称]；可手动修改</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">付款方</td><td style="padding:8px 12px;border:1px solid #e8e8e8"></td><td style="padding:8px 12px;border:1px solid #e8e8e8">唯普汽车 / 唯普云（下拉）；选择后关联银行账户自动带出</td></tr>
@@ -2485,8 +2485,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                 <div class="section-title" style="margin-bottom:12px">4.2 操作流程（两步骤）</div>
                 <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:6px;padding:14px 16px;margin-bottom:16px;font-size:12px;line-height:2.6">
-                  <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 1</span>选择费用类型（服务费 / 过户费 / 整理费）+ 结算年月，勾选"已结算"申请</div>
-                  <div style="margin-left:60px;font-size:11px;color:#999;margin-top:-6px">（含整理费时，U8部门编码为必填下拉）</div>
+                  <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 1</span>选择 U8 费用类型（服务费 / 过户费 / 整理费-牌证及邮递费 / 整理费-合作服务费）+ 结算年月，勾选"已结算"申请</div>
+                  <div style="margin-left:60px;font-size:11px;color:#999;margin-top:-6px">（含整理费类科目时，U8部门编码为必填下拉）</div>
                   <div><span style="display:inline-block;width:60px;color:#1890ff;font-weight:700">Step 2</span>系统自动生成凭证分录预览（含进项税额 6%）→ 财务核查 → 确认 → 凭证创建（待开具）</div>
                   <div><span style="display:inline-block;width:60px;color:#52c41a;font-weight:700">开具</span>列表点击"开具" → 推送U8 → 凭证号回写FNC</div>
                 </div>
@@ -2502,7 +2502,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <tr style="background:#f5f7fa"><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">费用类型</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:60px">税率</th><th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">计算公式</th></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">服务费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">进项税额 = 含税金额 × 6 / 106；不含税金额 = 含税金额 − 税额</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">过户费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上</td></tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费-牌证及邮递费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">整理费-合作服务费</td><td style="padding:8px 12px;border:1px solid #e8e8e8">6%</td><td style="padding:8px 12px;border:1px solid #e8e8e8">同上；需额外指定 U8部门编码（下拉选择）</td></tr>
                 </table>
 
                 <div class="section-title" style="margin-bottom:10px">4.5 凭证管理列表字段</div>
@@ -2563,7 +2564,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     · BMS 列表 &gt; U8部门名称筛选下拉<br>
                     · BMS 申请表单 &gt; U8部门名称输入（datalist）<br>
                     · FNC 列表 &gt; U8部门名称筛选下拉<br>
-                    · FNC 凭证管理 &gt; 新增(成本) &gt; Step 1 整理费 U8部门编码下拉<br>
+                    · FNC 凭证管理 &gt; 新增(成本) &gt; Step 1 整理费类科目 U8部门编码下拉<br>
                     · 后台配置 &gt; 部门编码映射 表中的数据是否完整<br>
                     <b>负责人：</b>业务方（待提供）
                   </div>
@@ -2743,7 +2744,7 @@ new Vue({
       ],
       // 待提交：车辆级别数据（独立于申请单列表）
       bmsVehicleData: [
-        // 手动导入（整理费）
+        // 手动导入（整理费-牌证及邮递费）
         {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
         {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
         // 系统自动添加（代办过户费，衍生订单）
@@ -2922,7 +2923,7 @@ new Vue({
       approvalListPC: [
         {id:1,name:'张三',dept:'业务部',summary:'2026年1月服务费，常有（天津）信息技术有限公司',amount:'1,060.00',time:'2026-01-15 10:23',level:'财务审批（第二级）'},
         {id:2,name:'李明',dept:'运营部',summary:'2026年1月过户费，好快帮（广州）科技有限公司',amount:'2,400.00',time:'2026-01-16 09:15',level:'部门审批（第一级）'},
-        {id:3,name:'赵华',dept:'业务部',summary:'2026年1月整理费，常有（天津）信息技术有限公司',amount:'3,800.00',time:'2026-01-16 14:40',level:'领导审批（第三级）'},
+        {id:3,name:'赵华',dept:'业务部',summary:'2026年1月整理费-牌证及邮递费，常有（天津）信息技术有限公司',amount:'3,800.00',time:'2026-01-16 14:40',level:'领导审批（第三级）'},
       ],
       // Lightbox
       lightboxVisible: false,
@@ -3090,7 +3091,7 @@ new Vue({
       const note = [
         '标准车牌格式，必填',
         '17位车架号，必填',
-        '可选值：服务费 / 过户费 / 整理费，必填',
+        '可选值：整理费-牌证及邮递费（服务费和过户费由系统自动生成），必填',
         '请以元为单位填写，保留两位小数，必填',
         '建议填写，便于归账核对',
         '建议填写，便于归账核对',
