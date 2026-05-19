@@ -670,14 +670,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                   <div class="alert alert-info" style="align-items:flex-start">
                     <div style="flex:1">
-                      <b>标准模板字段及必填规则：</b>
+                      <b>标准模板字段：</b>
                       <div style="margin-top:6px;font-size:12px;line-height:1.9;color:#555">
-                        <div><b style="color:#333">通用必填：</b>VIN码 / 费用类型 / 实际结算金额(含税)</div>
-                        <div><b style="color:#333">按费用类型条件必填：</b></div>
-                        <div style="margin-left:14px">
-                          <div>• 费用类型 = <b style="color:#1890ff">服务费</b>（业务合作费）：<b style="color:#cf1322">车牌号 / 集团 / 门店</b> 必填</div>
-                          <div>• 费用类型 = <b style="color:#fa8c16">过户费</b> / <b style="color:#52c41a">整理费</b>：<b style="color:#cf1322">服务中心</b> 必填</div>
-                        </div>
+                        <div><b style="color:#cf1322">必填：</b>车牌号 / VIN码 / 费用类型 / 实际结算金额(含税，单位：元)</div>
+                        <div><b style="color:#888">选填：</b>集团 / 门店 / 服务中心（建议填写，便于归账核对）</div>
                       </div>
                       <span style="font-size:11px;color:#888;margin-top:4px;display:block">费用类型下拉值：服务费、过户费、整理费</span>
                     </div>
@@ -694,17 +690,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th>VIN码</th><th>费用类型</th><th>实际结算金额(含税)</th>
-                        <th>车牌号</th><th>集团</th><th>门店</th><th>服务中心</th>
+                        <th>车牌号</th><th>VIN码</th><th>费用类型</th><th>实际结算金额(含税)</th>
+                        <th>集团</th><th>门店</th><th>服务中心</th>
                       </tr>
-                      <tr><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td><td><b>粤D·22222</b></td><td>广州区域</td><td>广州越秀门店</td><td>—</td></tr>
-                      <tr><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td><td><b>粤E·33333</b></td><td>广州区域</td><td>广州越秀门店</td><td>—</td></tr>
-                      <tr><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td><span class="tag tag-orange">过户费</span></td><td class="amount">700.00</td><td>—</td><td></td><td></td><td>广州天河服务中心</td></tr>
-                      <tr><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td><td><b>粤G·55555</b></td><td>广州区域</td><td>天河门店</td><td>—</td></tr>
-                      <tr><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td><td>—</td><td></td><td></td><td>广州番禺服务中心</td></tr>
+                      <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td><td>广州区域</td><td>广州越秀门店</td><td>—</td></tr>
+                      <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td><td>广州区域</td><td>广州越秀门店</td><td>—</td></tr>
+                      <tr><td><b>粤F·44444</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td><span class="tag tag-orange">过户费</span></td><td class="amount">700.00</td><td></td><td></td><td>广州天河服务中心</td></tr>
+                      <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td><td>广州区域</td><td>天河门店</td><td>—</td></tr>
+                      <tr><td><b>粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td></tr>
                     </table>
                   </div>
-                  <div class="alert alert-success" style="margin-top:12px">校验通过，无重复记录（查重维度：VIN码+费用类型；必填项校验：VIN码/费用类型/金额；服务费需含车牌+集团+门店；过户费/整理费需含服务中心）</div>
+                  <div class="alert alert-success" style="margin-top:12px">校验通过，无重复记录（查重维度：VIN码+费用类型；必填项：车牌号 / VIN码 / 费用类型 / 实际结算金额）</div>
                 </div>
               </div>
               <div class="modal-footer">
@@ -825,9 +821,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <b>驳回原因：</b>{{bmsCurrentDetail.rejectReason}}
                   <span style="margin-left:10px;font-size:11px;color:#999">— {{bmsCurrentDetail.rejectBy}} · {{bmsCurrentDetail.rejectTime}}</span>
                 </div>
-                <!-- 已结算车辆警示 -->
-                <div v-if="bmsCurrentDetail.settledPlates && bmsCurrentDetail.settledPlates.length" class="alert alert-warning" style="margin-bottom:12px">
-                   <b>存在已结算车辆，请留意核实：</b>{{bmsCurrentDetail.settledPlates.join('、')}}
+                <!-- 异常行提示（行级标签代替整体警告） -->
+                <div v-if="bmsCurrentDetail.settledPlates && bmsCurrentDetail.settledPlates.length" class="alert alert-warning" style="margin-bottom:12px;font-size:12px">
+                  <b>注意：</b>明细中含异常行，请核实后再提交。<span style="color:#888;margin-left:6px;font-weight:400">（【曾已结算】= 该车牌历史已结算过；【系统无】= 该车牌为手动导入，系统业务库中暂无记录）</span>
                 </div>
                 <!-- 待审批：操作按钮 -->
                 <div v-if="bmsCurrentDetail.status==='approval'" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;background:#fff7e6;border-radius:4px;border:1px solid #ffd591">
@@ -927,8 +923,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="detail-item-section" style="display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 14px;background:#fafafa;border:1px solid #f0f0f0;border-radius:4px;margin-bottom:10px">
                   <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤A·12345</b> <span class="amount" style="color:#333">¥ 360.00</span></span>
                   <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤B·67890</b> <span class="amount" style="color:#333">¥ 360.00</span></span>
-                  <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤C·11111</b> <span class="amount" style="color:#333">¥ 400.00</span></span>
-                  <span style="background:#fff;border:1px solid #e8e8e8;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b>粤D·22222</b> <span class="amount" style="color:#333">¥ 240.00</span></span>
+                  <span style="background:#fff7e6;border:1px solid #ffd591;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b style="color:#d46b08">粤C·11111</b> <span class="amount" style="color:#333">¥ 400.00</span> <span style="font-size:10px;background:#fff7e6;color:#d46b08;border:1px solid #ffd591;border-radius:2px;padding:0 4px;font-weight:600;margin-left:2px">曾已结算</span></span>
+                  <span style="background:#fff0f6;border:1px solid #ffadd2;border-radius:3px;padding:4px 10px;font-size:12px;white-space:nowrap"><b style="color:#c41d7f">粤D·22222</b> <span class="amount" style="color:#333">¥ 240.00</span> <span style="font-size:10px;background:#fff0f6;color:#c41d7f;border:1px solid #ffadd2;border-radius:2px;padding:0 4px;font-weight:600;margin-left:2px">系统无</span></span>
                   <span style="width:100%;padding-top:8px;margin-top:4px;border-top:1px solid #f0f0f0;font-size:12px;display:flex;justify-content:flex-end">合计：<b class="amount" style="margin-left:6px;color:#333">¥ 1,360.00</b></span>
                 </div>
               </div>
@@ -2066,26 +2062,47 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       </div>
                       <!-- 明细列表 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
-                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">明细列表（3条）<span style="font-size:11px;font-weight:400;color:#999;margin-left:8px">费用类型：服务费</span></div>
-                        <div class="alert alert-warning" style="margin-bottom:8px;font-size:11px;padding:7px 10px"> <b>存在已结算车辆，请留意核实：</b>粤A·12345、粤C·11111</div>
-                        <div style="font-size:11px">
-                          <div style="display:flex;color:#999;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid #f5f5f5">
-                            <span style="flex:1.6">车牌号</span><span style="flex:2.2">VIN码</span><span style="flex:1.2;text-align:right">含税金额</span>
-                          </div>
-                          <div style="display:flex;padding:5px 0;border-bottom:1px solid #f5f5f5;background:#fff7e6;border-radius:3px">
-                            <span style="flex:1.6;color:#d46b08;font-weight:500">粤A·12345</span><span style="flex:2.2;font-family:monospace;color:#666">LFVBBAKJ5N5xxxxx1</span><span style="flex:1.2;text-align:right;font-weight:500">360.00</span>
-                          </div>
-                          <div style="display:flex;padding:5px 0;border-bottom:1px solid #f5f5f5">
-                            <span style="flex:1.6;color:#333">粤B·67890</span><span style="flex:2.2;font-family:monospace;color:#666">LFVBBAKJ5N5xxxxx2</span><span style="flex:1.2;text-align:right;font-weight:500">360.00</span>
-                          </div>
-                          <div style="display:flex;padding:5px 0;background:#fff7e6;border-radius:3px">
-                            <span style="flex:1.6;color:#d46b08;font-weight:500">粤C·11111</span><span style="flex:2.2;font-family:monospace;color:#666">LFVBBAKJ5N5xxxxx3</span><span style="flex:1.2;text-align:right;font-weight:500">340.00</span>
-                          </div>
-                          <div style="display:flex;justify-content:flex-end;margin-top:8px;padding-top:7px;border-top:1px solid #f0f0f0">
-                            <span style="color:#999;margin-right:8px">合计：</span>
-                            <span style="font-weight:600;color:#333">¥ 1,060.00</span>
+                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">明细列表（4条）<span style="font-size:11px;font-weight:400;color:#999;margin-left:8px">费用类型：服务费</span></div>
+                        <!-- 可横向滑动区域 -->
+                        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;font-size:11px">
+                          <div style="min-width:420px">
+                            <div style="display:flex;color:#999;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid #f5f5f5;white-space:nowrap">
+                              <span style="width:90px;flex-shrink:0">车牌</span>
+                              <span style="width:70px;flex-shrink:0;text-align:right">含税金额</span>
+                              <span style="width:80px;flex-shrink:0;padding-left:8px">异常点</span>
+                              <span style="flex:1;padding-left:8px;font-family:monospace">VIN码</span>
+                            </div>
+                            <div style="display:flex;padding:6px 0;border-bottom:1px solid #f5f5f5;align-items:center;white-space:nowrap">
+                              <span style="width:90px;flex-shrink:0;color:#333;font-weight:500">粤A·12345</span>
+                              <span style="width:70px;flex-shrink:0;text-align:right;font-weight:500">360.00</span>
+                              <span style="width:80px;flex-shrink:0;padding-left:8px"></span>
+                              <span style="flex:1;padding-left:8px;font-family:monospace;color:#888">LFVBBAKJ5N5xxxxx1</span>
+                            </div>
+                            <div style="display:flex;padding:6px 0;border-bottom:1px solid #f5f5f5;align-items:center;white-space:nowrap">
+                              <span style="width:90px;flex-shrink:0;color:#333;font-weight:500">粤B·67890</span>
+                              <span style="width:70px;flex-shrink:0;text-align:right;font-weight:500">360.00</span>
+                              <span style="width:80px;flex-shrink:0;padding-left:8px"></span>
+                              <span style="flex:1;padding-left:8px;font-family:monospace;color:#888">LFVBBAKJ5N5xxxxx2</span>
+                            </div>
+                            <div style="display:flex;padding:6px 0;border-bottom:1px solid #f5f5f5;align-items:center;background:#fff7e6;border-radius:3px;white-space:nowrap">
+                              <span style="width:90px;flex-shrink:0;color:#d46b08;font-weight:500">粤C·11111</span>
+                              <span style="width:70px;flex-shrink:0;text-align:right;font-weight:500">160.00</span>
+                              <span style="width:80px;flex-shrink:0;padding-left:8px"><span style="font-size:10px;background:#fff7e6;color:#d46b08;border:1px solid #ffd591;border-radius:2px;padding:1px 4px;font-weight:600">曾已结算</span></span>
+                              <span style="flex:1;padding-left:8px;font-family:monospace;color:#888">LFVBBAKJ5N5xxxxx3</span>
+                            </div>
+                            <div style="display:flex;padding:6px 0;align-items:center;background:#fff0f6;border-radius:3px;white-space:nowrap">
+                              <span style="width:90px;flex-shrink:0;color:#c41d7f;font-weight:500">粤D·22222</span>
+                              <span style="width:70px;flex-shrink:0;text-align:right;font-weight:500">180.00</span>
+                              <span style="width:80px;flex-shrink:0;padding-left:8px"><span style="font-size:10px;background:#fff0f6;color:#c41d7f;border:1px solid #ffadd2;border-radius:2px;padding:1px 4px;font-weight:600">系统无</span></span>
+                              <span style="flex:1;padding-left:8px;font-family:monospace;color:#888">LFVBBAKJ5N5xxxxx4</span>
+                            </div>
                           </div>
                         </div>
+                        <div style="display:flex;justify-content:flex-end;margin-top:8px;padding-top:7px;border-top:1px solid #f0f0f0;font-size:11px">
+                          <span style="color:#999;margin-right:8px">合计：</span>
+                          <span style="font-weight:600;color:#333">¥ 1,060.00</span>
+                        </div>
+                        <div style="font-size:10px;color:#bbb;margin-top:4px;text-align:right">← 左右滑动查看 VIN码</div>
                       </div>
                       <!-- 备注 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;font-size:12px">
@@ -3052,26 +3069,26 @@ new Vue({
     downloadImportTemplate() {
       const BOM = '\ufeff'
       const headers = [
+        '车牌号*',
         'VIN码*',
         '费用类型*',
         '实际结算金额(含税，单位：元)*',
-        '车牌号(服务费必填)',
-        '集团(服务费必填)',
-        '门店(服务费必填)',
-        '服务中心(过户费/整理费必填)',
+        '集团(选填)',
+        '门店(选填)',
+        '服务中心(选填)',
       ]
       const note = [
+        '标准车牌格式，必填',
         '17位车架号，必填',
-        '可选值：服务费 / 过户费 / 整理费',
-        '请以元为单位填写，保留两位小数',
-        '服务费(业务合作费)必填',
-        '服务费(业务合作费)必填',
-        '服务费(业务合作费)必填',
-        '过户费 / 整理费必填',
+        '可选值：服务费 / 过户费 / 整理费，必填',
+        '请以元为单位填写，保留两位小数，必填',
+        '建议填写，便于归账核对',
+        '建议填写，便于归账核对',
+        '建议填写，便于归账核对',
       ]
-      const exampleService  = ['LFV3A2BM2N3xxxxx1','服务费','560.00','粤A·12345','广州区域','广州越秀门店','']
-      const exampleArrange  = ['LFV3A2BM2N3xxxxx2','整理费','500.00','','','','广州番禺服务中心']
-      const exampleTransfer = ['LFV3A2BM2N3xxxxx3','过户费','700.00','','','','广州天河服务中心']
+      const exampleService  = ['粤A·12345','LFV3A2BM2N3xxxxx1','服务费','560.00','广州区域','广州越秀门店','']
+      const exampleArrange  = ['粤B·67890','LFV3A2BM2N3xxxxx2','整理费','500.00','','','广州番禺服务中心']
+      const exampleTransfer = ['粤C·11111','LFV3A2BM2N3xxxxx3','过户费','700.00','','','广州天河服务中心']
       const csv = [headers, note, exampleService, exampleArrange, exampleTransfer].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
