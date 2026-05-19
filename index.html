@@ -277,13 +277,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               </div>
               <div class="form-row">
                 <div class="form-item">
-                  <label class="form-label req">费用类型</label>
+                  <label class="form-label req">U8费用类型</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请搜索或选择费用类型..." list="feeType-list" v-model="formFeeType" :class="{'field-error':formValidated&&!formFeeType}">
+                    <input class="inp" style="width:100%" placeholder="请选择 U8 费用类型..." list="feeType-list" v-model="formFeeType" :class="{'field-error':formValidated&&!formFeeType}">
                     <datalist id="feeType-list">
                       <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
                     </datalist>
-                    <div class="form-note">支持搜索联想，共 {{feeTypeOptions.length}} 种费用类型</div>
+                    <div class="form-note">可跨业务费用类型勾选，统一指定一个 U8 费用类型开具凭证</div>
                   </div>
                 </div>
                 <div class="form-item">
@@ -535,6 +535,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <input class="inp" style="width:130px" placeholder="搜索服务中心..." list="bms-sc-list" v-model="bmsFilter.serviceCenter">
                     <datalist id="bms-sc-list"><option>广州番禺服务中心</option><option>广州天河服务中心</option><option>广州越秀服务中心</option><option>广州花都服务中心</option></datalist>
                   </div>
+                  <div class="filter-item" v-if="bmsStatusTab==='draft'">
+                    <label>车牌号</label>
+                    <input class="inp" style="width:110px" placeholder="搜索车牌号..." v-model="bmsFilter.plate">
+                  </div>
                   <div class="filter-item"><label>申请人</label><input class="inp" placeholder="申请人" style="width:100px" v-model="bmsFilter.applicant"></div>
                   <div class="filter-item">
                     <label>结算状态</label>
@@ -543,7 +547,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </select>
                   </div>
                   <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredBmsList.length + ' 条')">查询</button>
-                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',group:'',store:'',serviceCenter:'',applicant:'',status:'全部'}">重置</button>
+                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',group:'',store:'',serviceCenter:'',plate:'',applicant:'',status:'全部'}">重置</button>
                   <button v-if="bmsStatusTab==='draft'" class="btn btn-default btn-sm" @click="showBmsTips=true">操作说明</button>
                 </div>
 
@@ -554,7 +558,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <table>
                       <tr>
                         <th class="check-col"><input type="checkbox" :checked="filteredVehicleData.length>0&&bmsVehicleChecked.length===filteredVehicleData.length" @change="bmsVehicleChecked=$event.target.checked?filteredVehicleData.map(v=>v.plate):[];bmsApplyError=''"></th>
-                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>集团</th><th>门店</th><th>服务中心</th>
+                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>U8费用类型</th><th>集团</th><th>门店</th><th>服务中心</th>
                         <th>实际结算金额(含税)</th><th>操作</th>
                       </tr>
                       <tr v-for="v in filteredVehicleData" :key="v.plate" :style="bmsVehicleChecked.includes(v.plate)?'background:#e6f7ff':''">
@@ -562,6 +566,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td style="font-size:11px;color:#999">{{v.clearTime||''}}</td>
                         <td><b>{{v.plate}}</b></td>
                         <td style="font-size:11px;font-family:monospace;color:#555">{{v.vin||'—'}}</td>
+                        <td style="font-size:11px">{{v.bizFeeType||'—'}}</td>
                         <td>{{v.feeType}}</td>
                         <td style="font-size:11px;color:#555">{{v.group||'—'}}</td>
                         <td style="font-size:11px;color:#555">{{v.store||'—'}}</td>
@@ -570,7 +575,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(bmsVehicleData.indexOf(v),1);showToast('已移除')">移除</button></td>
                       </tr>
                       <tr v-if="filteredVehicleData.length===0">
-                        <td colspan="10" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入结算明细'}}</td>
+                        <td colspan="11" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入结算明细'}}</td>
                       </tr>
                     </table>
                   </div>
@@ -657,7 +662,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;color:#d46b08;margin-bottom:4px">导入说明</div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">①</span>
-                      <span>适用于系统内<b>未自动创建</b>的订单，如「整理费」「过户费」等需手动录入的费用。</span>
+                      <span>适用于系统内<b>未自动创建</b>的订单，如「整理费」等需手动录入的费用。</span>
                     </div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">②</span>
@@ -677,9 +682,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       </div>
                       <div style="margin-top:8px;font-size:12px;line-height:1.9;color:#555">
                         <div style="font-weight:600;color:#333;margin-bottom:2px">费用类型说明：</div>
-                        <div><b style="color:#fa8c16">过户费</b>：代办过户费。</div>
-                        <div><b style="color:#52c41a">整理费</b>：牌证整理过程中产生的费用。</div>
-                        <div><b style="color:#1890ff">服务费</b>：业务合作费，用于返利或固定场地费。</div>
+                        <div><b style="color:#52c41a">整理费</b>：牌证整理过程中产生的费用，需人工导入。</div>
+                        <div style="color:#999;font-size:11px">服务费和过户费由系统自动生成，无需导入。</div>
                       </div>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
@@ -691,7 +695,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
                 <!-- Step 2: 预览 -->
                 <div v-if="importStep===2">
-                  <div class="summary-bar">预览：<b>5条明细</b> &nbsp;|&nbsp; 合计：<b class="amount">¥ 2,860.00</b></div>
+                  <div class="summary-bar">预览：<b>5条明细</b>（含 <b style="color:#d46b08">1条重复</b>）&nbsp;|&nbsp; 合计：<b class="amount">¥ 2,660.00</b></div>
                   <div class="table-wrap">
                     <table>
                       <tr>
@@ -699,14 +703,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <th>费用类型</th>
                         <th>实际结算金额(含税)</th>
                       </tr>
-                      <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td>广州区域</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td></tr>
-                      <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td>广州区域</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td></tr>
-                      <tr><td><b>粤F·44444</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxz</td><td></td><td></td><td>广州天河服务中心</td><td><span class="tag tag-orange">过户费</span></td><td class="amount">700.00</td></tr>
-                      <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td>广州区域</td><td>天河门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td></tr>
-                      <tr><td><b>粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
+                      <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td></tr>
+                      <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td></tr>
+                      <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td>汽贸集团</td><td>天河门店</td><td>—</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td></tr>
+                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
+                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b> <span style="font-size:10px;background:#fff7e6;color:#d46b08;border:1px solid #ffd591;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费</span></td><td class="amount">500.00</td></tr>
                     </table>
                   </div>
-                  <div class="alert alert-success" style="margin-top:12px">校验通过，无重复记录（查重维度：VIN码+费用类型；必填项：车牌号 / VIN码 / 费用类型 / 实际结算金额）</div>
+                  <div class="alert alert-error" style="margin-top:12px">发现 <b>1 条重复记录</b>（查重维度：车牌+VIN码+费用项），已高亮标出，请确认后保留其中一条：<span style="margin-left:8px;color:#555">可在下方确认导入后，进入待提交列表手动移除多余项。</span></div>
                 </div>
               </div>
               <div class="modal-footer">
@@ -844,8 +848,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-body">
                 <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:13px;color:#333">
                   <li>以下为待结算的车辆明细，点击勾选后，需点击右上角「马上结算」以进行填写申请表单。</li>
-                  <li>勾选时，所选车辆需为<b>同一费用类型</b>。</li>
-                  <li>部分费用如服务费（业务合作费），订单清分后，系统会自动增加。这部分内容只需勾选即可，无需人工导入上传。</li>
+                  <li>勾选时，所选车辆须属于<b>同一服务中心</b>或<b>同一集团</b>；可跨费用类型勾选，提交时统一选择 <b>U8 费用类型</b>进行申请。</li>
+                  <li>服务费（业务合作费）和过户费由系统自动生成，无需人工导入；整理费需通过「导入结算明细」上传。</li>
                 </ol>
               </div>
               <div class="modal-footer">
@@ -2976,13 +2980,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">二、明细来源</div>
         <ul style="margin:0 0 14px 20px;padding:0;color:#555">
           <li>服务费：订单清分完成后系统自动生成，落入「待提交」tab 列表，<b>无需人工导入</b>。</li>
-          <li>整理费 / 过户费：<b>需人工通过「导入结算明细」上传</b>到「待提交」tab；标准模板请在弹窗中下载。</li>
+          <li>过户费：一般是衍生订单内的代办过户费和发票代开及过户任务单中的其他机构过户费用结算；<b>无需人工导入</b>。</li>
+          <li>整理费：<b>需人工通过「导入结算明细」上传</b>到「待提交」tab；标准模板请在弹窗中下载。</li>
           <li>对账核对：服务费支持上传合作商外部对账单，系统按车牌 / VIN 自动匹配并勾选完全一致项；不匹配项会单独列出供人工核实。</li>
         </ul>
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、申请流程</div>
         <ol style="margin:0 0 14px 20px;padding:0;color:#555">
-          <li>在「待提交」tab 勾选车辆（同一申请单中所选车辆需为<b>同一费用类型</b>）。</li>
+          <li>在「待提交」tab 勾选车辆（所选车辆须属于<b>同一服务中心或同一集团</b>；可跨费用类型，提交时统一选择 U8 费用类型）。</li>
           <li>点击右上角「马上结算」填写申请表单（标题 / 收款方 / 付款信息等），提交审批。</li>
           <li>审批通过后由<b>财务在 FNC 端线下打款</b>，确认已结算。</li>
           <li>状态流转：<span class="tag tag-gray" style="font-size:11px">待提交</span> → <span class="tag tag-orange" style="font-size:11px">待审批</span> → <span class="tag tag-green" style="font-size:11px">待支付</span> → <span class="tag tag-cyan" style="font-size:11px">已结算</span>；中间可被驳回 / 废弃。</li>
@@ -3025,8 +3030,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">七、其他注意事项</div>
         <ul style="margin:0 0 6px 20px;padding:0;color:#555">
           <li>所有「U8部门名称」下拉数据来自后台「部门编码映射」，仅展示已启用部门。</li>
-          <li>查重维度：VIN码 + 费用类型；导入存在重复项时会标记提示，但<b>允许人工保留</b>（用于补充结算等场景）。</li>
-          <li>导入模板必填规则：<b>VIN码 / 费用类型 / 实际结算金额(含税)</b> 通用必填；费用类型=<b style="color:#1890ff">服务费</b>(业务合作费)时，<b>车牌号 / 集团 / 门店</b> 必填；费用类型=<b style="color:#fa8c16">过户费</b> / <b style="color:#52c41a">整理费</b> 时，<b>服务中心</b> 必填。</li>
+          <li>导入查重维度：<b>车牌 + VIN码 + 费用项</b>；存在重复时高亮标记，确认导入后可在待提交列表手动移除多余项。</li>
+          <li>导入模板仅适用于<b>整理费</b>；服务费和过户费由系统自动生成，无需导入。必填字段：车牌号 / VIN码 / 费用类型 / 实际结算金额(含税)。</li>
           <li>申请提交后底层明细被锁定，废弃 / 驳回后会自动释放，可重新勾选申请。</li>
         </ul>
       </div>
@@ -3112,7 +3117,7 @@ new Vue({
     return {
       activeMenu: 'prd',
       prdTab: 'origin',
-      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', group:'', store:'', serviceCenter:'', applicant:'', status:'全部' },
+      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', group:'', store:'', serviceCenter:'', plate:'', applicant:'', status:'全部' },
       deptMapFilter: { code:'', name:'', active:'全部' },
       toastMsg: '',
       // 填写申请表单 — 表单数据
@@ -3148,17 +3153,20 @@ new Vue({
       ],
       // 待提交：车辆级别数据（独立于申请单列表）
       bmsVehicleData: [
-        // 手动导入（过户费/整理费）
-        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',feeType:'过户费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
-        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',feeType:'整理费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
+        // 手动导入（整理费）
+        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',bizFeeType:'维修费',feeType:'整理费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
+        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',bizFeeType:'维修费',feeType:'整理费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
+        // 系统自动添加（代办过户费，衍生订单）
+        {clearTime:'2026-04-06',plate:'粤K·00001',vin:'LFV3A2BM2N3000010',bizFeeType:'代办过户费',feeType:'过户费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'750.00'},
+        {clearTime:'2026-04-07',plate:'粤K·00002',vin:'LFV3A2BM2N3000011',bizFeeType:'发票代开',feeType:'过户费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'680.00'},
         // 系统自动添加（订单清分后，服务费-合作商返利）
-        {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
-        {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
-        {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
-        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',feeType:'服务费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
-        {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',feeType:'服务费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
-        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',feeType:'服务费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
-        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',feeType:'服务费',serviceCenter:'广州花都服务中心',store:'广州花都门店',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
+        {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
+        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
+        {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',bizFeeType:'代办过户费',feeType:'服务费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
+        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
+        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州花都服务中心',store:'广州花都门店',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
       ],
       bmsVehicleChecked: [],
       bmsApplyError: '',
@@ -3504,6 +3512,7 @@ new Vue({
       if (f.group) list = list.filter(v => (v.group||'').includes(f.group))
       if (f.store) list = list.filter(v => (v.store||'').includes(f.store))
       if (f.serviceCenter) list = list.filter(v => (v.serviceCenter||'').includes(f.serviceCenter))
+      if (f.plate) list = list.filter(v => (v.plate||'').includes(f.plate))
       return list
     },
     filteredDeptMapping() {
@@ -3692,9 +3701,10 @@ new Vue({
         return
       }
       const selected = this.bmsVehicleChecked.map(plate => this.bmsVehicleData.find(v => v.plate === plate)).filter(Boolean)
-      const feeTypes = [...new Set(selected.map(v => v.feeType))]
-      if (feeTypes.length > 1) {
-        this.bmsApplyError = '所选车辆须属于同一费用类型，当前已选：' + feeTypes.join('、')
+      const scs = [...new Set(selected.map(v => v.serviceCenter).filter(Boolean))]
+      const groups = [...new Set(selected.map(v => v.group).filter(Boolean))]
+      if (scs.length > 1 && groups.length > 1) {
+        this.bmsApplyError = '所选车辆须属于同一服务中心或同一集团，当前跨服务中心：' + scs.join('、')
         return
       }
       this.bmsView = 'form'
@@ -3832,16 +3842,14 @@ new Vue({
       const note = [
         '标准车牌格式，必填',
         '17位车架号，必填',
-        '可选值：服务费 / 过户费 / 整理费，必填',
+        '可选值：整理费，必填（服务费和过户费由系统自动生成，无需导入）',
         '请以元为单位填写，保留两位小数，必填',
         '建议填写，便于归账核对',
         '建议填写，便于归账核对',
         '建议填写，便于归账核对',
       ]
-      const exampleService  = ['粤A·12345','LFV3A2BM2N3xxxxx1','服务费','560.00','广州区域','广州越秀门店','']
       const exampleArrange  = ['粤B·67890','LFV3A2BM2N3xxxxx2','整理费','500.00','','','广州番禺服务中心']
-      const exampleTransfer = ['粤C·11111','LFV3A2BM2N3xxxxx3','过户费','700.00','','','广州天河服务中心']
-      const csv = [headers, note, exampleService, exampleArrange, exampleTransfer].map(r => r.join(',')).join('\r\n')
+      const csv = [headers, note, exampleArrange].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
