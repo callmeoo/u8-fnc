@@ -3959,8 +3959,8 @@ new Vue({
     },
     downloadReconcileTemplate() {
       const BOM = '\ufeff'
-      const headers = ['车牌号', 'VIN码', '门店全称']
-      const example = ['粤A·12345', 'LFV3A2BM2N3000001', '广州番禺门店']
+      const headers = ['车牌号*', 'VIN码*', '门店全称*', '费用类型*', '实际结算金额（含税，单位：元）*']
+      const example = ['粤A12345', 'LFV3A2BM2N3000001', '广州番禺门店', '整理费-牌证及邮递费', '360.00']
       const csv = [headers, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
