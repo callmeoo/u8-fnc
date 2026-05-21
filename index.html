@@ -754,7 +754,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <b>对账单字段</b>按费用类型区分：
                       <ul style="margin:4px 0 0 18px;padding:0;line-height:1.8">
                         <li><b style="color:#1890ff">服务费</b>：车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</li>
-                        <li><b>非服务费</b>（整理费、过户费等）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</li>
+                        <li><b>非服务费</b>（整理费-牌证及邮递费、过户费）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</li>
                       </ul>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadReconcileTemplate">⬇ 下载对账单模板</button>
@@ -3115,7 +3115,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li>对账核对：服务费支持上传合作商外部对账单，系统按车牌 / VIN 自动匹配并勾选完全一致项；不匹配项会单独列出供人工核实。对账单字段按费用类型区分：
             <ul style="margin:4px 0 0 18px;padding:0;color:#555;line-height:1.8">
               <li><b style="color:#1890ff">服务费</b>：车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</li>
-              <li><b>非服务费</b>（整理费、过户费等）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</li>
+              <li><b>非服务费</b>（整理费-牌证及邮递费、过户费）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</li>
             </ul>
           </li>
         </ul>
