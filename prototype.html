@@ -3188,40 +3188,63 @@ new Vue({
       }
       this.bmsView = 'form'
     },
-    downloadImportTemplate() {
+    downloadImportTemplate(feeType) {
       const BOM = '\ufeff'
-      const headers = [
-        '车牌号*',
-        'VIN码*',
-        '费用类型*',
-        '实际结算金额(含税，单位：元)*',
-        '集团(选填)',
-        '门店(选填)',
-        '服务中心(选填)',
-      ]
-      const note = [
-        '标准车牌格式，必填',
-        '17位车架号，必填',
-        '可选值：整理费-牌证及邮递费（服务费和过户费由系统自动生成），必填',
-        '请以元为单位填写，保留两位小数，必填',
-        '建议填写，便于归账核对',
-        '建议填写，便于归账核对',
-        '建议填写，便于归账核对',
-      ]
-      const exampleService  = ['粤A·12345','LFV3A2BM2N3xxxxx1','服务费','560.00','广州区域','广州越秀门店','']
-      const exampleArrange  = ['粤B·67890','LFV3A2BM2N3xxxxx2','整理费-牌证及邮递费','500.00','','','广州番禺服务中心']
-      const exampleTransfer = ['粤C·11111','LFV3A2BM2N3xxxxx3','过户费','700.00','','','广州天河服务中心']
-      const csv = [headers, note, exampleService, exampleArrange, exampleTransfer].map(r => r.join(',')).join('\r\n')
+      let headers, note, example, filename
+      if (feeType === 'service') {
+        headers = [
+          '车牌号*',
+          'VIN码*',
+          '门店全称*',
+          '集团*',
+          '费用类型*',
+          '实际结算金额(含税，单位：元)*',
+        ]
+      } else {
+        headers = [
+          '车牌号*',
+          'VIN码*',
+          '服务中心*',
+          '费用类型*',
+          '实际结算金额(含税，单位：元)*',
+        ]
+      }
+      if (feeType === 'service') {
+        note = [
+          '标准车牌格式，必填',
+          '17位车架号，必填',
+          '请填写完整门店全称，必填',
+          '所属集团，必填',
+          '固定填：服务费',
+          '请以元为单位填写，保留两位小数，必填',
+        ]
+      } else {
+        note = [
+          '标准车牌格式，必填',
+          '17位车架号，必填',
+          '请填写归属服务中心全称，必填',
+          '可选值：整理费-牌证及邮递费、过户费等，必填',
+          '请以元为单位填写，保留两位小数，必填',
+        ]
+      }
+      if (feeType === 'service') {
+        example = ['粤A·12345','LFV3A2BM2N3xxxxx1','广州越秀门店','汽贸集团','服务费','560.00']
+        filename = '批量结算对账明细标准模板-服务费.csv'
+      } else {
+        example = ['粤B·67890','LFV3A2BM2N3xxxxx2','广州番禺服务中心','整理费-牌证及邮递费','500.00']
+        filename = '批量结算对账明细标准模板-非服务费.csv'
+      }
+      const csv = [headers, note, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = '批量结算对账明细标准模板.csv'
+      a.download = filename
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      this.showToast('标准模板下载成功')
+      this.showToast(feeType === 'service' ? '服务费模板下载成功' : '非服务费模板下载成功')
     },
     confirmImport() {
       // 模拟将预览数据追加进待提交车辆列表
