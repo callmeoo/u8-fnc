@@ -3206,7 +3206,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li><b>系统已有 + 金额一致：</b>沿用系统内数据，对账单视为"完全匹配"。</li>
           <li><b>系统已有 + 金额不一致（如服务费）：</b><b style="color:#cf1322">以系统内金额为准</b>，不采用对账单金额，避免业务方提供的金额与清分结果冲突。</li>
           <li><b>系统无：</b>允许将对账单中系统不存在的数据导入"待提交"，并将对账单中的金额写入 <b>实际结算金额(含税)</b>；此类数据打 <span class="tag" style="background:#fff7e6;color:#d46b08;border:1px solid #ffd591;font-size:11px">系统无</span> 标签（含义：系统无该明细，由人工导入补录）。</li>
-          <li><b>人工导入标记：</b>通过"导入对账单"或"导入结算明细"进入"待提交"的数据，统一打 <span class="tag" style="background:#f0f5ff;color:#2f54eb;border:1px solid #adc6ff;font-size:11px">人工导入</span> 标签，与系统自动生成的明细区分。</li>
           <li><b>跨次去重：</b>同一对账单（车牌 + VIN码 + 费用项）若<b>已在历史中导入过</b>，再次导入时系统自动跳过，不重复入库，避免"导入对账单"与"导入结算明细"两个入口造成数据重复。</li>
           <li><b>标签判断时间点：</b>
             <ul style="margin:6px 0 0 18px;padding:0">
