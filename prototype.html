@@ -672,16 +672,24 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span>「服务费」订单在<b>清分成功后系统自动生成</b>，无需批量导入；如手动导入，系统会提示重复。</span>
                     </div>
                   </div>
-                  <div class="alert alert-info" style="align-items:flex-start">
-                    <div style="flex:1">
-                      <b>标准模板字段：</b>
-                      <div style="margin-top:6px;font-size:12px;line-height:1.9;color:#555">
-                        <div><b style="color:#cf1322">必填：</b>车牌号 / VIN码 / U8费用类型 / 实际结算金额(含税，单位：元)</div>
-                        <div><b style="color:#888">选填：</b>集团 / 门店 / 服务中心（建议填写，便于归账核对）</div>
+                  <div class="alert alert-info" style="align-items:flex-start;flex-direction:column;gap:8px">
+                    <b style="font-size:13px">标准模板字段（按费用类型选择对应模板）</b>
+                    <!-- 服务费模板 -->
+                    <div style="width:100%;background:#fff;border:1px solid #d9e6ff;border-left:3px solid #1677ff;border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+                      <div style="flex:1">
+                        <div style="font-weight:600;font-size:12px;color:#0958d9;margin-bottom:4px">服务费</div>
+                        <div style="font-size:12px;line-height:1.7;color:#555">车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</div>
                       </div>
-                      <span style="font-size:11px;color:#888;margin-top:4px;display:block">U8费用类型可选值：服务费、过户费、整理费-牌证及邮递费</span>
+                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('service')">⬇ 下载服务费模板</button>
                     </div>
-                    <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
+                    <!-- 非服务费模板 -->
+                    <div style="width:100%;background:#fff;border:1px solid #d9f7be;border-left:3px solid #52c41a;border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+                      <div style="flex:1">
+                        <div style="font-weight:600;font-size:12px;color:#389e0d;margin-bottom:4px">非服务费<span style="font-weight:normal;color:#888;font-size:11px;margin-left:6px">如整理费-牌证及邮递费、过户费等</span></div>
+                        <div style="font-size:12px;line-height:1.7;color:#555">车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</div>
+                      </div>
+                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('nonService')">⬇ 下载非服务费模板</button>
+                    </div>
                   </div>
                   <div class="upload-area" style="margin-top:4px" @click="importStep=2">
                 <div>点击上传 Excel 文件（仅支持系统标准模板格式）</div>

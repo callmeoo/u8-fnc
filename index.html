@@ -682,20 +682,24 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span>「服务费」订单在<b>清分成功后系统自动生成</b>，无需批量导入；如手动导入，系统会提示重复。</span>
                     </div>
                   </div>
-                  <div class="alert alert-info" style="align-items:flex-start">
-                    <div style="flex:1">
-                      <b>标准模板字段：</b>
-                      <div style="margin-top:6px;font-size:12px;line-height:1.9;color:#555">
-                        <div><b style="color:#cf1322">必填：</b>车牌号 / VIN码 / 费用类型 / 实际结算金额(含税，单位：元)</div>
-                        <div><b style="color:#888">选填：</b>集团 / 门店 / 服务中心（建议填写，便于归账核对）</div>
+                  <div class="alert alert-info" style="align-items:flex-start;flex-direction:column;gap:8px">
+                    <b style="font-size:13px">标准模板字段（按费用类型选择对应模板）</b>
+                    <!-- 服务费模板 -->
+                    <div style="width:100%;background:#fff;border:1px solid #d9e6ff;border-left:3px solid #1677ff;border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+                      <div style="flex:1">
+                        <div style="font-weight:600;font-size:12px;color:#0958d9;margin-bottom:4px">服务费</div>
+                        <div style="font-size:12px;line-height:1.7;color:#555">车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</div>
                       </div>
-                      <div style="margin-top:8px;font-size:12px;line-height:1.9;color:#555">
-                        <div style="font-weight:600;color:#333;margin-bottom:2px">费用类型说明：</div>
-                        <div><b style="color:#52c41a">整理费-牌证及邮递费</b>：牌证办理及邮寄产生的费用，需人工导入。</div>
-                        <div style="color:#999;font-size:11px">服务费和过户费由系统自动生成，无需导入。</div>
-                      </div>
+                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('service')">⬇ 下载服务费模板</button>
                     </div>
-                    <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadImportTemplate">⬇ 下载标准模板</button>
+                    <!-- 非服务费模板 -->
+                    <div style="width:100%;background:#fff;border:1px solid #d9f7be;border-left:3px solid #52c41a;border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+                      <div style="flex:1">
+                        <div style="font-weight:600;font-size:12px;color:#389e0d;margin-bottom:4px">非服务费<span style="font-weight:normal;color:#888;font-size:11px;margin-left:6px">如整理费-牌证及邮递费、过户费等</span></div>
+                        <div style="font-size:12px;line-height:1.7;color:#555">车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</div>
+                      </div>
+                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('nonService')">⬇ 下载非服务费模板</button>
+                    </div>
                   </div>
                   <div class="upload-area" style="margin-top:4px" @click="importStep=2">
                 <div>点击上传 Excel 文件（仅支持系统标准模板格式）</div>
@@ -747,7 +751,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                   <div class="alert alert-info" style="align-items:flex-start">
                     <div style="flex:1">
-                      <b>对账单字段：</b>车牌号 / VIN码 / 门店全称 / 费用类型 / 实际结算金额（含税，单位：元）
+                      <b>对账单字段</b>按费用类型区分：
+                      <ul style="margin:4px 0 0 18px;padding:0;line-height:1.8">
+                        <li><b style="color:#1890ff">服务费</b>：车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</li>
+                        <li><b>非服务费</b>（整理费、过户费等）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</li>
+                      </ul>
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadReconcileTemplate">⬇ 下载对账单模板</button>
                   </div>
@@ -3108,7 +3116,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <ul style="margin:4px 0 0 18px;padding:0;color:#555;line-height:1.8">
               <li><b style="color:#1890ff">服务费</b>：车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</li>
               <li><b>非服务费</b>（整理费、过户费等）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</li>
-              <li style="color:#888;font-size:12px">「下载对账单模板」会根据所选费用类型自动调整模板字段。</li>
             </ul>
           </li>
         </ul>
@@ -4033,38 +4040,63 @@ new Vue({
       URL.revokeObjectURL(url)
       this.showToast('对账单模板下载成功')
     },
-    downloadImportTemplate() {
+    downloadImportTemplate(feeType) {
       const BOM = '\ufeff'
-      const headers = [
-        '车牌号*',
-        'VIN码*',
-        '费用类型*',
-        '实际结算金额(含税，单位：元)*',
-        '集团(选填)',
-        '门店(选填)',
-        '服务中心(选填)',
-      ]
-      const note = [
-        '标准车牌格式，必填',
-        '17位车架号，必填',
-        '可选值：整理费-牌证及邮递费，必填（服务费和过户费由系统自动生成，无需导入）',
-        '请以元为单位填写，保留两位小数，必填',
-        '建议填写，便于归账核对',
-        '建议填写，便于归账核对',
-        '建议填写，便于归账核对',
-      ]
-      const exampleArrange  = ['粤B·67890','LFV3A2BM2N3xxxxx2','整理费-牌证及邮递费','500.00','','','广州番禺服务中心']
-      const csv = [headers, note, exampleArrange].map(r => r.join(',')).join('\r\n')
+      let headers, note, example, filename
+      if (feeType === 'service') {
+        headers = [
+          '车牌号*',
+          'VIN码*',
+          '门店全称*',
+          '集团*',
+          '费用类型*',
+          '实际结算金额(含税，单位：元)*',
+        ]
+      } else {
+        headers = [
+          '车牌号*',
+          'VIN码*',
+          '服务中心*',
+          '费用类型*',
+          '实际结算金额(含税，单位：元)*',
+        ]
+      }
+      if (feeType === 'service') {
+        note = [
+          '标准车牌格式，必填',
+          '17位车架号，必填',
+          '请填写完整门店全称，必填',
+          '所属集团，必填',
+          '固定填：服务费',
+          '请以元为单位填写，保留两位小数，必填',
+        ]
+      } else {
+        note = [
+          '标准车牌格式，必填',
+          '17位车架号，必填',
+          '请填写归属服务中心全称，必填',
+          '可选值：整理费-牌证及邮递费、过户费等，必填',
+          '请以元为单位填写，保留两位小数，必填',
+        ]
+      }
+      if (feeType === 'service') {
+        example = ['粤A·12345','LFV3A2BM2N3xxxxx1','广州越秀门店','汽贸集团','服务费','560.00']
+        filename = '批量结算明细标准模板-服务费.csv'
+      } else {
+        example = ['粤B·67890','LFV3A2BM2N3xxxxx2','广州番禺服务中心','整理费-牌证及邮递费','500.00']
+        filename = '批量结算明细标准模板-非服务费.csv'
+      }
+      const csv = [headers, note, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = '批量结算明细标准模板.csv'
+      a.download = filename
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      this.showToast('标准模板下载成功')
+      this.showToast(feeType === 'service' ? '服务费模板下载成功' : '非服务费模板下载成功')
     },
     confirmImport() {
       // 模拟将预览数据追加进待提交车辆列表
