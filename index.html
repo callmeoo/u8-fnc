@@ -747,7 +747,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                   <div class="alert alert-info" style="align-items:flex-start">
                     <div style="flex:1">
-                      <b>对账单字段：</b>车牌号 / VIN码 / 门店全称
+                      <b>对账单字段：</b>车牌号 / VIN码 / 门店全称 / 费用类型 / 实际结算金额（含税，单位：元）
                     </div>
                     <button class="btn btn-default btn-sm" style="margin-left:12px;flex-shrink:0" @click="downloadReconcileTemplate">⬇ 下载对账单模板</button>
                   </div>
@@ -764,10 +764,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="flex:1;min-width:160px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px;padding:10px 12px">
                       <div style="font-size:11px;color:#666">完全匹配（自动勾选）</div>
                       <div style="font-size:18px;font-weight:600;color:#52c41a;margin-top:2px">{{reconcileResult.matched.length}} 条</div>
-                    </div>
-                    <div style="flex:1;min-width:160px;background:#fff1f0;border:1px solid #ffa39e;border-radius:4px;padding:10px 12px">
-                      <div style="font-size:11px;color:#666">系统有 / 对账单无</div>
-                      <div style="font-size:18px;font-weight:600;color:#cf1322;margin-top:2px">{{reconcileResult.missingInBill.length}} 条</div>
                     </div>
                     <div style="flex:1;min-width:160px;background:#e6f7ff;border:1px solid #91d5ff;border-radius:4px;padding:10px 12px">
                       <div style="font-size:11px;color:#666">对账单有 / 系统无</div>
@@ -788,23 +784,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td class="amount">{{m.sysAmt}}</td>
                         </tr>
                         <tr v-if="reconcileResult.matched.length===0"><td colspan="4" style="text-align:center;color:#999;padding:14px">无</td></tr>
-                      </table>
-                    </div>
-                  </div>
-
-                  <!-- 系统有/对账单无 -->
-                  <div v-if="reconcileResult.missingInBill.length" style="margin-bottom:14px">
-                    <div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#cf1322">系统有 / 对账单无（{{reconcileResult.missingInBill.length}} 条 · 默认<b>不勾选</b>，建议本次不结算）</div>
-                    <div class="table-wrap">
-                      <table>
-                        <tr><th>车牌号</th><th>VIN码</th><th>门店全称</th><th>系统金额</th><th>清分时间</th></tr>
-                        <tr v-for="m in reconcileResult.missingInBill" :key="m.plate">
-                          <td><b>{{m.plate}}</b></td>
-                          <td style="font-size:11px;font-family:monospace;color:#666">{{m.vin}}</td>
-                          <td style="font-size:11px;color:#555">{{m.store||'—'}}</td>
-                          <td class="amount">{{m.sysAmt}}</td>
-                          <td style="font-size:11px;color:#666">{{m.clearTime}}</td>
-                        </tr>
                       </table>
                     </div>
                   </div>
