@@ -4026,9 +4026,18 @@ new Vue({
     },
     downloadReconcileTemplate() {
       const BOM = '\ufeff'
-      const headers = ['车牌号*', 'VIN码*', '门店全称*', '费用类型*', '实际结算金额（含税，单位：元）*']
-      const example = ['粤A12345', 'LFV3A2BM2N3000001', '广州番禺门店', '整理费-牌证及邮递费', '360.00']
-      const csv = [headers, example].map(r => r.join(',')).join('\r\n')
+      const headers = ['车牌号', 'VIN码', '门店全称', '集团', '服务中心', '费用类型', '实际结算金额（元含税）']
+      const ruleRows = [
+        ['# 填写规则说明（导入时以 # 开头的说明行会被忽略）'],
+        ['# 服务费必填：车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额'],
+        ['# 非服务费（整理费、过户费）必填：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额']
+      ]
+      const examples = [
+        ['粤A12345', 'LFV3A2BM2N3000001', '广州番禺门店', '汽贸集团', '', '服务费', '560.00'],
+        ['粤B23456', 'LFV3A2BM2N3000002', '', '', '广州番禺服务中心', '整理费-牌证及邮递费', '360.00'],
+        ['粤C34567', 'LFV3A2BM2N3000003', '', '', '广州天河服务中心', '过户费', '295.00']
+      ]
+      const csv = [...ruleRows, headers, ...examples].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
