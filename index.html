@@ -2009,6 +2009,41 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <li>审批通过/驳回结果实时同步至BMS批量结算列表状态</li>
                 <li>申请人在BMS侧可查看完整审批流程和意见</li>
               </ul>
+
+              <div class="section-title" style="margin:14px 0 8px">五、导入比对与标签更新时机</div>
+              <div class="alert alert-warning" style="margin-bottom:10px;font-size:12px;line-height:1.8">
+                BMS"导入对账单 / 导入结算明细"完成后，系统按 <b>车牌 + VIN码 + 费用项</b> 与系统内数据比对，并生成对应标签；付款审批环节会基于这些标签做二次校验，避免重复支付。详细比对规则见 BMS &gt; 批量结算 &gt; 「功能说明」第七节。
+              </div>
+              <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px">
+                <thead>
+                  <tr style="background:#e6f4ff">
+                    <th style="padding:7px 10px;border:1px solid #bae0ff;text-align:left;font-weight:600;color:#1677ff">标签</th>
+                    <th style="padding:7px 10px;border:1px solid #bae0ff;text-align:left;font-weight:600;color:#1677ff">含义</th>
+                    <th style="padding:7px 10px;border:1px solid #bae0ff;text-align:left;font-weight:600;color:#1677ff">判断 / 更新时机</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff"><span class="tag tag-cyan" style="font-size:11px">已结算</span></td>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff">该明细在系统内已存在且已完成结算</td>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff"><b>时间点 1：</b>导入完成后即时判断生成</td>
+                  </tr>
+                  <tr style="background:#f0f7ff">
+                    <td style="padding:7px 10px;border:1px solid #bae0ff"><span class="tag" style="background:#fff7e6;color:#d46b08;border:1px solid #ffd591;font-size:11px">系统无</span></td>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff">系统无该明细，由人工通过对账单 / 结算明细导入补录</td>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff"><b>时间点 1：</b>导入完成后即时判断生成</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff"><span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span></td>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff">该明细此前已被其他申请单结算过，本次提示风险，需审批人重点确认</td>
+                    <td style="padding:7px 10px;border:1px solid #bae0ff"><b>时间点 2：</b>打开付款审批流时再次比对并更新</td>
+                  </tr>
+                </tbody>
+              </table>
+              <ul style="font-size:12px;color:#555;line-height:2.2;padding-left:20px">
+                <li>审批人在付款审批详情页可直接看到这三类标签，作为审批通过 / 驳回的依据。</li>
+                <li><span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span> 是付款审批环节新增的"开门校验"，防止同一笔费用被二次支付。</li>
+              </ul>
             </div>
           </div>
 
@@ -3165,10 +3200,25 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li><b>已废弃</b>：仅查看。</li>
         </ul>
 
-        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">七、其他注意事项</div>
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">七、对账单导入比对规则与标签判断时点</div>
+        <ul style="margin:0 0 14px 20px;padding:0;color:#555">
+          <li><b>比对维度：</b>导入对账单后，系统按 <b>车牌 + VIN码 + 费用项</b> 与系统内已有数据比对，并在导入结果中告知匹配情况。</li>
+          <li><b>系统已有 + 金额一致：</b>沿用系统内数据，对账单视为"完全匹配"。</li>
+          <li><b>系统已有 + 金额不一致（如服务费）：</b><b style="color:#cf1322">以系统内金额为准</b>，不采用对账单金额，避免业务方提供的金额与清分结果冲突。</li>
+          <li><b>系统无：</b>允许将对账单中系统不存在的数据导入"待提交"，并将对账单中的金额写入 <b>实际结算金额(含税)</b>；此类数据打 <span class="tag" style="background:#fff7e6;color:#d46b08;border:1px solid #ffd591;font-size:11px">系统无</span> 标签（含义：系统无该明细，由人工导入补录）。</li>
+          <li><b>人工导入标记：</b>通过"导入对账单"或"导入结算明细"进入"待提交"的数据，统一打 <span class="tag" style="background:#f0f5ff;color:#2f54eb;border:1px solid #adc6ff;font-size:11px">人工导入</span> 标签，与系统自动生成的明细区分。</li>
+          <li><b>跨次去重：</b>同一对账单（车牌 + VIN码 + 费用项）若<b>已在历史中导入过</b>，再次导入时系统自动跳过，不重复入库，避免"导入对账单"与"导入结算明细"两个入口造成数据重复。</li>
+          <li><b>标签判断时间点：</b>
+            <ul style="margin:6px 0 0 18px;padding:0">
+              <li><b>导入完成时（时间点 1）：</b>判断生成 <span class="tag tag-cyan" style="font-size:11px">已结算</span>、<span class="tag" style="background:#fff7e6;color:#d46b08;border:1px solid #ffd591;font-size:11px">系统无</span> 两个标签。</li>
+              <li><b>打开付款审批流时（时间点 2）：</b>进入付款审批环节时再次比对，更新 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span> 标签（防止重复支付）。</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div style="font-weight:600;margin-bottom:6px;color:#0050b3">八、其他注意事项</div>
         <ul style="margin:0 0 6px 20px;padding:0;color:#555">
           <li>所有「U8部门名称」下拉数据来自后台「部门编码映射」，仅展示已启用部门。</li>
-          <li>导入查重维度：<b>车牌 + VIN码 + 费用项</b>；存在重复时高亮标记，确认导入后可在待提交列表手动移除多余项。</li>
           <li>导入模板仅适用于<b>整理费-牌证及邮递费</b>；服务费和过户费由系统自动生成，无需导入。必填字段：车牌号 / VIN码 / 费用类型 / 实际结算金额(含税)。</li>
           <li>申请提交后底层明细被锁定，废弃 / 驳回后会自动释放，可重新勾选申请。</li>
         </ul>
