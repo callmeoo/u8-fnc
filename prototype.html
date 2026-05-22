@@ -493,7 +493,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="card-title">BMS — 批量结算列表</span>
                 <!-- 非待提交 tab：显示"导入"和"申请结算" -->
                 <div v-if="bmsStatusTab!=='draft'" style="display:flex;gap:8px">
-                  <button class="btn btn-default" @click="importDialog=true">导入对账明细</button>
+                  <button class="btn btn-default" @click="importDialog=true">导入牌证及邮递费</button>
                   <button class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
                 </div>
                 <!-- 待提交 tab：仅显示"马上申请结算" -->
@@ -558,7 +558,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
                 <div v-if="bmsStatusTab==='draft'">
-                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。须勾选<b>同一服务中心</b>或<b>同一集团</b>的车辆；可跨费用类型，提交时统一选择 <b>U8 费用类型</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费-牌证及邮递费需通过「导入结算明细」上传。</span></div>
+                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。须勾选<b>同一服务中心</b>或<b>同一集团</b>的车辆；可跨费用类型，提交时统一选择 <b>U8 费用类型</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费-牌证及邮递费需通过「导入牌证及邮递费」上传。</span></div>
                   <div v-if="bmsApplyError" class="alert alert-error" style="margin-bottom:10px"> {{bmsApplyError}}</div>
                   <div class="table-wrap">
                     <table>
@@ -581,7 +581,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(bmsVehicleData.indexOf(v),1);showToast('已移除')">移除</button></td>
                       </tr>
                       <tr v-if="filteredVehicleData.length===0">
-                        <td colspan="11" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入对账明细'}}</td>
+                        <td colspan="11" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入牌证及邮递费'}}</td>
                       </tr>
                     </table>
                   </div>
@@ -652,7 +652,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <!-- Import Dialog -->
           <div class="modal-mask" v-if="importDialog" @click.self="importDialog=false">
             <div class="modal" style="max-width:640px">
-              <div class="modal-header"><span class="modal-title">导入对账明细</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
+              <div class="modal-header"><span class="modal-title">导入牌证及邮递费</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
               <div class="modal-body">
                 <!-- Step 1: 上传文件 -->
                 <div v-if="importStep===1">
@@ -661,35 +661,27 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;color:#d46b08;margin-bottom:6px">导入说明</div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">①</span>
-                      <span>适用于系统内<b>未自动创建</b>的订单（如「整理费-牌证及邮递费」）；「服务费」「过户费」由系统自动生成，无需手动导入。</span>
+                      <span>适用于「<b>整理费-牌证及邮递费</b>」。</span>
                     </div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555;margin-top:4px">
                       <span style="color:#fa8c16;flex-shrink:0">②</span>
-                      <span>系统按 <b>车牌+VIN+U8费用类型</b> 与全量数据查重；<b>三类重复均允许导入</b>，预览页高亮提示，导入后由审批人重点核实。</span>
+                      <span>系统按 <b>车牌+VIN+U8费用类型</b> 与全量数据查重；<b>三类重复均允许导入</b>，预览页高亮提示，导入后再次核实。</span>
                     </div>
                     <div style="padding-left:22px;margin-top:4px;line-height:2;color:#555">
-                      <div>· <b>文件内重复</b>：同一文件中多次出现，每条标记 <span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span>，提醒导入人核实。</div>
-                      <div>· <b>与系统已结算数据重复</b>：每条标记 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span>，提醒审批人核实是否补录。</div>
-                      <div>· <b>与系统未结算数据重复</b>：每条标记 <span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span>，提醒审批人核实是否重复结算。</div>
+                      <div>· <b>文件内重复</b>：同一文件中多次出现，每条标记 <span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span>，提醒核实。</div>
+                      <div>· <b>与系统已结算数据重复</b>：每条标记 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span>，提醒核实是否补录。</div>
+                      <div>· <b>与系统未结算数据重复</b>：每条标记 <span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span>，提醒核实是否重复结算。</div>
                     </div>
                   </div>
                   <div class="alert alert-info" style="align-items:flex-start;flex-direction:column;gap:8px">
-                    <b style="font-size:13px">标准模板字段（按费用类型选择对应模板）</b>
-                    <!-- 服务费模板 -->
-                    <div style="width:100%;background:#fff;border:1px solid #d9e6ff;border-left:3px solid #1677ff;border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px">
-                      <div style="flex:1">
-                        <div style="font-weight:600;font-size:12px;color:#0958d9;margin-bottom:4px">服务费</div>
-                        <div style="font-size:12px;line-height:1.7;color:#555">车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</div>
-                      </div>
-                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('service')">⬇ 下载服务费模板</button>
-                    </div>
-                    <!-- 非服务费模板 -->
+                    <b style="font-size:13px">标准模板字段（所有字段均必填）</b>
                     <div style="width:100%;background:#fff;border:1px solid #d9f7be;border-left:3px solid #52c41a;border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px">
                       <div style="flex:1">
-                        <div style="font-weight:600;font-size:12px;color:#389e0d;margin-bottom:4px">非服务费<span style="font-weight:normal;color:#888;font-size:11px;margin-left:6px">如整理费-牌证及邮递费、过户费等</span></div>
+                        <div style="font-weight:600;font-size:12px;color:#389e0d;margin-bottom:4px">整理费-牌证及邮递费</div>
                         <div style="font-size:12px;line-height:1.7;color:#555">车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</div>
+                        <div style="font-size:11px;color:#888;margin-top:2px">费用类型默认为「整理费-牌证及邮递费」，模板中已锁定该值。</div>
                       </div>
-                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('nonService')">⬇ 下载非服务费模板</button>
+                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('nonService')">⬇ 下载导入模板</button>
                     </div>
                   </div>
                   <div class="upload-area" style="margin-top:4px" @click="importStep=2">
@@ -703,14 +695,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th>车牌号</th><th>VIN码</th><th>U8费用类型</th><th>实际结算金额(含税)</th>
-                        <th>集团</th><th>门店</th><th>服务中心</th><th>异常信息</th>
+                        <th>车牌号</th><th>VIN码</th><th>服务中心</th><th>U8费用类型</th><th>实际结算金额(含税)</th><th>异常信息</th>
                       </tr>
-                      <tr><td><b>粤A·11111</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx01</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td><td style="color:#52c41a;font-size:11px">正常</td></tr>
-                      <tr style="background:#fff1f0"><td><b style="color:#cf1322">粤B·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx02</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td><td>汽贸集团</td><td>天河门店</td><td>—</td><td><span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span></td></tr>
-                      <tr style="background:#f9f0ff"><td><b style="color:#722ed1">粤C·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx03</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span></td></tr>
-                      <tr style="background:#fffbe6"><td><b style="color:#874d00">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx0b</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td><td><span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td></tr>
-                      <tr style="background:#fffbe6"><td><b style="color:#874d00">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx0b</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td><td><span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td></tr>
+                      <tr><td><b>粤A·11111</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx01</td><td>广州越秀服务中心</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">600.00</td><td style="color:#52c41a;font-size:11px">正常</td></tr>
+                      <tr style="background:#fff1f0"><td><b style="color:#cf1322">粤B·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx02</td><td>广州天河服务中心</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">560.00</td><td><span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span></td></tr>
+                      <tr style="background:#f9f0ff"><td><b style="color:#722ed1">粤C·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx03</td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td><span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span></td></tr>
+                      <tr style="background:#fffbe6"><td><b style="color:#874d00">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx0b</td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td><span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td></tr>
+                      <tr style="background:#fffbe6"><td><b style="color:#874d00">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx0b</td><td>广州番禺服务中心</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td><span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td></tr>
                     </table>
                   </div>
                   <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
@@ -1900,7 +1891,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
               <div class="section-title" style="margin:14px 0 8px">五、导入比对与标签更新时机</div>
               <div class="alert alert-warning" style="margin-bottom:10px;font-size:12px;line-height:1.8">
-                BMS"导入对账单 / 导入结算明细"完成后，系统按 <b>车牌 + VIN码 + 费用项</b> 与系统内数据比对，并生成对应标签；付款审批环节会基于这些标签做二次校验，避免重复支付。
+                BMS"导入服务费 / 导入牌证及邮递费"完成后，系统按 <b>车牌 + VIN码 + 费用项</b> 与系统内数据比对，并生成对应标签；付款审批环节会基于这些标签做二次校验，避免重复支付。
               </div>
               <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px">
                 <thead>
@@ -2342,7 +2333,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8">说明</th>
                     <th style="padding:8px 12px;text-align:left;border:1px solid #e8e8e8;width:200px">详见</th>
                   </tr>
-                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS 申请表单（一站式）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">明细勾选 / 导入对账单 / 导入明细 + 发票上传 + 付款/收款信息录入 + 备注</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算</td></tr>
+                  <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS 申请表单（一站式）</td><td style="padding:8px 12px;border:1px solid #e8e8e8">明细勾选 / 导入服务费 / 导入牌证及邮递费 + 发票上传 + 付款/收款信息录入 + 备注</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">5级审批流</td><td style="padding:8px 12px;border:1px solid #e8e8e8">区域经理 → 财务（麦经理）→ 区域总监 → 财务负责人 → 总经理</td><td style="padding:8px 12px;border:1px solid #e8e8e8">其他 &gt; 审批流</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">企微 H5 审批端</td><td style="padding:8px 12px;border:1px solid #e8e8e8">非财务角色在企微"付款审批"中处理待办</td><td style="padding:8px 12px;border:1px solid #e8e8e8">其他 &gt; 审批流（企微演示 tab）</td></tr>
                   <tr><td style="padding:8px 12px;border:1px solid #e8e8e8">驳回 / 修改重提 / 废弃</td><td style="padding:8px 12px;border:1px solid #e8e8e8">任意级驳回退回业务员；可修改重提或废弃为终态</td><td style="padding:8px 12px;border:1px solid #e8e8e8">BMS &gt; 批量结算（详情页）</td></tr>
@@ -2670,15 +2661,26 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div style="margin-bottom:20px">
                   <div style="font-weight:600;font-size:13px;color:#1890ff;margin-bottom:10px">2. BMS 批量结算</div>
 
-                  <div style="margin-bottom:8px;font-size:13px"><b>2.1 导入结算明细</b></div>
+                  <div style="margin-bottom:8px;font-size:13px"><b>2.1 导入入口拆分（按费用类型分独立入口）</b></div>
                   <div style="font-size:12px;color:#555;line-height:2;padding-left:16px;margin-bottom:10px">
-                    <div>· 必填项：车牌 + VIN + U8费用项</div>
-                    <div>· 重复项唯一标识：车牌 + VIN + U8费用项（与系统<b>全量数据</b>比对）</div>
-                    <div>· 查重分三类，<b>均允许导入</b>，预览页高亮，并在审批环节再次复核：</div>
-                    <div style="padding-left:14px">① <b>文件内重复</b>：每条标记 <span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span>，由导入人核实</div>
-                    <div style="padding-left:14px">② <b>与系统已结算重复</b>：每条标记 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span></div>
-                    <div style="padding-left:14px">③ <b>与系统未结算重复</b>：每条标记 <span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span></div>
-                    <div>· "下载模板"有更新</div>
+                    <div>· 原「导入对账单核对」<b>改名</b>「<b>导入服务费</b>」；原「导入结算明细」<b>改名</b>「<b>导入牌证及邮递费</b>」。</div>
+                    <div style="margin-top:6px;padding:6px 8px;background:#f0f5ff;border-left:3px solid #1677ff;border-radius:2px">
+                      <div><b style="color:#0958d9">导入服务费</b></div>
+                      <div style="padding-left:14px">· 模板字段（均必填）：车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税）</div>
+                      <div style="padding-left:14px">· 费用类型默认：<b>服务费</b>（模板锁定）</div>
+                      <div style="padding-left:14px">· <b style="color:#cf1322">对账单有 / 系统无</b> 的数据 <b>不导入</b>，仅列出供人工核实</div>
+                    </div>
+                    <div style="margin-top:6px;padding:6px 8px;background:#f6ffed;border-left:3px solid #52c41a;border-radius:2px">
+                      <div><b style="color:#389e0d">导入牌证及邮递费</b></div>
+                      <div style="padding-left:14px">· 适用于：<b>整理费-牌证及邮递费</b>；只保留一个模板</div>
+                      <div style="padding-left:14px">· 模板字段（均必填）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税）</div>
+                      <div style="padding-left:14px">· 费用类型固定：<b>整理费-牌证及邮递费</b>（模板锁定）</div>
+                      <div style="padding-left:14px">· 查重维度：车牌 + VIN + U8费用类型；查重范围：与系统<b>全量数据</b>比对</div>
+                      <div style="padding-left:14px">· 查重分三类，<b>均允许导入</b>，预览页高亮，并在审批环节再次复核：</div>
+                      <div style="padding-left:28px">① <b>文件内重复</b>：每条标记 <span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">重复</span></div>
+                      <div style="padding-left:28px">② <b>与系统已结算重复</b>：每条标记 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span></div>
+                      <div style="padding-left:28px">③ <b>与系统未结算重复</b>：每条标记 <span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span></div>
+                    </div>
                   </div>
 
                   <div style="margin-bottom:8px;font-size:13px"><b>2.2 查询项和展示项</b></div>
@@ -3205,52 +3207,24 @@ new Vue({
       }
       this.bmsView = 'form'
     },
-    downloadImportTemplate(feeType) {
+    downloadImportTemplate() {
       const BOM = '\ufeff'
-      let headers, note, example, filename
-      if (feeType === 'service') {
-        headers = [
-          '车牌号*',
-          'VIN码*',
-          '门店全称*',
-          '集团*',
-          '费用类型*',
-          '实际结算金额(含税，单位：元)*',
-        ]
-      } else {
-        headers = [
-          '车牌号*',
-          'VIN码*',
-          '服务中心*',
-          '费用类型*',
-          '实际结算金额(含税，单位：元)*',
-        ]
-      }
-      if (feeType === 'service') {
-        note = [
-          '标准车牌格式，必填',
-          '17位车架号，必填',
-          '请填写完整门店全称，必填',
-          '所属集团，必填',
-          '固定填：服务费',
-          '请以元为单位填写，保留两位小数，必填',
-        ]
-      } else {
-        note = [
-          '标准车牌格式，必填',
-          '17位车架号，必填',
-          '请填写归属服务中心全称，必填',
-          '可选值：整理费-牌证及邮递费、过户费等，必填',
-          '请以元为单位填写，保留两位小数，必填',
-        ]
-      }
-      if (feeType === 'service') {
-        example = ['粤A·12345','LFV3A2BM2N3xxxxx1','广州越秀门店','汽贸集团','服务费','560.00']
-        filename = '批量结算对账明细标准模板-服务费.csv'
-      } else {
-        example = ['粤B·67890','LFV3A2BM2N3xxxxx2','广州番禺服务中心','整理费-牌证及邮递费','500.00']
-        filename = '批量结算对账明细标准模板-非服务费.csv'
-      }
+      const headers = [
+        '车牌号*',
+        'VIN码*',
+        '服务中心*',
+        '费用类型*',
+        '实际结算金额(含税，单位：元)*',
+      ]
+      const note = [
+        '标准车牌格式，必填',
+        '17位车架号，必填',
+        '请填写归属服务中心全称，必填',
+        '固定填：整理费-牌证及邮递费',
+        '请以元为单位填写，保留两位小数，必填',
+      ]
+      const example = ['粤B·67890','LFV3A2BM2N3xxxxx2','广州番禺服务中心','整理费-牌证及邮递费','500.00']
+      const filename = '整理费-牌证及邮递费导入模板.csv'
       const csv = [headers, note, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
@@ -3261,7 +3235,7 @@ new Vue({
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      this.showToast(feeType === 'service' ? '服务费模板下载成功' : '非服务费模板下载成功')
+      this.showToast('导入模板下载成功')
     },
     confirmImport() {
       // 模拟将预览数据追加进待提交车辆列表
