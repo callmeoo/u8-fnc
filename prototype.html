@@ -268,7 +268,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <b>费用类型：</b>{{formFeeType}} &nbsp;&nbsp; <b>已选明细：</b>4条 &nbsp;&nbsp;
                 <b>明细合计：</b><span class="amount">¥ 1,360.00</span>
               </div>
-              <div class="alert alert-info" style="margin-bottom:14px">可跨业务费用类型提交，统一指定一个 <b>U8 费用类型</b>开具凭证；所选车辆须属于同一服务中心或同一集团。</div>
+              <div class="alert alert-info" style="margin-bottom:14px">所选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；U8 费用类型由所选车辆自动带入，<b>不支持修改</b>。</div>
               <div class="section-title" style="margin-bottom:14px">基本信息</div>
               <div class="form-row">
                 <div class="form-item full">
@@ -280,11 +280,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="form-item">
                   <label class="form-label req">U8费用类型</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请选择 U8 费用类型..." list="feeType-list" v-model="formFeeType" :class="{'field-error':formValidated&&!formFeeType}">
-                    <datalist id="feeType-list">
-                      <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
-                    </datalist>
-                    <div class="form-note" style="color:#cf1322">服务费返佣选择「服务费」</div>
+                    <input class="inp" style="width:100%;background:#f5f5f5;color:#333;cursor:not-allowed" :value="formFeeType||'服务费'" readonly disabled>
+                    <div class="form-note" style="color:#888">由勾选数据带入，<b>不支持修改</b>；如需更换费用类型，请返回「待提交」tab 重新勾选。</div>
                   </div>
                 </div>
                 <div class="form-item">
@@ -558,7 +555,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
                 <div v-if="bmsStatusTab==='draft'">
-                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。须勾选<b>同一服务中心</b>或<b>同一集团</b>的车辆；可跨费用类型，提交时统一选择 <b>U8 费用类型</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费-牌证及邮递费需通过「导入牌证及邮递费」上传。</span></div>
+                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单的 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费-牌证及邮递费需通过「导入牌证及邮递费」上传。</span></div>
                   <div v-if="bmsApplyError" class="alert alert-error" style="margin-bottom:10px"> {{bmsApplyError}}</div>
                   <div class="table-wrap">
                     <table>
@@ -2691,6 +2688,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div>① 新增费用类型查询项和展示项</div>
                     <div>② <b>服务费（业务合作费）</b>：将门店固定场地费的此类删除，不流入</div>
                     <div>③ 补充数据流入源：衍生服务订单（项目与服务商管理）和原有的过户单的第三方机构结算单</div>
+                    <div>④ <b style="color:#d46b08">申请规则收紧</b>：勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>（2026-05-22 更新）</div>
                   </div>
                 </div>
 
@@ -3194,6 +3192,11 @@ new Vue({
         return
       }
       const selected = this.bmsVehicleChecked.map(plate => this.bmsVehicleData.find(v => v.plate === plate)).filter(Boolean)
+      const feeTypes = [...new Set(selected.map(v => v.feeType).filter(Boolean))]
+      if (feeTypes.length > 1) {
+        this.bmsApplyError = '所选车辆须属于同一 U8 费用类型，当前混选了：' + feeTypes.join('、')
+        return
+      }
       const orgs = [...new Set(selected.map(v => v.org))]
       if (orgs.length > 1) {
         this.bmsApplyError = '所选车辆须属于同一BIP部门名称，当前已选：' + orgs.join('、')
@@ -3205,6 +3208,8 @@ new Vue({
         this.bmsApplyError = '所选车辆须属于同一服务中心或同一集团，当前跨服务中心：' + scs.join('、')
         return
       }
+      // 申请单 U8 费用类型由勾选数据带入，不可修改
+      this.formFeeType = feeTypes[0] || '服务费'
       this.bmsView = 'form'
     },
     downloadImportTemplate() {

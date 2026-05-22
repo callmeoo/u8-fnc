@@ -279,11 +279,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <div class="form-item">
                   <label class="form-label req">U8费用类型</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请选择 U8 费用类型..." list="feeType-list" v-model="formFeeType" :class="{'field-error':formValidated&&!formFeeType}">
-                    <datalist id="feeType-list">
-                      <option v-for="t in feeTypeOptions" :key="t" :value="t">{{t}}</option>
-                    </datalist>
-                    <div class="form-note" style="color:#cf1322">服务费返佣选择「服务费」</div>
+                    <input class="inp" style="width:100%;background:#f5f5f5;color:#333;cursor:not-allowed" :value="formFeeType||'服务费'" readonly disabled>
+                    <div class="form-note" style="color:#888">由勾选数据带入，<b>不支持修改</b>；如需更换费用类型，请返回「待提交」tab 重新勾选。</div>
                   </div>
                 </div>
                 <div class="form-item">
@@ -847,7 +844,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-body">
                 <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:13px;color:#333">
                   <li>以下为待结算的车辆明细，点击勾选后，需点击右上角「马上结算」以进行填写申请表单。</li>
-                  <li>勾选时，所选车辆须属于<b>同一服务中心</b>或<b>同一集团</b>；可跨费用类型勾选，提交时统一选择 <b>U8 费用类型</b>进行申请。</li>
+                  <li>勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单的 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>。</li>
                   <li>服务费（业务合作费）和过户费由系统自动生成，无需人工导入；整理费-牌证及邮递费需通过「导入牌证及邮递费」上传。</li>
                 </ol>
               </div>
@@ -2854,6 +2851,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div>① 新增费用类型查询项和展示项</div>
                     <div>② <b>服务费（业务合作费）</b>：将门店固定场地费的此类删除，不流入</div>
                     <div>③ 补充数据流入源：衍生服务订单（项目与服务商管理）和原有的过户单的第三方机构结算单</div>
+                    <div>④ <b style="color:#d46b08">申请规则收紧</b>：勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>（2026-05-22 更新）</div>
                   </div>
                 </div>
 
@@ -3128,14 +3126,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li>过户费：一般是衍生订单内的代办过户费和发票代开及过户任务单中的其他机构过户费用结算；<b>无需人工导入</b>。</li>
           <li>整理费-牌证及邮递费：<b>需人工通过「导入牌证及邮递费」上传</b>到「待提交」tab；标准模板请在弹窗中下载。</li>
           <li style="color:#cf1322">「待提交」tab 下的数据来源共 4 类：1. 人工导入；2. 人资绩效表-业务合作费；3. 衍生服务订单（项目与服务商管理）中的订单数据；4. 过户任务单中结算给第三方机构的数据（第三方机构未实名认证）。</li>
-          <li style="color:#cf1322">当数据是从<b>衍生服务订单</b>或<b>过户任务单</b>中过来的数据，<b>U8 费用项</b>属性值默认是<b>过户费</b>。</li>
+          <li style="color:#cf1322">当数据是从<b>衍生服务订单</b>或<b>过户任务单</b>中过来的数据，<b>U8 费用项</b>属性值默认是<b>过户费</b>；<b>历史未结算的此类款项 U8 费用类型默认为「过户费」</b>（后端一次性回填）。</li>
           <li style="color:#cf1322">当数据是从<b>人资绩效表-业务合作费</b>过来的数据，<b>U8 费用项</b>默认是<b>「服务费」</b>。</li>
-          <li>对账核对：服务费支持上传合作商外部对账单，系统按车牌 / VIN 自动匹配并勾选完全一致项；不匹配项会单独列出供人工核实。对账单字段按费用类型区分必填项：
-            <ul style="margin:4px 0 0 18px;padding:0;color:#555;line-height:1.8">
-              <li><b style="color:#1890ff">服务费</b>：车牌号 / VIN码 / 门店全称 / 集团 / 费用类型 / 实际结算金额（含税，单位：元）</li>
-              <li><b>非服务费</b>（整理费-牌证及邮递费、过户费）：车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</li>
-            </ul>
-          </li>
+          <li>对账核对：服务费支持上传合作商外部对账单，系统按车牌 / VIN 自动匹配并勾选完全一致项；不匹配项会单独列出供人工核实。</li>
         </ul>
 
         <!-- 数据来源示意 -->
@@ -3193,8 +3186,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、申请流程</div>
         <ol style="margin:0 0 14px 20px;padding:0;color:#555">
-          <li>在「待提交」tab 勾选车辆（所选车辆须属于<b>同一服务中心或同一集团</b>；可跨费用类型，提交时统一选择 U8 费用类型）。
-            <div style="color:#cf1322;font-size:12px;margin-top:4px">当所选数据中既有<b>「服务费」</b>，又有<b>「空的」</b> U8 费用类型时，提交时<b>默认勾选「服务费」</b>。</div>
+          <li>在「待提交」tab 勾选车辆。勾选范围须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>。
+            <div style="color:#cf1322;font-size:12px;margin-top:4px">申请单的 <b>U8 费用类型</b>由所选车辆自动带入，<b>不支持修改</b>；如需切换，请返回列表重新勾选。</div>
           </li>
           <li>点击右上角「马上结算」填写申请表单（标题 / 收款方 / 付款信息等），提交审批。</li>
           <li>审批通过后由<b>财务在 FNC 端线下打款</b>，确认已结算。</li>
@@ -3931,12 +3924,19 @@ new Vue({
         return
       }
       const selected = this.bmsVehicleChecked.map(plate => this.bmsVehicleData.find(v => v.plate === plate)).filter(Boolean)
+      const feeTypes = [...new Set(selected.map(v => v.feeType).filter(Boolean))]
+      if (feeTypes.length > 1) {
+        this.bmsApplyError = '所选车辆须属于同一 U8 费用类型，当前混选了：' + feeTypes.join('、')
+        return
+      }
       const scs = [...new Set(selected.map(v => v.serviceCenter).filter(Boolean))]
       const groups = [...new Set(selected.map(v => v.group).filter(Boolean))]
       if (scs.length > 1 && groups.length > 1) {
         this.bmsApplyError = '所选车辆须属于同一服务中心或同一集团，当前跨服务中心：' + scs.join('、')
         return
       }
+      // 申请单 U8 费用类型由勾选数据带入，不可修改
+      this.formFeeType = feeTypes[0] || '服务费'
       this.bmsView = 'form'
     },
     openFncSettleConfirm(record) {
