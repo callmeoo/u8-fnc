@@ -657,19 +657,20 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <!-- Step 1: 上传文件 -->
                 <div v-if="importStep===1">
                   <!-- Tips -->
-                  <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:2">
-                    <div style="font-weight:600;color:#d46b08;margin-bottom:4px">导入说明</div>
+                  <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px 14px;margin-bottom:12px;font-size:12px;line-height:1.9">
+                    <div style="font-weight:600;color:#d46b08;margin-bottom:6px">导入说明</div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">①</span>
-                      <span>适用于系统内<b>未自动创建</b>的订单，如「整理费-牌证及邮递费」等需手动录入的费用。</span>
+                      <span>适用于系统内<b>未自动创建</b>的订单（如「整理费-牌证及邮递费」）；「服务费」「过户费」由系统自动生成，无需手动导入。</span>
                     </div>
-                    <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
+                    <div style="display:flex;align-items:flex-start;gap:6px;color:#555;margin-top:4px">
                       <span style="color:#fa8c16;flex-shrink:0">②</span>
-                      <span>系统将自动与「<b>已结算单</b>」比对，存在重复项时会标记提醒；<b>允许继续添加</b>，请人工核实后决定是否保留。</span>
+                      <span>系统按 <b>车牌+VIN+U8费用类型</b> 与全量数据查重；<b>三类重复均允许导入</b>，预览页高亮提示，导入后由审批人重点核实。</span>
                     </div>
-                    <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
-                      <span style="color:#52c41a;flex-shrink:0">③</span>
-                      <span>「服务费」订单在<b>清分成功后系统自动生成</b>，无需批量导入；如手动导入，系统会提示重复。</span>
+                    <div style="padding-left:22px;margin-top:4px;line-height:2;color:#555">
+                      <div>· <b>文件内重复</b>：同一文件中多次出现，系统自动合并保留 1 条入库。</div>
+                      <div>· <b>与系统已结算数据重复</b>：每条标记 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span>，提醒审批人核实是否补录。</div>
+                      <div>· <b>与系统未结算数据重复</b>：每条标记 <span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span>，提醒审批人核实是否重复结算。</div>
                     </div>
                   </div>
                   <div class="alert alert-info" style="align-items:flex-start;flex-direction:column;gap:8px">
@@ -698,21 +699,32 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
                 <!-- Step 2: 预览 -->
                 <div v-if="importStep===2">
-                  <div class="summary-bar">预览：<b>5条明细</b>（含 <b style="color:#d46b08">1条重复</b>）&nbsp;|&nbsp; 合计：<b class="amount">¥ 2,660.00</b></div>
+                  <div class="summary-bar">预览：<b>5条明细</b>（含 <b style="color:#d46b08">3条异常</b>，可导入 <b>4条</b>）&nbsp;|&nbsp; 合计：<b class="amount">¥ 2,660.00</b></div>
                   <div class="table-wrap">
                     <table>
                       <tr>
                         <th>车牌号</th><th>VIN码</th><th>U8费用类型</th><th>实际结算金额(含税)</th>
-                        <th>集团</th><th>门店</th><th>服务中心</th>
+                        <th>集团</th><th>门店</th><th>服务中心</th><th>异常信息</th>
                       </tr>
-                      <tr><td><b>粤D·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxx</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td></tr>
-                      <tr><td><b>粤E·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxy</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td></tr>
-                      <tr><td><b>粤G·55555</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxa</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">500.00</td><td>汽贸集团</td><td>天河门店</td><td>—</td></tr>
-                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td></tr>
-                      <tr style="background:#fff7e6"><td><b style="color:#d46b08">粤H·66666</b> <span style="font-size:10px;background:#fff7e6;color:#d46b08;border:1px solid #ffd591;border-radius:2px;padding:0 4px;font-weight:600">重复</span></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxxxb</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td></tr>
+                      <tr><td><b>粤A·11111</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx01</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">600.00</td><td>汽贸集团</td><td>广州越秀门店</td><td>—</td><td style="color:#52c41a;font-size:11px">正常</td></tr>
+                      <tr style="background:#fff1f0"><td><b style="color:#cf1322">粤B·22222</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx02</td><td><span class="tag tag-blue">服务费</span></td><td class="amount">560.00</td><td>汽贸集团</td><td>天河门店</td><td>—</td><td><span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span></td></tr>
+                      <tr style="background:#f9f0ff"><td><b style="color:#722ed1">粤C·33333</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx03</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td><td><span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span></td></tr>
+                      <tr style="background:#fffbe6"><td><b style="color:#874d00">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx0b</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td><td><span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">文件内重复</span></td></tr>
+                      <tr style="background:#fffbe6"><td><b style="color:#874d00">粤H·66666</b></td><td style="font-size:11px;color:#666">LFVBBAKJ5N5xxxx0b</td><td><span class="tag tag-green">整理费-牌证及邮递费</span></td><td class="amount">500.00</td><td></td><td></td><td>广州番禺服务中心</td><td><span style="font-size:11px;background:#fffbe6;color:#874d00;border:1px solid #ffe58f;border-radius:2px;padding:0 4px;font-weight:600">文件内重复</span><span style="font-size:10px;color:#999;margin-left:4px">(将跳过)</span></td></tr>
                     </table>
                   </div>
-                  <div class="alert alert-error" style="margin-top:12px">发现 <b>1 条重复记录</b>（查重维度：车牌+VIN码+费用项），已高亮标出，系统仅会导入 1 条数据；如需调整，请更新文档后重新上传。</div>
+                  <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+                    <div style="padding:8px 12px;background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;font-size:12px;color:#874d00;line-height:1.7">
+                      <b>1 组文件内重复（2 行）</b> · 自动合并保留 1 条入库，其余将跳过；如需保留，请更新文档后重新上传。
+                    </div>
+                    <div style="padding:8px 12px;background:#fff1f0;border:1px solid #ffa39e;border-radius:4px;font-size:12px;color:#cf1322;line-height:1.7">
+                      <b>1 条与系统已结算数据重复</b> · 允许导入，将打 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span> 标签；请审批人核实是否为补充结算，避免重复支付。
+                    </div>
+                    <div style="padding:8px 12px;background:#f9f0ff;border:1px solid #d3adf7;border-radius:4px;font-size:12px;color:#722ed1;line-height:1.7">
+                      <b>1 条与系统未结算数据重复</b> · 允许导入，将打 <span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span> 标签；系统中已有未处理的相同记录，请审批人重点核实是否重复结算。
+                    </div>
+                  </div>
+                  <div style="margin-top:8px;font-size:11px;color:#888">查重维度：车牌号 + VIN码 + U8费用类型；查重范围：与系统全量数据比对。</div>
                 </div>
               </div>
               <div class="modal-footer">
@@ -2646,10 +2658,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div style="font-size:12px;color:#555;line-height:1.9;margin-bottom:12px">在审批流配置中新增审批人角色说明，明确各节点审批人的职责范围。</div>
 
                   <div style="margin-bottom:8px;font-size:13px"><b>1.2 增加差异项</b></div>
-                  <div style="font-size:12px;color:#555;line-height:1.9;margin-bottom:6px">差异项分为两类：</div>
+                  <div style="font-size:12px;color:#555;line-height:1.9;margin-bottom:6px">差异项分为三类：</div>
                   <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
                     <div>① <b>系统无</b>：人工手动导入数据，系统内无此数据</div>
-                    <div>② <b>曾已结算</b>：这台车曾经结算过</div>
+                    <div>② <b>曾已结算</b>：这台车曾经结算过（与系统<b>已结算</b>数据命中查重键）</div>
+                    <div>③ <b>已存在未结算</b>：系统中已有<b>未结算</b>的同 key 记录（车牌+VIN+U8费用类型），提示审批人重点核实是否重复结算（2026-05-22 新增）</div>
                   </div>
                 </div>
 
@@ -2660,7 +2673,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div style="margin-bottom:8px;font-size:13px"><b>2.1 导入结算明细</b></div>
                   <div style="font-size:12px;color:#555;line-height:2;padding-left:16px;margin-bottom:10px">
                     <div>· 必填项：车牌 + VIN + U8费用项</div>
-                    <div>· 重复项唯一标识：车牌 + VIN + U8费用项</div>
+                    <div>· 重复项唯一标识：车牌 + VIN + U8费用项（与系统<b>全量数据</b>比对）</div>
+                    <div>· 查重分三类，<b>均允许导入</b>，预览页高亮，并在审批环节再次复核：</div>
+                    <div style="padding-left:14px">① <b>文件内重复</b>：自动合并保留 1 条入库</div>
+                    <div style="padding-left:14px">② <b>与系统已结算重复</b>：每条标记 <span class="tag" style="background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;font-size:11px">曾已结算</span></div>
+                    <div style="padding-left:14px">③ <b>与系统未结算重复</b>：每条标记 <span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">已存在未结算</span></div>
                     <div>· "下载模板"有更新</div>
                   </div>
 
