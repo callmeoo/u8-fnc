@@ -490,7 +490,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="card-title">BMS — 批量结算列表</span>
                 <!-- 非待提交 tab：显示"导入"和"申请结算" -->
                 <div v-if="bmsStatusTab!=='draft'" style="display:flex;gap:8px">
-                  <button class="btn btn-default" @click="importDialog=true">导入牌证及邮递费</button>
+                  <button class="btn btn-default" @click="importDialog=true">导入牌证邮递费及过户费</button>
                   <button class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
                 </div>
                 <!-- 待提交 tab：仅显示"马上申请结算" -->
@@ -514,6 +514,15 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <select class="sel" v-model="bmsFilter.dept">
                       <option value="全部">全部</option>
                       <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
+                    </select>
+                  </div>
+                  <div class="filter-item" v-if="bmsStatusTab==='draft'">
+                    <label>结算机构</label>
+                    <select class="sel" v-model="bmsFilter.settleOrg" style="width:130px">
+                      <option>全部</option>
+                      <option>柠檬车服</option>
+                      <option>唯普云服务</option>
+                      <option>唯普服务</option>
                     </select>
                   </div>
                   <div class="filter-item">
@@ -550,18 +559,18 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </select>
                   </div>
                   <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredBmsList.length + ' 条')">查询</button>
-                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',group:'',store:'',serviceCenter:'',plate:'',applicant:'',status:'全部'}">重置</button>
+                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',settleOrg:'全部',group:'',store:'',serviceCenter:'',plate:'',applicant:'',status:'全部'}">重置</button>
                 </div>
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
                 <div v-if="bmsStatusTab==='draft'">
-                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单的 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费-牌证及邮递费需通过「导入牌证及邮递费」上传。</span></div>
+                  <div class="alert alert-info" style="margin-bottom:10px">以下为待结算车辆明细，勾选记录后点击右上角「马上申请结算」进入填写申请表单。勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单的 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>。<br><span style="font-size:11px;color:#555">服务费和过户费由系统自动生成；整理费-牌证及邮递费、UCC 出口业务的过户费需通过「导入牌证邮递费及过户费」上传。</span></div>
                   <div v-if="bmsApplyError" class="alert alert-error" style="margin-bottom:10px"> {{bmsApplyError}}</div>
                   <div class="table-wrap">
                     <table>
                       <tr>
                         <th class="check-col"><input type="checkbox" :checked="filteredVehicleData.length>0&&bmsVehicleChecked.length===filteredVehicleData.length" @change="bmsVehicleChecked=$event.target.checked?filteredVehicleData.map(v=>v.plate):[];bmsApplyError=''"></th>
-                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>费用类型</th><th>服务中心</th><th>BIP部门名称</th><th>集团</th><th>门店</th>
+                        <th>清分时间</th><th>车牌号</th><th>VIN码</th><th>结算机构</th><th>费用类型</th><th>服务中心</th><th>BIP部门名称</th><th>集团</th><th>门店</th>
                         <th>实际结算金额(含税)</th><th>操作</th>
                       </tr>
                       <tr v-for="v in filteredVehicleData" :key="v.plate" :style="bmsVehicleChecked.includes(v.plate)?'background:#e6f7ff':''">
@@ -569,6 +578,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td style="font-size:11px;color:#999">{{v.clearTime||''}}</td>
                         <td><b>{{v.plate}}</b></td>
                         <td style="font-size:11px;font-family:monospace;color:#555">{{v.vin||'—'}}</td>
+                        <td style="font-size:11px;color:#555">{{v.settleOrg||'—'}}</td>
                         <td style="font-size:11px">{{v.bizFeeType||'—'}}</td>
                         <td style="font-size:11px;color:#555">{{v.serviceCenter||'—'}}</td>
                         <td style="font-size:11px;color:#555">{{v.org}}</td>
@@ -578,7 +588,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td><button class="btn-link" style="color:#ff4d4f" @click="bmsVehicleData.splice(bmsVehicleData.indexOf(v),1);showToast('已移除')">移除</button></td>
                       </tr>
                       <tr v-if="filteredVehicleData.length===0">
-                        <td colspan="11" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入牌证及邮递费'}}</td>
+                        <td colspan="12" style="text-align:center;color:#999;padding:30px">{{bmsVehicleData.length?'暂无匹配记录':'暂无待结算车辆，请先导入牌证邮递费及过户费'}}</td>
                       </tr>
                     </table>
                   </div>
@@ -649,7 +659,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <!-- Import Dialog -->
           <div class="modal-mask" v-if="importDialog" @click.self="importDialog=false">
             <div class="modal" style="max-width:640px">
-              <div class="modal-header"><span class="modal-title">导入牌证及邮递费</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
+              <div class="modal-header"><span class="modal-title">导入牌证邮递费及过户费</span><span class="modal-close" @click="importDialog=false;importStep=1">✕</span></div>
               <div class="modal-body">
                 <!-- Step 1: 上传文件 -->
                 <div v-if="importStep===1">
@@ -658,7 +668,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;color:#d46b08;margin-bottom:6px">导入说明</div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">①</span>
-                      <span>适用于「<b>整理费-牌证及邮递费</b>」。</span>
+                      <span>适用于「<b>整理费-牌证及邮递费</b>」和「<b>出口业务：代办过户费</b>」；导入时通过模板的「费用类型」字段区分，是否合法合规由人工判断。</span>
                     </div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555;margin-top:4px">
                       <span style="color:#fa8c16;flex-shrink:0">②</span>
@@ -679,6 +689,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <div style="font-size:11px;color:#888;margin-top:2px">费用类型默认为「整理费-牌证及邮递费」，模板中已锁定该值。</div>
                       </div>
                       <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('nonService')">⬇ 下载导入模板</button>
+                    </div>
+                    <div style="width:100%;background:#fff;border:1px solid #ffe7ba;border-left:3px solid #fa8c16;border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+                      <div style="flex:1">
+                        <div style="font-weight:600;font-size:12px;color:#d46b08;margin-bottom:4px">过户费（出口业务）</div>
+                        <div style="font-size:12px;line-height:1.7;color:#555">车牌号 / VIN码 / 服务中心 / 费用类型 / 实际结算金额（含税，单位：元）</div>
+                        <div style="font-size:11px;color:#888;margin-top:2px">费用类型默认为「过户费」，模板中已锁定该值；适用于 UCC 出口业务等无法生成衍生单、需人工记账的场景。</div>
+                      </div>
+                      <button class="btn btn-default btn-sm" style="flex-shrink:0" @click="downloadImportTemplate('transfer')">⬇ 下载导入模板</button>
                     </div>
                   </div>
                   <div class="upload-area" style="margin-top:4px" @click="importStep=2">
@@ -2837,7 +2855,7 @@ new Vue({
     return {
       activeMenu: 'prd',
       prdTab: 'origin',
-      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', group:'', store:'', serviceCenter:'', plate:'', applicant:'', status:'全部' },
+      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', settleOrg:'全部', group:'', store:'', serviceCenter:'', plate:'', applicant:'', status:'全部' },
       deptMapFilter: { code:'', name:'', active:'全部' },
       toastMsg: '',
       // 填写申请表单 — 表单数据
@@ -2873,19 +2891,19 @@ new Vue({
       // 待提交：车辆级别数据（独立于申请单列表）
       bmsVehicleData: [
         // 手动导入（整理费-牌证及邮递费）
-        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
-        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
+        {clearTime:'2026-04-05',plate:'粤C·11111',vin:'LFV3A2BM2N3000003',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',settleOrg:'唯普服务',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'400.00'},
+        {clearTime:'2026-04-05',plate:'粤E·33333',vin:'LFV3A2BM2N3000005',bizFeeType:'维修费',feeType:'整理费-牌证及邮递费',settleOrg:'唯普服务',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'500.00'},
         // 系统自动添加（代办过户费，衍生订单）
-        {clearTime:'2026-04-06',plate:'粤K·00001',vin:'LFV3A2BM2N3000010',bizFeeType:'代办过户费',feeType:'过户费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'750.00'},
-        {clearTime:'2026-04-07',plate:'粤K·00002',vin:'LFV3A2BM2N3000011',bizFeeType:'发票代开',feeType:'过户费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'680.00'},
+        {clearTime:'2026-04-06',plate:'粤K·00001',vin:'LFV3A2BM2N3000010',bizFeeType:'代办过户费',feeType:'过户费',settleOrg:'柠檬车服',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'750.00'},
+        {clearTime:'2026-04-07',plate:'粤K·00002',vin:'LFV3A2BM2N3000011',bizFeeType:'发票代开',feeType:'过户费',settleOrg:'唯普云服务',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'680.00'},
         // 系统自动添加（订单清分后，服务费-合作商返利）
-        {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
-        {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
-        {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
-        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
-        {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',bizFeeType:'代办过户费',feeType:'服务费',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
-        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
-        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',bizFeeType:'发票代开',feeType:'服务费',serviceCenter:'广州花都服务中心',store:'广州花都门店',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
+        {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普云服务',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普云服务',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
+        {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普云服务',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
+        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
+        {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',bizFeeType:'代办过户费',feeType:'服务费',settleOrg:'柠檬车服',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
+        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
+        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州花都服务中心',store:'广州花都门店',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
       ],
       bmsVehicleChecked: [],
       bmsApplyError: '',
@@ -3099,6 +3117,7 @@ new Vue({
       let list = this.bmsVehicleData
       const f = this.bmsFilter
       if (f.feeType && f.feeType !== '全部') list = list.filter(v => v.feeType === f.feeType)
+      if (f.settleOrg && f.settleOrg !== '全部') list = list.filter(v => v.settleOrg === f.settleOrg)
       if (f.dept && f.dept !== '全部') list = list.filter(v => v.org === f.dept)
       if (f.group) list = list.filter(v => (v.group||'').includes(f.group))
       if (f.store) list = list.filter(v => (v.store||'').includes(f.store))
