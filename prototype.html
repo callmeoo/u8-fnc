@@ -668,7 +668,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div style="font-weight:600;color:#d46b08;margin-bottom:6px">导入说明</div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555">
                       <span style="color:#fa8c16;flex-shrink:0">①</span>
-                      <span>适用于「<b>整理费-牌证及邮递费</b>」和「<b>出口业务：代办过户费</b>」；导入时通过模板的「费用类型」字段区分，是否合法合规由人工判断。</span>
+                      <span>适用于「<b>整理费-牌证及邮递费</b>」和「<b>出口业务：代办过户费</b>」；导入时通过模板的「费用类型」字段区分。</span>
                     </div>
                     <div style="display:flex;align-items:flex-start;gap:6px;color:#555;margin-top:4px">
                       <span style="color:#fa8c16;flex-shrink:0">②</span>
@@ -3231,7 +3231,8 @@ new Vue({
       this.formFeeType = feeTypes[0] || '服务费'
       this.bmsView = 'form'
     },
-    downloadImportTemplate() {
+    downloadImportTemplate(type) {
+      const isTransfer = type === 'transfer'
       const BOM = '\ufeff'
       const headers = [
         '车牌号*',
@@ -3244,11 +3245,13 @@ new Vue({
         '标准车牌格式，必填',
         '17位车架号，必填',
         '请填写归属服务中心全称，必填',
-        '固定填：整理费-牌证及邮递费',
+        '固定填：' + (isTransfer ? '过户费' : '整理费-牌证及邮递费'),
         '请以元为单位填写，保留两位小数，必填',
       ]
-      const example = ['粤B·67890','LFV3A2BM2N3xxxxx2','广州番禺服务中心','整理费-牌证及邮递费','500.00']
-      const filename = '整理费-牌证及邮递费导入模板.csv'
+      const example = isTransfer
+        ? ['粤K·00099','LFV3A2BM2N3xxxxx9','广州天河服务中心','过户费','680.00']
+        : ['粤B·67890','LFV3A2BM2N3xxxxx2','广州番禺服务中心','整理费-牌证及邮递费','500.00']
+      const filename = (isTransfer ? '过户费（出口业务）' : '整理费-牌证及邮递费') + '导入模板.csv'
       const csv = [headers, note, example].map(r => r.join(',')).join('\r\n')
       const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
