@@ -3363,12 +3363,16 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
     <div class="modal-header"><span class="modal-title">{{deptMappingEditing?'编辑U8部门':'新增U8部门'}}</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-item"><label class="form-label req">主体</label><div class="form-control"><select class="sel" style="width:100%" v-model="deptForm.company"><option value="">请选择主体...</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div></div>
-        <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402" v-model="deptForm.code"></div></div>
+        <div class="form-item full"><label class="form-label req">主体</label><div class="form-control"><select class="sel" style="width:100%" v-model="deptForm.company"><option value="">请选择主体...</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div></div>
       </div>
       <div class="form-row">
-        <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）" v-model="deptForm.name"></div></div>
-        <div class="form-item"></div>
+        <div class="form-item full"><label class="form-label" :class="{req:deptForm.company==='weipu'}">唯普部门编码</label><div class="form-control"><input class="inp" style="width:100%" :placeholder="deptForm.company==='weipu'?'必填，如：7402':'选填'" v-model="deptForm.weipuCode"><div class="form-note" v-if="deptForm.company==='weipu'" style="color:#cf1322">主体为唯普，此项必填</div></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item full"><label class="form-label" :class="{req:deptForm.company==='weipuyun'}">唯普云部门编码</label><div class="form-control"><input class="inp" style="width:100%" :placeholder="deptForm.company==='weipuyun'?'必填，如：044':'选填'" v-model="deptForm.weipuyunCode"><div class="form-note" v-if="deptForm.company==='weipuyun'" style="color:#cf1322">主体为唯普云，此项必填</div></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item full"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）" v-model="deptForm.name"></div></div>
       </div>
       <div class="form-row">
         <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填" v-model="deptForm.remark"></div></div>
@@ -3490,7 +3494,7 @@ new Vue({
       showBackfill: false,
       deptMappingDialog: false,
       deptMappingEditing: null,
-      deptForm: { company:'', code:'', name:'', remark:'' },
+      deptForm: { company:'', weipuCode:'', weipuyunCode:'', name:'', remark:'' },
       showDeptDisableConfirm: false,
       deptDisableTarget: null,
       showDeptMapRule: false,
@@ -4064,35 +4068,39 @@ new Vue({
     openDeptMapping(dept) {
       if (dept) {
         this.deptMappingEditing = dept
-        this.deptForm = { company: dept.company, code: dept.code, name: dept.name, remark: dept.remark || '' }
+        this.deptForm = {
+          company: dept.company,
+          weipuCode: dept.weipuCode !== undefined ? dept.weipuCode : (dept.company === 'weipu' ? dept.code : ''),
+          weipuyunCode: dept.weipuyunCode !== undefined ? dept.weipuyunCode : (dept.company === 'weipuyun' ? dept.code : ''),
+          name: dept.name,
+          remark: dept.remark || ''
+        }
       } else {
         this.deptMappingEditing = null
-        this.deptForm = { company:'', code:'', name:'', remark:'' }
+        this.deptForm = { company:'', weipuCode:'', weipuyunCode:'', name:'', remark:'' }
       }
       this.deptMappingDialog = true
     },
     saveDeptMapping() {
       const f = this.deptForm
-      if (!f.company || !f.code || !f.name) {
-        this.showToast('请填写主体、部门编码和名称')
-        return
-      }
+      if (!f.company) { this.showToast('请选择主体'); return }
+      if (f.company === 'weipu' && !f.weipuCode) { this.showToast('主体为唯普时，唯普部门编码必填'); return }
+      if (f.company === 'weipuyun' && !f.weipuyunCode) { this.showToast('主体为唯普云时，唯普云部门编码必填'); return }
+      if (!f.name) { this.showToast('请填写 U8 部门名称'); return }
+      // 主体决定主编码（用于列表与申请表单级联展示），另一主体编码可选填
+      const primaryCode = f.company === 'weipu' ? f.weipuCode : f.weipuyunCode
       const today = new Date()
       const pad = n => String(n).padStart(2,'0')
       const ts = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
       if (this.deptMappingEditing) {
-        this.deptMappingEditing.company = f.company
-        this.deptMappingEditing.code = f.code
-        this.deptMappingEditing.name = f.name
-        this.deptMappingEditing.remark = f.remark
-        this.deptMappingEditing.updatedAt = ts
+        Object.assign(this.deptMappingEditing, { company:f.company, code:primaryCode, weipuCode:f.weipuCode, weipuyunCode:f.weipuyunCode, name:f.name, remark:f.remark, updatedAt:ts })
         this.showToast('修改成功')
       } else {
-        if (this.deptMappingData.find(d => d.company === f.company && d.code === f.code)) {
+        if (this.deptMappingData.find(d => d.company === f.company && d.code === primaryCode)) {
           this.showToast('该主体下的部门编码已存在')
           return
         }
-        this.deptMappingData.push({ company:f.company, code:f.code, name:f.name, remark:f.remark, active:true, updatedAt:ts })
+        this.deptMappingData.push({ company:f.company, code:primaryCode, weipuCode:f.weipuCode, weipuyunCode:f.weipuyunCode, name:f.name, remark:f.remark, active:true, updatedAt:ts })
         this.showToast('新增成功')
       }
       this.deptMappingDialog = false

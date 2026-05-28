@@ -1855,8 +1855,16 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-header"><span class="modal-title">新增 / 编辑U8部门</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
               <div class="modal-body">
                 <div class="form-row">
-                  <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402"></div></div>
-                  <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）"></div></div>
+                  <div class="form-item full"><label class="form-label req">主体</label><div class="form-control"><select class="sel" style="width:100%"><option value="">请选择主体...</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div></div>
+                </div>
+                <div class="form-row">
+                  <div class="form-item full"><label class="form-label">唯普部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402"><div class="form-note">主体为唯普时必填，唯普云时可选填</div></div></div>
+                </div>
+                <div class="form-row">
+                  <div class="form-item full"><label class="form-label">唯普云部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：044"><div class="form-note">主体为唯普云时必填，唯普时可选填</div></div></div>
+                </div>
+                <div class="form-row">
+                  <div class="form-item full"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）"></div></div>
                 </div>
                 <div class="form-row">
                   <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填"></div></div>
