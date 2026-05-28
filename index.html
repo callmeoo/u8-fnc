@@ -283,23 +283,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div class="form-note" style="color:#888">由勾选数据带入，<b>不支持修改</b>；如需更换费用类型，请返回「待提交」tab 重新勾选。</div>
                   </div>
                 </div>
-                <div class="form-item">
-                  <label class="form-label req">U8部门名称</label>
-                  <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请搜索或选择BIP部门..." list="bipDept-list" v-model="formBipDept" :class="{'field-error':formValidated&&!formBipDept}">
-                    <datalist id="bipDept-list">
-                      <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
-                    </datalist>
-                    <div class="form-note">数据源：部门编码映射，支持搜索联想</div>
-                  </div>
-                </div>
+                <div class="form-item"></div>
               </div>
               <div class="section-title" style="margin-bottom:14px">付款信息</div>
               <div class="form-row">
                 <div class="form-item">
                   <label class="form-label req">付款方名称</label>
                   <div class="form-control">
-                    <select class="sel" style="width:100%" v-model="formPayer" :class="{'field-error':formValidated&&!formPayer}">
+                    <select class="sel" style="width:100%" v-model="formPayer" @change="formBipDept=''" :class="{'field-error':formValidated&&!formPayer}">
                       <option value="">请选择付款方...</option>
                       <option value="weipu">广东唯普汽车科技股份有限公司</option>
                       <option value="weipuyun">唯普云市场经营管理（广州）有限公司</option>
@@ -322,7 +313,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div class="form-note">根据付款方自动带入</div>
                   </div>
                 </div>
-                <div class="form-item"></div>
+                <div class="form-item">
+                  <label class="form-label req">U8部门名称</label>
+                  <div class="form-control">
+                    <input class="inp" style="width:100%" :placeholder="formPayer?'请搜索或选择承担部门...':'请先选择付款方名称'" :disabled="!formPayer" list="bipDept-list" v-model="formBipDept" :class="{'field-error':formValidated&&!formBipDept}">
+                    <datalist id="bipDept-list">
+                      <option v-for="d in deptOptions" :key="d.code" :value="d.name">{{d.code}}</option>
+                    </datalist>
+                    <div class="form-note" v-if="formPayer">承担部门按付款主体级联，仅列「{{payerCompanyLabel}}」主体下的部门</div>
+                    <div class="form-note" v-else style="color:#cf1322">承担部门随付款主体而定，请先选择上方「付款方名称」</div>
+                  </div>
+                </div>
               </div>
               <div class="section-title" style="margin-bottom:14px">收款信息</div>
               <div class="form-row">
@@ -456,16 +457,18 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="card-body">
                 <div class="alert alert-info" style="margin-bottom:12px"> U8部门编码与部门名称映射关系，供填写申请表单时选择BIP部门使用。</div>
                 <div class="filter-bar" style="margin-bottom:12px">
+                  <div class="filter-item"><label>主体</label><select class="sel" v-model="deptMapFilter.company"><option value="全部">全部</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div>
                   <div class="filter-item"><label>部门编码</label><input class="inp" placeholder="编码" style="width:80px" v-model="deptMapFilter.code"></div>
                   <div class="filter-item"><label>部门名称</label><input class="inp" placeholder="名称" style="width:140px" v-model="deptMapFilter.name"></div>
                   <div class="filter-item"><label>状态</label><select class="sel" v-model="deptMapFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
                   <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredDeptMapping.length + ' 条')">查询</button>
-                  <button class="btn btn-default btn-sm" @click="deptMapFilter={code:'',name:'',active:'全部'}">重置</button>
+                  <button class="btn btn-default btn-sm" @click="deptMapFilter={company:'全部',code:'',name:'',active:'全部'}">重置</button>
                 </div>
                 <div class="table-wrap">
                   <table>
-                    <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th></tr>
+                    <tr><th>主体</th><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th></tr>
                     <tr v-for="d in filteredDeptMapping" :key="d.code">
+                      <td>{{companyLabel(d.company)}}</td>
                       <td><b>{{d.code}}</b></td>
                       <td>{{d.name}}</td>
                       <td style="color:#999">{{d.remark||'—'}}</td>
@@ -532,7 +535,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <label>U8部门名称</label>
                     <select class="sel" v-model="bmsFilter.dept">
                       <option value="全部">全部</option>
-                      <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
+                      <option v-for="n in deptNameOptions" :key="n" :value="n">{{n}}</option>
                     </select>
                   </div>
                   <div class="filter-item" v-if="bmsStatusTab==='draft'">
@@ -862,7 +865,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-body">
                 <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:13px;color:#333">
                   <li>以下为待结算的车辆明细，点击勾选后，需点击右上角「马上结算」以进行填写申请表单。</li>
-                  <li>勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单的 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>。</li>
+                  <li>勾选车辆须为<b>同一 U8 费用类型</b>；其中<b>服务费</b>按<b>同一集团</b>归并，<b>其他费用类型</b>按<b>同一服务中心</b>归并；申请单的 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>。</li>
                   <li>服务费（业务合作费）和过户费由系统自动生成，无需人工导入；整理费-牌证及邮递费需通过「导入牌证及邮递费」上传。</li>
                 </ol>
               </div>
@@ -1106,7 +1109,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <label>U8部门名称</label>
                   <select class="sel" @change="fncFilterChanged=true">
                     <option value="全部">全部</option>
-                    <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
+                    <option v-for="n in deptNameOptions" :key="n" :value="n">{{n}}</option>
                   </select>
                 </div>
                 <div class="filter-item">
@@ -1492,6 +1495,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <!-- 部门编码映射 tab -->
               <div v-if="voucherTab==='mapping'">
                 <div class="filter-bar" style="margin-top:12px">
+                  <div class="filter-item"><label>主体</label><select class="sel" v-model="deptMapFilter.company"><option value="全部">全部</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div>
                   <div class="filter-item">
                     <label>U8部门编码</label>
                     <input class="inp" placeholder="搜索编码..." style="width:140px" list="dept-code-list-v" v-model="deptMapFilter.code">
@@ -1510,8 +1514,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
                 <div class="table-wrap">
                   <table>
-                    <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
+                    <tr><th>主体</th><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
                     <tr v-for="d in filteredDeptMapping" :key="d.code">
+                      <td>{{companyLabel(d.company)}}</td>
                       <td><b>{{d.code}}</b></td>
                       <td>{{d.name}}</td>
                       <td style="color:#999">{{d.remark||'—'}}</td>
@@ -1519,7 +1524,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <td style="color:#999">{{d.updatedAt}}</td>
                       <td><button class="btn-link" @click="openDeptMapping(d)">编辑</button> | <button class="btn-link" :style="d.active?'color:#ff4d4f':''" @click="toggleDeptActive(d)">{{d.active?'停用':'启用'}}</button></td>
                     </tr>
-                    <tr v-if="filteredDeptMapping.length===0"><td colspan="6" style="text-align:center;color:#999;padding:24px">暂无数据</td></tr>
+                    <tr v-if="filteredDeptMapping.length===0"><td colspan="7" style="text-align:center;color:#999;padding:24px">暂无数据</td></tr>
                   </table>
                 </div>
                 <div class="pagination">
@@ -1541,7 +1546,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <label>U8部门名称</label>
                     <select class="sel" style="width:140px" v-model="step1Dept">
                       <option value="">全部</option>
-                      <option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.name">{{d.name}}</option>
+                      <option v-for="n in deptNameOptions" :key="n" :value="n">{{n}}</option>
                     </select>
                   </div>
                   <div class="filter-item" style="flex:1;max-width:300px">
@@ -1968,6 +1973,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
             <div class="card-body">
               <div class="filter-bar">
+                <div class="filter-item"><label>主体</label><select class="sel" v-model="deptMapFilter.company"><option value="全部">全部</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div>
                 <div class="filter-item">
                   <label>U8部门编码</label>
                   <input class="inp" placeholder="搜索编码..." style="width:140px" list="dept-code-list-bg" v-model="deptMapFilter.code">
@@ -1982,8 +1988,9 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <button class="btn btn-primary btn-sm">查询</button>
               </div>
               <table>
-                <tr><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
+                <tr><th>主体</th><th>U8部门编码</th><th>U8部门名称</th><th>备注</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
                 <tr v-for="d in filteredDeptMapping" :key="d.code">
+                  <td>{{companyLabel(d.company)}}</td>
                   <td><b>{{d.code}}</b></td>
                   <td>{{d.name}}</td>
                   <td style="color:#999">{{d.remark||'—'}}</td>
@@ -2869,7 +2876,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div>① 新增费用类型查询项和展示项</div>
                     <div>② <b>服务费（业务合作费）</b>：将门店固定场地费的此类删除，不流入</div>
                     <div>③ 补充数据流入源：衍生服务订单（项目与服务商管理）和原有的过户单的第三方机构结算单</div>
-                    <div>④ <b style="color:#d46b08">申请规则收紧</b>：勾选车辆须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>；申请单 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>（2026-05-22 更新）</div>
+                    <div>④ <b style="color:#d46b08">申请规则收紧</b>：勾选车辆须为<b>同一 U8 费用类型</b>；其中<b>服务费</b>按<b>同一集团</b>归并，<b>其他费用类型</b>按<b>同一服务中心</b>归并；申请单 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>（2026-05-28 更新）</div>
+                    <div>⑤ <b style="color:#d46b08">U8部门名称改造</b>：申请表单中该字段从「基本信息」移至「付款信息」，改由<b>付款主体</b>级联选择承担部门（同名部门在唯普/唯普云下编码不同，须先定主体再选部门）；部门编码映射表相应增加<b>主体</b>维度（2026-05-28 更新）</div>
                   </div>
                 </div>
 
@@ -3214,14 +3222,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <li>在「待提交」tab 勾选车辆。<b>同一批勾选需同时满足两个条件</b>：
             <div style="margin:6px 0 0 0;padding:8px 12px;background:#f6faff;border-left:3px solid #1890ff;color:#444;font-size:12px;line-height:1.8">
               <div><b>① U8 费用类型相同</b> —— 勾选第一条后锁定，其他费用类型行置灰不可勾。</div>
-              <div style="margin-top:4px"><b>② 服务中心相同 或 集团相同</b>（满足其一即可，不必两个都满足）：</div>
+              <div style="margin-top:4px"><b>② 归并维度由 U8 费用类型决定</b>：</div>
               <div style="margin:2px 0 0 14px;color:#666">
-                · 服务中心一样 → 可批（集团是否一样不影响）<br>
-                · 集团一样 → 可批（服务中心是否一样不影响）<br>
-                · 服务中心、集团都为空 → 同样"两项都为空"的行之间可批<br>
-                · 两项都对不上（例如一条只有服务中心、另一条只有集团）→ 不可同批
+                · 当 U8 费用类型 = <b>服务费</b> → 按<b>同一集团</b>批一起（服务中心是否一致不影响）<br>
+                · 当 U8 费用类型 = <b>过户费 / 整理费-牌证及邮递费 等其他</b> → 按<b>同一服务中心</b>批一起（集团是否一致不影响）<br>
+                · 兜底：若用作归并的字段（集团 或 服务中心）在两条记录上都为空，可以一起勾选，视为"无归属"组
               </div>
-              <div style="margin-top:6px;color:#888;font-size:11px">说明：判断"相同"时，"空 = 空"算相同；"空 vs 有值"不算相同。</div>
+              <div style="margin-top:6px;color:#888;font-size:11px">说明：服务费的归属对象是集团客户，过户费、整理费等具体业务的归属对象是服务中心，规则与业务结算口径一致。</div>
             </div>
             <div style="color:#cf1322;font-size:12px;margin-top:6px">申请单的 <b>U8 费用类型</b>由所选车辆自动带入，<b>不支持修改</b>；如需切换，请返回列表重新勾选。</div>
           </li>
@@ -3345,8 +3352,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
     <div class="modal-header"><span class="modal-title">{{deptMappingEditing?'编辑U8部门':'新增U8部门'}}</span><span class="modal-close" @click="deptMappingDialog=false">✕</span></div>
     <div class="modal-body">
       <div class="form-row">
+        <div class="form-item"><label class="form-label req">主体</label><div class="form-control"><select class="sel" style="width:100%" v-model="deptForm.company"><option value="">请选择主体...</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div></div>
         <div class="form-item"><label class="form-label req">U8部门编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：7402" v-model="deptForm.code"></div></div>
+      </div>
+      <div class="form-row">
         <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：车源生态事业部（武汉）" v-model="deptForm.name"></div></div>
+        <div class="form-item"></div>
       </div>
       <div class="form-row">
         <div class="form-item full"><label class="form-label">备注</label><div class="form-control"><input class="inp" style="width:100%" placeholder="选填" v-model="deptForm.remark"></div></div>
@@ -3369,7 +3380,7 @@ new Vue({
       activeMenu: 'prd',
       prdTab: 'origin',
       bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', bizFeeType:'全部', feeType:'全部', settleOrg:'全部', group:'', store:'', serviceCenter:'', plate:'', applicant:'', status:'全部' },
-      deptMapFilter: { code:'', name:'', active:'全部' },
+      deptMapFilter: { company:'全部', code:'', name:'', active:'全部' },
       toastMsg: '',
       // 填写申请表单 — 表单数据
       formPayer: 'weipu',
@@ -3468,7 +3479,7 @@ new Vue({
       showBackfill: false,
       deptMappingDialog: false,
       deptMappingEditing: null,
-      deptForm: { code:'', name:'', remark:'' },
+      deptForm: { company:'', code:'', name:'', remark:'' },
       showDeptDisableConfirm: false,
       deptDisableTarget: null,
       showDeptMapRule: false,
@@ -3534,47 +3545,61 @@ new Vue({
         {plate:'粤J·77777', withTax:360},
       ],
       deptMappingData: [
-        {code:'01',  name:'财务部',                                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'02',  name:'综合部',                                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'04',  name:'人力资源部',                                remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'14',  name:'销售部门',                                  remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'25',  name:'审计部',                                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'64',  name:'经营发展部-中控中心',                       remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'65',  name:'平台产品部（产品分析组）',                  remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'68',  name:'平台产品部（用户运营组）',                  remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7401',name:'车源生态事业部（广州）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7402',name:'车源生态事业部（武汉）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7403',name:'车源生态事业部（长沙）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7404',name:'车源生态事业部（成都）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7405',name:'车源生态事业部（深圳）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7406',name:'车源生态事业部（东莞）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7407',name:'车源生态事业部（中山）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7409',name:'车源生态事业部（太原）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7410',name:'车源生态事业部（南宁）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7411',name:'车源生态事业部 广西-南宁',                  remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7412',name:'车源生态事业部（佛山）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7413',name:'车源生态事业部（惠州）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7414',name:'车源生态事业部（本部）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7415',name:'车源生态事业部（北京）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7416',name:'车源生态事业部（贵阳）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'7417',name:'车源生态事业部（海口）',                    remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'75',  name:'创新产品研发部',                            remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'76',  name:'平台研发部',                                remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'77',  name:'检测评估中心',                              remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'78',  name:'平台产品部',                                remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'79',  name:'商户运营中心-商户运营中心—东莞服务',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'80',  name:'国际事业部-国际事业部-本部',                remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'82',  name:'经营发展部-经营发展部（本部）',             remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'85',  name:'商户运营中心-商户运营中心—东涌便民',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'86',  name:'商户运营中心-商户运营中心—佛山服务',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'87',  name:'商户运营中心-商户运营中心—黄阁便民',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'88',  name:'商户运营中心-商户运营中心—白云服务',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'89',  name:'商户运营中心-商户运营中心—南沙服务',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'90',  name:'商户运营中心-商户运营中心—深圳服务',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'91',  name:'商户运营中心-商户运营中心—惠州服务',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'92',  name:'商户运营中心-商户运营中心—长沙服务',        remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'93',  name:'国际事业部-国际事业部-政企',                remark:'',active:true,updatedAt:'2026-05-19'},
-        {code:'96',  name:'商户运营中心-商户运营中心-本部',            remark:'',active:true,updatedAt:'2026-05-19'},
+        {company:'weipu',code:'01',name:'财务部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'02',name:'综合部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'04',name:'人力资源部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'14',name:'销售部门',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'25',name:'审计部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'64',name:'经营发展部-中控中心',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'65',name:'平台产品部（产品分析组）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'68',name:'平台产品部（用户运营组）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7401',name:'车源生态事业部（广州）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7402',name:'车源生态事业部（武汉）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7403',name:'车源生态事业部（长沙）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7404',name:'车源生态事业部（成都）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7405',name:'车源生态事业部（深圳）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7406',name:'车源生态事业部（东莞）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7407',name:'车源生态事业部（中山）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7409',name:'车源生态事业部（太原）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7410',name:'车源生态事业部（南宁）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7411',name:'车源生态事业部 广西-南宁',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7412',name:'车源生态事业部（佛山）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7413',name:'车源生态事业部（惠州）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7414',name:'车源生态事业部（本部）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7415',name:'车源生态事业部（北京）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7416',name:'车源生态事业部（贵阳）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'7417',name:'车源生态事业部（海口）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'75',name:'创新产品研发部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'76',name:'平台研发部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'77',name:'检测评估中心',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'78',name:'平台产品部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'79',name:'商户运营中心-商户运营中心—东莞服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'80',name:'国际事业部-国际事业部-本部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'82',name:'经营发展部-经营发展部（本部）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'85',name:'商户运营中心-商户运营中心—东涌便民',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'86',name:'商户运营中心-商户运营中心—佛山服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'87',name:'商户运营中心-商户运营中心—黄阁便民',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'88',name:'商户运营中心-商户运营中心—白云服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'89',name:'商户运营中心-商户运营中心—南沙服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'90',name:'商户运营中心-商户运营中心—深圳服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'91',name:'商户运营中心-商户运营中心—惠州服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'92',name:'商户运营中心-商户运营中心—长沙服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'93',name:'国际事业部-国际事业部-政企',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipu',code:'96',name:'商户运营中心-商户运营中心-本部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'0041',name:'检测评估中心',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'039',name:'车源生态事业部-车源生态事业部 （中山）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'044',name:'综合部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'045',name:'国际事业部-国际事业部（政企）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'046',name:'创新产品研发部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'047',name:'商户运营中心-商户运营中心-白云服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'048',name:'商户运营中心-商户运营中心-南沙服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'049',name:'商户运营中心-商户运营中心-东涌便民',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'050',name:'商户运营中心-商户运营中心-黄阁便民',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'051',name:'商户运营中心-商户运营中心-惠州服务',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'052',name:'国际事业部-国际事业部（本部）',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'1',name:'财务部',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'5',name:'销售部门',remark:'',active:true,updatedAt:'2026-05-28'},
+        {company:'weipuyun',code:'6',name:'人力资源部',remark:'',active:true,updatedAt:'2026-05-28'},
       ],
       // FNC Voucher
       voucherNewStep: 0,
@@ -3778,6 +3803,7 @@ new Vue({
     filteredDeptMapping() {
       let list = this.deptMappingData
       const f = this.deptMapFilter
+      if (f.company && f.company !== '全部') list = list.filter(d => d.company === f.company)
       if (f.code) list = list.filter(d => d.code.includes(f.code))
       if (f.name) list = list.filter(d => d.name.includes(f.name))
       if (f.active !== '全部') list = list.filter(d => d.active === (f.active === '启用'))
@@ -3795,8 +3821,18 @@ new Vue({
       const m = this.deptMappingData.find(d => d.code === this.voucherDeptCode)
       return m ? m.name : '—'
     },
+    deptOptions() {
+      return this.deptMappingData.filter(d => d.active && d.company === this.formPayer)
+    },
+    payerCompanyLabel() {
+      return this.companyLabel(this.formPayer)
+    },
+    deptNameOptions() {
+      return [...new Set(this.deptMappingData.filter(d => d.active).map(d => d.name))]
+    },
   },
   methods: {
+    companyLabel(c) { return c === 'weipu' ? '唯普' : c === 'weipuyun' ? '唯普云' : '—' },
     printDetailExceptList() {
       const root = document.querySelector('.detail-overlay-content')
       if (!root) { this.showToast('未找到申请详情内容'); return }
@@ -3966,14 +4002,24 @@ new Vue({
         this.bmsApplyError = '所选车辆须属于同一 U8 费用类型，当前混选了：' + feeTypes.join('、')
         return
       }
-      const scs = [...new Set(selected.map(v => v.serviceCenter).filter(Boolean))]
-      const groups = [...new Set(selected.map(v => v.group).filter(Boolean))]
-      if (scs.length > 1 && groups.length > 1) {
-        this.bmsApplyError = '所选车辆须属于同一服务中心或同一集团，当前跨服务中心：' + scs.join('、')
-        return
+      // 服务费按同一集团归并，其他费用类型按同一服务中心归并；"空 = 空"算同组
+      const norm = v => (v == null || v === '—') ? '' : String(v).trim()
+      const feeType = feeTypes[0]
+      if (feeType === '服务费') {
+        const groups = [...new Set(selected.map(v => norm(v.group)))]
+        if (groups.length > 1) {
+          this.bmsApplyError = '服务费须按同一集团归并，当前混选了：' + groups.map(g => g || '（空）').join('、')
+          return
+        }
+      } else {
+        const scs = [...new Set(selected.map(v => norm(v.serviceCenter)))]
+        if (scs.length > 1) {
+          this.bmsApplyError = '该费用类型须按同一服务中心归并，当前混选了：' + scs.map(s => s || '（空）').join('、')
+          return
+        }
       }
       // 申请单 U8 费用类型由勾选数据带入，不可修改
-      this.formFeeType = feeTypes[0] || '服务费'
+      this.formFeeType = feeType || '服务费'
       this.bmsView = 'form'
     },
     openFncSettleConfirm(record) {
@@ -4007,34 +4053,35 @@ new Vue({
     openDeptMapping(dept) {
       if (dept) {
         this.deptMappingEditing = dept
-        this.deptForm = { code: dept.code, name: dept.name, remark: dept.remark || '' }
+        this.deptForm = { company: dept.company, code: dept.code, name: dept.name, remark: dept.remark || '' }
       } else {
         this.deptMappingEditing = null
-        this.deptForm = { code:'', name:'', remark:'' }
+        this.deptForm = { company:'', code:'', name:'', remark:'' }
       }
       this.deptMappingDialog = true
     },
     saveDeptMapping() {
       const f = this.deptForm
-      if (!f.code || !f.name) {
-        this.showToast('请填写部门编码和名称')
+      if (!f.company || !f.code || !f.name) {
+        this.showToast('请填写主体、部门编码和名称')
         return
       }
       const today = new Date()
       const pad = n => String(n).padStart(2,'0')
       const ts = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
       if (this.deptMappingEditing) {
+        this.deptMappingEditing.company = f.company
         this.deptMappingEditing.code = f.code
         this.deptMappingEditing.name = f.name
         this.deptMappingEditing.remark = f.remark
         this.deptMappingEditing.updatedAt = ts
         this.showToast('修改成功')
       } else {
-        if (this.deptMappingData.find(d => d.code === f.code)) {
-          this.showToast('该部门编码已存在')
+        if (this.deptMappingData.find(d => d.company === f.company && d.code === f.code)) {
+          this.showToast('该主体下的部门编码已存在')
           return
         }
-        this.deptMappingData.push({ code:f.code, name:f.name, remark:f.remark, active:true, updatedAt:ts })
+        this.deptMappingData.push({ company:f.company, code:f.code, name:f.name, remark:f.remark, active:true, updatedAt:ts })
         this.showToast('新增成功')
       }
       this.deptMappingDialog = false
