@@ -3211,8 +3211,19 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
 
         <div style="font-weight:600;margin-bottom:6px;color:#0050b3">三、申请流程</div>
         <ol style="margin:0 0 14px 20px;padding:0;color:#555">
-          <li>在「待提交」tab 勾选车辆。勾选范围须为<b>同一 U8 费用类型</b>，并同属<b>同一集团</b>或<b>同一服务中心</b>。
-            <div style="color:#cf1322;font-size:12px;margin-top:4px">申请单的 <b>U8 费用类型</b>由所选车辆自动带入，<b>不支持修改</b>；如需切换，请返回列表重新勾选。</div>
+          <li>在「待提交」tab 勾选车辆。<b>同一批勾选需同时满足两个条件</b>：
+            <div style="margin:6px 0 0 0;padding:8px 12px;background:#f6faff;border-left:3px solid #1890ff;color:#444;font-size:12px;line-height:1.8">
+              <div><b>① U8 费用类型相同</b> —— 勾选第一条后锁定，其他费用类型行置灰不可勾。</div>
+              <div style="margin-top:4px"><b>② 服务中心相同 或 集团相同</b>（满足其一即可，不必两个都满足）：</div>
+              <div style="margin:2px 0 0 14px;color:#666">
+                · 服务中心一样 → 可批（集团是否一样不影响）<br>
+                · 集团一样 → 可批（服务中心是否一样不影响）<br>
+                · 服务中心、集团都为空 → 同样"两项都为空"的行之间可批<br>
+                · 两项都对不上（例如一条只有服务中心、另一条只有集团）→ 不可同批
+              </div>
+              <div style="margin-top:6px;color:#888;font-size:11px">说明：判断"相同"时，"空 = 空"算相同；"空 vs 有值"不算相同。</div>
+            </div>
+            <div style="color:#cf1322;font-size:12px;margin-top:6px">申请单的 <b>U8 费用类型</b>由所选车辆自动带入，<b>不支持修改</b>；如需切换，请返回列表重新勾选。</div>
           </li>
           <li>点击右上角「马上结算」填写申请表单（标题 / 收款方 / 付款信息等），提交审批。</li>
           <li>审批通过后由<b>财务在 FNC 端线下打款</b>，确认已结算。</li>
