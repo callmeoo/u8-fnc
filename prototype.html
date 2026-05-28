@@ -2712,7 +2712,18 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <div>② <b>服务费（业务合作费）</b>：将门店固定场地费的此类删除，不流入</div>
                     <div>③ 补充数据流入源：衍生服务订单（项目与服务商管理）和原有的过户单的第三方机构结算单</div>
                     <div>④ <b style="color:#d46b08">申请规则收紧</b>：勾选车辆须为<b>同一 U8 费用类型</b>；其中<b>服务费</b>按<b>同一集团</b>归并，<b>其他费用类型</b>按<b>同一服务中心</b>归并；申请单 U8 费用类型由所选车辆自动带入，<b>不支持修改</b>（2026-05-28 更新）</div>
-                    <div>⑤ <b style="color:#d46b08">U8部门名称改造</b>：申请表单中该字段从「基本信息」移至「付款信息」，改由<b>付款主体</b>级联选择承担部门（同名部门在唯普/唯普云下编码不同，须先定主体再选部门）；部门编码映射表相应增加<b>主体</b>维度（2026-05-28 更新）</div>
+                    <div>⑤ <b style="color:#d46b08">U8部门名称改造（承担部门按付款主体级联）</b>（2026-05-28 更新）</div>
+                    <div style="margin-top:6px;padding:8px 10px;background:#f0f5ff;border-left:3px solid #1677ff;border-radius:2px;line-height:1.9">
+                      <div><b style="color:#0958d9">为什么改</b>：同一个部门名称在不同法人主体下编码不同（见下方示例）。旧设计把「U8部门名称」放在「基本信息」里自由选，无法唯一确定 U8 部门编码，凭证可能推送到错误账套或科目。</div>
+                      <div style="margin-top:6px"><b style="color:#0958d9">怎么改</b>：</div>
+                      <div style="padding-left:14px">· 字段从「基本信息」移到「付款信息」，紧跟「付款方名称」之后</div>
+                      <div style="padding-left:14px">· 改为级联：先选<b>付款主体</b>（对应法人主体 / U8 账套），再从该主体下选<b>承担部门</b></div>
+                      <div style="padding-left:14px">· 部门编码映射表增加<b>主体</b>维度，唯一键由「编码」变为「<b>主体 + 编码</b>」（数据源：附表《部门档案-唯普》，唯普 41 条 + 唯普云 14 条）</div>
+                      <div style="margin-top:6px"><b style="color:#0958d9">同名不同码示例</b>：</div>
+                      <div style="padding-left:14px">· 财务部 → 唯普 <b>01</b> / 唯普云 <b>1</b>；综合部 → 唯普 <b>02</b> / 唯普云 <b>044</b></div>
+                      <div style="padding-left:14px">· 销售部门 → 唯普 <b>14</b> / 唯普云 <b>5</b>；人力资源部 → 唯普 <b>04</b> / 唯普云 <b>6</b></div>
+                      <div style="margin-top:6px"><b style="color:#0958d9">交互规则</b>：未选付款方时部门框禁用并提示"请先选择付款方名称"；切换付款方时<b>清空</b>已选部门，避免残留跨主体的错值。</div>
+                    </div>
                   </div>
                 </div>
 
