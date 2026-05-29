@@ -550,6 +550,12 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <option v-for="n in deptNameOptions" :key="n" :value="n">{{n}}</option>
                     </select>
                   </div>
+                  <div class="filter-item" v-if="bmsStatusTab!=='draft'">
+                    <label>付款种类</label>
+                    <select class="sel" v-model="bmsFilter.payKind">
+                      <option>全部</option><option>对外支付</option><option>冲销借支</option>
+                    </select>
+                  </div>
                   <div class="filter-item" v-if="bmsStatusTab==='draft'">
                     <label>结算机构</label>
                     <select class="sel" v-model="bmsFilter.settleOrg" style="width:130px">
@@ -593,7 +599,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     </select>
                   </div>
                   <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredBmsList.length + ' 条')">查询</button>
-                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',settleOrg:'全部',group:'',store:'',serviceCenter:'',plate:'',applicant:'',status:'全部'}">重置</button>
+                  <button class="btn btn-default btn-sm" @click="bmsFilter={dateFrom:'',dateTo:'',settleMonth:'',dept:'全部',feeType:'全部',payKind:'全部',settleOrg:'全部',group:'',store:'',serviceCenter:'',plate:'',applicant:'',status:'全部'}">重置</button>
                 </div>
 
                 <!-- 待提交 tab：车辆列表（可勾选） -->
@@ -641,12 +647,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="table-wrap">
                     <table>
                       <tr>
-                        <th>U8部门名称</th><th>U8费用类型</th><th>标题</th><th>结算说明</th><th>明细数</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
+                        <th>U8部门名称</th><th>U8费用类型</th><th>付款种类</th><th>标题</th><th>结算说明</th><th>明细数</th><th>审批状态</th><th>结算状态</th><th>申请人</th><th>申请时间</th><th>操作</th>
                       </tr>
                       <template v-for="r in filteredBmsList" :key="r.id">
                         <tr>
                           <td style="font-size:11px;color:#555">{{r.org||'—'}}</td>
                           <td>{{r.feeType}}</td>
+                          <td><span v-if="(r.payKind||'对外支付')==='冲销借支'" class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">冲销借支</span><span v-else style="font-size:11px;color:#555">对外支付</span></td>
                           <td style="max-width:140px;white-space:normal">{{r.title}}</td>
                           <td style="max-width:160px;white-space:normal;font-size:11px;color:#555">{{r.settleDesc||'—'}}</td>
                           <td style="text-align:center">{{r.count||'—'}}</td>
@@ -666,7 +673,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           </td>
                         </tr>
                         <tr v-if="r.status==='rejected' && r.rejectReason" class="reject-reason-row">
-                          <td colspan="10">
+                          <td colspan="11">
                             <span style="color:#999;margin-right:6px">驳回原因：</span>
                             <span class="reject-reason-cell">{{r.rejectReason}}</span>
                             <span style="color:#999;margin-left:12px;font-size:11px">— {{r.rejectBy}} · {{r.rejectTime}}</span>
@@ -674,7 +681,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         </tr>
                       </template>
                       <tr v-if="filteredBmsList.length===0">
-                        <td colspan="10" style="text-align:center;color:#999;padding:30px">暂无数据</td>
+                        <td colspan="11" style="text-align:center;color:#999;padding:30px">暂无数据</td>
                       </tr>
 
                     </table>
@@ -2964,7 +2971,7 @@ new Vue({
     return {
       activeMenu: 'prd',
       prdTab: 'origin',
-      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', settleOrg:'全部', group:'', store:'', serviceCenter:'', plate:'', applicant:'', status:'全部' },
+      bmsFilter: { dateFrom:'', dateTo:'', settleMonth:'', dept:'全部', feeType:'全部', payKind:'全部', settleOrg:'全部', group:'', store:'', serviceCenter:'', plate:'', applicant:'', status:'全部' },
       deptMapFilter: { company:'全部', code:'', name:'', active:'全部' },
       toastMsg: '',
       // 填写申请表单 — 表单数据
@@ -2994,7 +3001,7 @@ new Vue({
       bmsStatusTabs: [
         {key:'all',    label:'全部',  count:0},
         {key:'draft',  label:'待提交', count:5},
-        {key:'approval',label:'待审批',count:3},
+        {key:'approval',label:'待审批',count:5},
         {key:'pay',    label:'待支付', count:2},
         {key:'settled',label:'已结算', count:2},
         {key:'rejected',label:'已驳回',count:2},
@@ -3023,6 +3030,8 @@ new Vue({
         {id:'BS202601001',title:'2026年1月服务费结算申请',org:'车源生态事业部（广州）',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15',settleDesc:'付1月，服务费，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批',settledPlates:['粤A·12345','粤C·11111'],remark:'粤C·11111 曾于上月已结算（BS202512001），本次申请为补充结算，已与财务确认可再次提交。'},
         {id:'BS202512003',title:'2025年12月过户费结算申请',org:'车源生态事业部（武汉）',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'过户费',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10',settleDesc:'付12月，过户费，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
         {id:'BS202601007',title:'2026年1月整理费结算申请',org:'车源生态事业部（长沙）',serviceCenter:'广州花都服务中心',group:'广州区域',feeType:'整理费-牌证及邮递费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:2,amount:'400.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'王芳',time:'2026-01-18',settleDesc:'付1月，整理费-牌证及邮递费，常有（天津）信息技术有限公司',handler:'李财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
+        {id:'BS202604008',title:'2026年4月整理费冲销借支申请',org:'审计部',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'整理费-牌证及邮递费',payKind:'冲销借支',settleMonth:'2026-04',payee:'陈凤芹（发单人）',payeeFull:'陈凤芹（发单人）',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'陈凤芹',time:'2026-04-15',settleDesc:'陈凤芹报销4月整理费-牌证及邮递费',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
+        {id:'BS202604009',title:'2026年4月整理费冲销借支申请',org:'综合部',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'整理费-牌证及邮递费',payKind:'冲销借支',settleMonth:'2026-04',payee:'张伟林（发单人）',payeeFull:'张伟林（发单人）',count:2,amount:'720.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张伟林',time:'2026-04-16',settleDesc:'张伟林报销4月整理费-牌证及邮递费',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待财务审批'},
         // 待支付
         {id:'BS202601002',title:'2026年1月服务费结算申请',org:'交易中心（广州）',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:6,amount:'2,400.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'张三',time:'2026-01-16',settleDesc:'付1月，服务费，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
         {id:'BS202601005',title:'2026年1月服务费结算申请',org:'交易中心（广州）',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:12,amount:'4,200.00',status:'pay',statusLabel:'待支付',tagClass:'tag-green',applicant:'李明',time:'2026-01-18',settleDesc:'付1月，服务费，好快帮（广州）科技有限公司',handler:'李财务',approvalStatus:'通过',approvalTagClass:'tag-green'},
@@ -3263,6 +3272,7 @@ new Vue({
       const f = this.bmsFilter
       if (f.dept && f.dept !== '全部') list = list.filter(r => r.org === f.dept)
       if (f.feeType && f.feeType !== '全部') list = list.filter(r => r.feeType === f.feeType)
+      if (f.payKind && f.payKind !== '全部') list = list.filter(r => (r.payKind||'对外支付') === f.payKind)
       if (f.group) list = list.filter(r => (r.group||'').includes(f.group))
       if (f.store) list = list.filter(r => (r.storeName||'').includes(f.store))
       if (f.serviceCenter) list = list.filter(r => (r.serviceCenter||'').includes(f.serviceCenter))
