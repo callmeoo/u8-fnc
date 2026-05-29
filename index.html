@@ -1949,10 +1949,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td style="white-space:normal;line-height:1.4;font-size:11px">{{ voucherDetailFeeType==='冲销借支' ? (voucherDetailScenario.payee + '报销4月' + (voucherDetailScenario.feeLabel||'服务费')) : ('付4月，' + voucherDetailFeeType + '，' + voucherDetailScenario.payee) }}</td>
                           <td>人民币</td><td>1</td>
                           <td style="color:#bbb">—</td><td style="text-align:right;color:#c41d7f">{{voucherDetailScenario.creditAmt}}</td>
-                          <td>{{voucherDetailScenario.credit.auxItemName}}</td>
-                          <td>{{voucherDetailScenario.credit.auxItemCode}}</td>
-                          <td style="white-space:normal;line-height:1.4"><div v-for="(i,ix) in voucherDetailScenario.credit.infos" :key="'cin'+ix">{{i.name}}</div></td>
-                          <td><div v-for="(i,ix) in voucherDetailScenario.credit.infos" :key="'cic'+ix">{{i.code}}</div></td>
+                          <td><div v-for="(a,ax) in voucherDetailScenario.credit.aux" :key="'can'+ax">{{a.name}}</div></td>
+                          <td><div v-for="(a,ax) in voucherDetailScenario.credit.aux" :key="'cac'+ax">{{a.code}}</div></td>
+                          <td style="white-space:normal;line-height:1.4"><div v-for="(a,ax) in voucherDetailScenario.credit.aux" :key="'cin'+ax">{{a.infoName}}</div></td>
+                          <td><div v-for="(a,ax) in voucherDetailScenario.credit.aux" :key="'cii'+ax">{{a.info}}</div></td>
                           <td></td><td></td>
                           <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
@@ -3136,7 +3136,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <tr><td>整理费-牌证及邮递费</td><td><span class="tag tag-orange" style="font-size:11px">整理费-牌证及邮递费</span></td><td>64011209</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
               <tr style="background:#fffbe6"><td>进项税额</td><td>—</td><td>2221010101</td><td colspan="4" style="color:#999">汇总一行，按总进项税额计入</td></tr>
               <tr style="background:#fff0f6"><td>银行存款</td><td>—</td><td>10020101</td><td>现金流量项目</td><td>0007</td><td>购买商品、接受劳务支付的现金</td><td>04</td></tr>
-              <tr style="background:#f9f0ff"><td>其他应收款</td><td><span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">冲销借支</span></td><td>122106</td><td>部门</td><td>0001</td><td>部门名称 / 员工名称</td><td>部门编码 / 员工编码</td></tr>
+              <tr style="background:#f9f0ff"><td>其他应收款</td><td><span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">冲销借支</span></td><td>122106</td><td>部门 / 员工</td><td>0001 / 0002</td><td>部门名称 / 员工名称</td><td>部门编码 / 员工编码</td></tr>
             </tbody>
           </table>
         </div>
@@ -3881,7 +3881,7 @@ new Vue({
     voucherDetailScenario() {
       const ft = this.voucherDetailFeeType
       // 默认贷方：银行存款（单一辅助：现金流量项目）
-      const bankCredit = { subject:'银行存款', code:'10020101', auxItemName:'现金流量项目', auxItemCode:'0007', infos:[{name:'购买商品、接受劳务支付的现金', code:'04'}] }
+      const bankCredit = { subject:'银行存款', code:'10020101', aux:[{name:'现金流量项目', code:'0007', infoName:'购买商品、接受劳务支付的现金', info:'04'}] }
       const base = {
         '服务费': {
           subjectCode:'64010102', auxName:'项目', auxCode:'0010', auxInfoLabel:'车牌',
@@ -3918,9 +3918,9 @@ new Vue({
             {desc:'陈凤芹报销4月整理费-牌证及邮递费（审计部）', auxInfo:'审计部', auxInfoExt:'25', debit:'320.75', credit:''},
           ],
           taxAmt:'60.01', creditAmt:'1,060.00', payee:'陈凤芹',
-          credit: { subject:'其他应收款', code:'122106', auxItemName:'部门', auxItemCode:'0001', infos:[
-            {name:'审计部', code:'25'},
-            {name:'陈凤芹', code:'0215'},
+          credit: { subject:'其他应收款', code:'122106', aux:[
+            {name:'部门', code:'0001', infoName:'审计部', info:'25'},
+            {name:'员工', code:'0002', infoName:'陈凤芹', info:'0215'},
           ]},
         },
       }
