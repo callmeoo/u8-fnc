@@ -477,7 +477,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="tabs" style="margin-bottom:0;background:#fff;padding:0 16px;border-radius:4px 4px 0 0;border:1px solid #e8e8e8;border-bottom:none">
               <span class="tab" :class="{active:bmsListTab==='settle'}" @click="bmsListTab='settle'">批量结算</span>
               <span class="tab" :class="{active:bmsListTab==='deptmap'}" @click="bmsListTab='deptmap'">部门编码映射</span>
-              <span class="tab" :class="{active:bmsListTab==='empmap'}" @click="bmsListTab='empmap'">员工维护</span>
             </div>
 
             <!-- 部门编码映射（只读） -->
@@ -510,39 +509,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </table>
                 </div>
                 <div class="pagination"><span>共 {{filteredDeptMapping.length}} 条</span><div class="page-btn active">1</div></div>
-              </div>
-            </div>
-
-            <!-- 员工维护 -->
-            <div v-if="bmsListTab==='empmap'" class="card" style="border-radius:0 4px 4px 4px">
-              <div class="card-header">
-                <span class="card-title">员工维护</span>
-                <button class="btn btn-primary btn-sm" @click="openEmp()">＋ 新增员工</button>
-              </div>
-              <div class="card-body">
-                <div class="alert alert-info" style="margin-bottom:12px">员工编码与员工姓名维护，供申请单「冲销借支」选择发单人、以及生成凭证时作为辅助核算（员工）使用。</div>
-                <div class="filter-bar" style="margin-bottom:12px">
-                  <div class="filter-item"><label>主体</label><select class="sel" v-model="empFilter.company"><option value="全部">全部</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div>
-                  <div class="filter-item"><label>员工编码</label><input class="inp" placeholder="编码" style="width:100px" v-model="empFilter.code"></div>
-                  <div class="filter-item"><label>员工姓名</label><input class="inp" placeholder="姓名" style="width:120px" v-model="empFilter.name"></div>
-                  <div class="filter-item"><label>状态</label><select class="sel" v-model="empFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
-                  <button class="btn btn-default btn-sm" @click="empFilter={company:'全部',code:'',name:'',active:'全部'}">重置</button>
-                </div>
-                <div class="table-wrap">
-                  <table>
-                    <tr><th>主体</th><th>员工编码</th><th>员工姓名</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
-                    <tr v-for="e in filteredEmployees" :key="e.code">
-                      <td>{{companyLabel(e.company)}}</td>
-                      <td><b>{{e.code}}</b></td>
-                      <td>{{e.name}}</td>
-                      <td><span class="tag" :class="e.active?'tag-green':'tag-gray'">{{e.active?'启用':'停用'}}</span></td>
-                      <td style="color:#999;font-size:11px">{{e.updatedAt}}</td>
-                      <td style="white-space:nowrap"><button class="btn-link" @click="openEmp(e)">编辑</button> | <button class="btn-link" :style="e.active?'color:#ff4d4f':''" @click="toggleEmpActive(e)">{{e.active?'停用':'启用'}}</button></td>
-                    </tr>
-                    <tr v-if="filteredEmployees.length===0"><td colspan="6" style="text-align:center;color:#999;padding:24px">暂无数据</td></tr>
-                  </table>
-                </div>
-                <div class="pagination"><span>共 {{filteredEmployees.length}} 条</span><div class="page-btn active">1</div></div>
               </div>
             </div>
 
@@ -1503,7 +1469,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               </div>
 
               <!-- 凭证列表视图 -->
-              <div v-if="voucherTab!=='mapping'">
+              <div v-if="voucherTab!=='mapping' && voucherTab!=='empmap'">
                 <div class="filter-bar">
                   <div class="filter-item"><label>凭证期间</label><input class="inp" type="date" placeholder="开始日期" style="width:120px"><span>—</span><input class="inp" type="date" placeholder="结束日期" style="width:120px"></div>
                   <div class="filter-item"><label>制单日期</label><input class="inp" type="date" placeholder="开始日期" style="width:120px"><span>—</span><input class="inp" type="date" placeholder="结束日期" style="width:120px"></div>
@@ -1598,6 +1564,35 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <span>共 {{deptMappingData.length}} 条</span>
                   <div class="page-btn active">1</div>
                 </div>
+              </div>
+
+              <!-- 员工维护 tab -->
+              <div v-if="voucherTab==='empmap'">
+                <div class="alert alert-info" style="margin-top:12px;margin-bottom:12px">员工编码与员工姓名维护，供申请单「冲销借支」选择发单人、以及生成凭证时作为辅助核算（员工）使用。</div>
+                <div class="filter-bar">
+                  <div class="filter-item"><label>主体</label><select class="sel" v-model="empFilter.company"><option value="全部">全部</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div>
+                  <div class="filter-item"><label>员工编码</label><input class="inp" placeholder="搜索编码..." style="width:140px" v-model="empFilter.code"></div>
+                  <div class="filter-item"><label>员工姓名</label><input class="inp" placeholder="搜索名称..." style="width:140px" v-model="empFilter.name"></div>
+                  <div class="filter-item"><label>状态</label><select class="sel" v-model="empFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <span style="flex:1"></span>
+                  <button class="btn btn-primary btn-sm">查询</button>
+                  <button class="btn btn-primary btn-sm" @click="openEmp()">新增</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <tr><th>主体</th><th>员工编码</th><th>员工姓名</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
+                    <tr v-for="e in filteredEmployees" :key="e.code">
+                      <td>{{companyLabel(e.company)}}</td>
+                      <td><b>{{e.code}}</b></td>
+                      <td>{{e.name}}</td>
+                      <td><span class="tag" :class="e.active?'tag-green':'tag-gray'">{{e.active?'启用':'停用'}}</span></td>
+                      <td style="color:#999">{{e.updatedAt}}</td>
+                      <td><button class="btn-link" @click="openEmp(e)">编辑</button> | <button class="btn-link" :style="e.active?'color:#ff4d4f':''" @click="toggleEmpActive(e)">{{e.active?'停用':'启用'}}</button></td>
+                    </tr>
+                    <tr v-if="filteredEmployees.length===0"><td colspan="6" style="text-align:center;color:#999;padding:24px">暂无数据</td></tr>
+                  </table>
+                </div>
+                <div class="pagination"><span>共 {{filteredEmployees.length}} 条</span><div class="page-btn active">1</div></div>
               </div>
             </div>
           </div>
@@ -3745,6 +3740,7 @@ new Vue({
         {key:'failed',  label:'开具失败',count:2},
         {key:'deleted', label:'已删除', count:1},
         {key:'mapping', label:'部门编码映射'},
+        {key:'empmap',  label:'员工维护'},
       ],
       voucherAllData: [
         // 待开具 (BMS新流程)
