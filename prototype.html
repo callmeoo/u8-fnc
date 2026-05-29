@@ -1557,7 +1557,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="form-item"><label class="form-label req">制单日期</label><div class="form-control"><input class="inp" type="date" value="2026-04-20"></div></div>
                   <div class="form-item"><label class="form-label">费用类型</label><div class="form-control"><input class="inp" style="background:#f5f5f5;width:180px" readonly :value="step2FeeType"></div></div>
                   <div class="form-item"><label class="form-label req">U8部门名称</label><div class="form-control"><select class="sel" v-model="voucherDeptCode" style="width:200px"><option value="" disabled>请选择</option><option v-for="d in deptMappingData.filter(x=>x.active)" :key="d.code" :value="d.code">{{d.name}}（{{companyLabel(d.company)}}）</option></select></div></div>
-                  <div class="form-item" style="flex:0 0 100%"><label class="form-label">摘要</label><div class="form-control"><input class="inp" style="width:100%;background:#f5f5f5" readonly :value="'付1月，'+step2FeeType+'，'+step2Payee"><div class="form-note">自动生成：付"月份"＋"费用类型"＋"收款方公司名称"</div></div></div>
+                  <div class="form-item" style="flex:0 0 100%"><label class="form-label">摘要</label><div class="form-control"><input class="inp" style="width:100%;background:#f5f5f5" readonly :value="step2FeeType==='冲销借支' ? '陈凤芹报销4月整理费-牌证及邮递费' : ('付1月，'+step2FeeType+'，'+step2Payee)"><div class="form-note">自动生成：付"月份"＋"费用类型"＋"收款方公司名称"</div></div></div>
                 </div>
 
                 <!-- 总进项税额可编辑块 -->

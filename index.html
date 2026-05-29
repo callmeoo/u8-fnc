@@ -1675,7 +1675,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="modal-body">
                 <!-- 只读信息：摘要 / 费用类型 / U8部门名称 -->
                 <div class="form-row" style="margin-bottom:10px">
-                  <div class="form-item" style="flex:0 0 100%"><label class="form-label">摘要</label><div class="form-control"><input class="inp" style="width:100%;background:#f5f5f5" readonly :value="'付1月，'+step2FeeType+'，'+step2Payee"></div></div>
+                  <div class="form-item" style="flex:0 0 100%"><label class="form-label">摘要</label><div class="form-control"><input class="inp" style="width:100%;background:#f5f5f5" readonly :value="step2FeeType==='冲销借支' ? '陈凤芹报销4月整理费-牌证及邮递费' : ('付1月，'+step2FeeType+'，'+step2Payee)"></div></div>
                   <div class="form-item"><label class="form-label">费用类型</label><div class="form-control"><input class="inp" style="background:#f5f5f5;width:180px" readonly :value="step2FeeType"></div></div>
                   <div class="form-item"><label class="form-label">U8部门名称</label><div class="form-control"><input class="inp" style="background:#f5f5f5;width:200px" readonly :value="voucherDeptName"></div></div>
                 </div>
@@ -1689,7 +1689,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <!-- 演示用：费用类型切换器（mock：3 种费用对应不同科目编码 / 辅助项目） -->
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 14px;background:#f0f7ff;border:1px solid #91d5ff;border-radius:4px;flex-wrap:wrap">
                   <span style="font-size:12px;color:#0050b3">演示模式 · 切换费用类型查看不同分录：</span>
-                  <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
+                  <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费','冲销借支']" :key="ft" class="btn btn-sm" :class="step2FeeType===ft?'btn-primary':'btn-default'" @click="step2FeeType=ft">{{ft}}</button>
                   <span style="flex:1"></span>
                   <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="showTaxRule=true">进项税额功能说明</button>
                 </div>
