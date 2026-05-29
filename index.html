@@ -2222,6 +2222,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <!-- Tab 4：企微审批流演示（H5端：企微手机审批模拟） -->
           <div v-if="approvalSidebarTab==='h5'" style="display:flex;justify-content:center;padding:8px 0 24px;background:#fff;border:1px solid #e8e8e8;border-radius:0 4px 4px 4px">
             <div style="width:375px">
+              <!-- 演示切换：付款审批 — 对外支付 / 冲销借支 -->
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;justify-content:center">
+                <span style="font-size:11px;color:#888">付款审批演示：</span>
+                <button v-for="pk in ['对外支付','冲销借支']" :key="pk" class="btn btn-sm" :class="h5PayKind===pk?'btn-primary':'btn-default'" @click="h5PayKind=pk;h5ApprovalDetail=false">{{pk}}</button>
+              </div>
               <!-- 手机外壳 -->
               <div style="background:#222;border-radius:36px;padding:10px;box-shadow:0 8px 32px rgba(0,0,0,.35)">
                 <div style="background:#f5f5f5;border-radius:28px;overflow:hidden;height:680px;display:flex;flex-direction:column">
@@ -2263,10 +2268,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                             <div style="width:36px;height:36px;background:#1890ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0"></div>
                             <div style="flex:1">
                               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
-                                <span style="font-size:13px;font-weight:600;color:#333">2026年1月服务费结算申请</span>
+                                <span style="font-size:13px;font-weight:600;color:#333">{{h5PayKind==='冲销借支' ? '2026年4月整理费冲销借支申请' : '2026年1月服务费结算申请'}}</span>
                                 <span class="tag tag-orange" style="font-size:10px">待审批</span>
                               </div>
-                              <div style="font-size:11px;color:#999;margin-bottom:3px">付款审批 · 张三 · 车源生态事业部（广州）</div>
+                              <div style="font-size:11px;color:#999;margin-bottom:3px">{{h5PayKind==='冲销借支' ? '付款审批 · 陈凤芹 · 审计部' : '付款审批 · 张三 · 车源生态事业部（广州）'}}</div>
                               <div style="font-size:12px;font-weight:500;color:#333">¥ 1,060.00</div>
                             </div>
                           </div>
@@ -2335,18 +2340,19 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <!-- 标题卡 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
                         <div style="display:flex;justify-content:space-between;align-items:flex-start">
-                          <div style="font-size:14px;font-weight:600;flex:1;margin-right:8px;line-height:1.4">2026年1月服务费结算申请</div>
+                          <div style="font-size:14px;font-weight:600;flex:1;margin-right:8px;line-height:1.4">{{h5PayKind==='冲销借支' ? '2026年4月整理费冲销借支申请' : '2026年1月服务费结算申请'}}</div>
                           <span class="tag tag-orange" style="flex-shrink:0">待审批</span>
                         </div>
-                        <div style="font-size:11px;color:#999;margin-top:6px">BS202601001 &nbsp;·&nbsp; 张三 &nbsp;·&nbsp; 2026-01-15</div>
+                        <div style="font-size:11px;color:#999;margin-top:6px">{{h5PayKind==='冲销借支' ? 'BS202604008　·　陈凤芹　·　2026-04-15' : 'BS202601001　·　张三　·　2026-01-15'}}</div>
                       </div>
                       <!-- 基本信息 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
                         <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">基本信息</div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px">
-                          <div><div style="color:#999;margin-bottom:2px">申请人</div><div style="font-weight:500">张三（业务部）</div></div>
-                          <div><div style="color:#999;margin-bottom:2px">U8部门名称</div><div style="font-weight:500">车源生态事业部（广州）</div></div>
-                          <div><div style="color:#999;margin-bottom:2px">费用类型</div><div style="font-weight:500">服务费</div></div>
+                          <div><div style="color:#999;margin-bottom:2px">申请人</div><div style="font-weight:500">{{h5PayKind==='冲销借支' ? '陈凤芹（审计部）' : '张三（业务部）'}}</div></div>
+                          <div><div style="color:#999;margin-bottom:2px">U8部门名称</div><div style="font-weight:500">{{h5PayKind==='冲销借支' ? '审计部' : '车源生态事业部（广州）'}}</div></div>
+                          <div><div style="color:#999;margin-bottom:2px">费用类型</div><div style="font-weight:500">{{h5PayKind==='冲销借支' ? '整理费-牌证及邮递费' : '服务费'}}</div></div>
+                          <div><div style="color:#999;margin-bottom:2px">付款种类</div><div style="font-weight:500">{{h5PayKind}}</div></div>
                           <div><div style="color:#999;margin-bottom:2px">含税合计</div><div class="amount" style="font-size:13px">¥ 1,060.00</div></div>
                           <div><div style="color:#999;margin-bottom:2px">明细数</div><div style="font-weight:500">3条</div></div>
                         </div>
@@ -2355,19 +2361,19 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;font-size:12px">
                         <div style="font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">付款方信息</div>
                         <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">付款方名称</span><span style="font-weight:500;max-width:60%;text-align:right">广东唯普汽车科技股份有限公司</span></div>
-                        <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">付款开户行</span><span style="font-weight:500;max-width:60%;text-align:right">中国工商银行广州市第一支行</span></div>
-                        <div style="display:flex;justify-content:space-between"><span style="color:#999">付款账号</span><span style="font-family:monospace;font-size:11px">3602000109201420459</span></div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">付款开户行</span><span style="font-weight:500;max-width:60%;text-align:right">{{h5PayKind==='冲销借支' ? '—' : '中国工商银行广州市第一支行'}}</span></div>
+                        <div style="display:flex;justify-content:space-between"><span style="color:#999">付款账号</span><span style="font-family:monospace;font-size:11px">{{h5PayKind==='冲销借支' ? '—' : '3602000109201420459'}}</span></div>
                       </div>
                       <!-- 收款方信息 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;font-size:12px">
                         <div style="font-weight:600;color:#333;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">收款方信息</div>
-                        <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">收款方名称</span><span style="font-weight:500;max-width:60%;text-align:right">常有（天津）信息技术有限公司</span></div>
-                        <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">收款开户行</span><span style="font-weight:500;max-width:60%;text-align:right">工商银行天津滨海新区支行</span></div>
-                        <div style="display:flex;justify-content:space-between"><span style="color:#999">收款账号</span><span style="font-family:monospace;font-size:11px">0200004209200xxxxxx</span></div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">{{h5PayKind==='冲销借支' ? '发单人' : '收款方名称'}}</span><span style="font-weight:500;max-width:60%;text-align:right">{{h5PayKind==='冲销借支' ? '陈凤芹（发单人）' : '常有（天津）信息技术有限公司'}}</span></div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="color:#999">收款开户行</span><span style="font-weight:500;max-width:60%;text-align:right">{{h5PayKind==='冲销借支' ? '—' : '工商银行天津滨海新区支行'}}</span></div>
+                        <div style="display:flex;justify-content:space-between"><span style="color:#999">收款账号</span><span style="font-family:monospace;font-size:11px">{{h5PayKind==='冲销借支' ? '—' : '0200004209200xxxxxx'}}</span></div>
                       </div>
                       <!-- 明细列表 -->
                       <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px">
-                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">明细列表（4条）<span style="font-size:11px;font-weight:400;color:#999;margin-left:8px">费用类型：服务费</span></div>
+                        <div style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">明细列表（4条）<span style="font-size:11px;font-weight:400;color:#999;margin-left:8px">费用类型：{{h5PayKind==='冲销借支' ? '整理费-牌证及邮递费' : '服务费'}}</span></div>
                         <!-- 可横向滑动区域 -->
                         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;font-size:11px">
                           <div style="min-width:420px">
@@ -2478,6 +2484,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="stab" :class="{active:prdTab==='points'}"  @click="prdTab='points'">③ 需求要点罗列</span>
                 <span class="stab" :class="{active:prdTab==='pending'}" @click="prdTab='pending'">④ U8部门初始化数据</span>
                 <span class="stab" :class="{active:prdTab==='changes'}" @click="prdTab='changes'" style="color:#d46b08">⑤ 需求变动点说明</span>
+                <span class="stab" :class="{active:prdTab==='chongxiao'}" @click="prdTab='chongxiao'" style="color:#722ed1">⑥ 冲销借支</span>
               </div>
 
               <!-- ① 原始需求（附件原文） -->
@@ -2975,6 +2982,57 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div style="font-weight:600;font-size:13px;color:#1890ff;margin-bottom:10px">3. U8 费用项名称改名</div>
                   <div style="font-size:12px;color:#555;line-height:1.9;padding-left:16px">
                     整理费改名为 <b>"整理费-牌证及邮递费"</b>，凭证推送内容不变
+                  </div>
+                </div>
+              </div>
+
+              <!-- ⑥ 冲销借支 -->
+              <div v-if="prdTab==='chongxiao'">
+                <div style="font-weight:600;font-size:13px;color:#333;margin-bottom:14px;border-bottom:1px solid #f0f0f0;padding-bottom:8px">冲销借支 — 本次需求点及关联改动（2026-05-28 新增）</div>
+
+                <div style="margin-bottom:18px;padding:10px 12px;background:#f9f0ff;border-left:3px solid #722ed1;border-radius:2px;line-height:1.9;font-size:12px;color:#444">
+                  <b style="color:#531dab">什么是冲销借支</b>：一种<b>付款种类</b>（与「对外支付」并列）。员工先行垫付费用后，用本次结算冲销其在公司的借支，<b>不对外付款</b>，会计上贷记「<b>其他应收款</b>」而非「银行存款」。费用类型仍是服务费 / 过户费 / 整理费，冲销借支只改变"怎么付"和"凭证贷方科目"。
+                </div>
+
+                <div style="margin-bottom:18px">
+                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">1. 申请表单（BMS 批量结算 → 马上结算）</div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+                    <div>· <b>付款种类</b>：收款信息区新增下拉，默认<b>对外支付</b>，可切<b>冲销借支</b></div>
+                    <div>· 选「冲销借支」时：<b>收款方名称 / 开户行 / 银行账号</b> 置空且无需填写（禁用）；新增 <b>发单人</b>（必填）</div>
+                    <div>· <b>发单人</b>：人工选择，<b>按付款主体级联</b>（唯普 / 唯普云 各自的员工），来源见第 2 节</div>
+                    <div>· <b>付款摘要</b>：冲销借支格式 = <b>「发单人 + 报销 + X月 + 费用类型」</b>，如「陈凤芹报销4月整理费-牌证及邮递费」；月份手动填、<b>仅 1-12 的正整数</b></div>
+                  </div>
+                </div>
+
+                <div style="margin-bottom:18px">
+                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">2. 员工维护（发单人数据源）</div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+                    <div>· 位置：<b>财务管理 → 凭证管理 → 员工维护</b> tab（与「部门编码映射」并列）</div>
+                    <div>· 维护内容：<b>主体（唯普 / 唯普云）+ 员工编码 + 员工姓名</b>；支持增删改、启停、按主体筛选</div>
+                    <div>· 存在同名不同码：如 张伟林（唯普 0221 / 唯普云 0001）、陈凤芹（唯普 0215 / 唯普云 0002），故发单人须按主体过滤以消歧</div>
+                  </div>
+                </div>
+
+                <div style="margin-bottom:18px">
+                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">3. 列表与详情</div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+                    <div>· <b>BMS / FNC 批量结算列表</b>（非待提交 tab）：新增「<b>付款种类</b>」查询项 + 展示列（冲销借支显紫色标签）</div>
+                    <div>· <b>申请详情</b>：付款种类按记录显示；冲销借支时<b>付款银行 / 收款开户行 / 银行账号 显「—」</b>（无银行收付）；摘要按发单人报销格式</div>
+                  </div>
+                </div>
+
+                <div style="margin-bottom:8px">
+                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">4. 凭证管理（与服务费 / 整理费的差异）</div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+                    <div>· 冲销借支凭证以<b>整理费-牌证及邮递费</b>为例：借方科目 <b>64011209</b>、辅助=部门（同整理费），<b>借方不变</b></div>
+                    <div>· <b style="color:#c41d7f">关键差异 — 贷方</b>：原「银行存款 10020101」改为「<b>其他应收款 122106</b>」</div>
+                    <div>· 其他应收款带<b>两条辅助核算</b>（其他应收款的特殊之处）：</div>
+                    <div style="margin:2px 0 0 14px;color:#666">
+                      ① 辅助项目名称=<b>部门</b>、辅助项目编码 <b>0001</b> → 辅助信息=部门名称 / 部门编码<br>
+                      ② 辅助项目名称=<b>员工</b>、辅助项目编码 <b>0002</b> → 辅助信息=员工名称 / 员工编码
+                    </div>
+                    <div>· 新增成本 Step1 选单 / Step2 预览 / 凭证详情演示模式 均已支持「冲销借支」切换</div>
+                    <div>· 科目映射表新增 <b>其他应收款 122106</b> 映射行</div>
                   </div>
                 </div>
               </div>
@@ -3780,6 +3838,7 @@ new Vue({
       approvalFeeTab: 'service',
       h5ApprovalDetail: false,
       h5ApprovalTab: 'pending',
+      h5PayKind: '对外支付',
       approvalListPC: [
         {id:1,name:'张三',dept:'业务部',summary:'2026年1月服务费，常有（天津）信息技术有限公司',amount:'1,060.00',time:'2026-01-15 10:23',level:'财务审批（第二级）'},
         {id:2,name:'李明',dept:'运营部',summary:'2026年1月过户费，好快帮（广州）科技有限公司',amount:'2,400.00',time:'2026-01-16 09:15',level:'部门审批（第一级）'},
