@@ -1076,8 +1076,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <div class="info-item"><div class="info-label">收款方名称</div><div class="info-value">{{bmsCurrentDetail.payeeFull||bmsCurrentDetail.payee}}</div></div>
                       <div class="info-item"><div class="info-label">开户行</div><div class="info-value">中国工商银行天津滨海新区支行</div></div>
                       <div class="info-item"><div class="info-label">银行账号</div><div class="info-value">0200004209200xxxxxx</div></div>
-                      <div class="info-item"><div class="info-label">付款种类</div><div class="info-value">对外支付</div></div>
-                      <div class="info-item full"><div class="info-label">付款摘要</div><div class="info-value">付{{formatMonth(bmsCurrentDetail.settleMonth)}}，{{bmsCurrentDetail.feeType}}，{{bmsCurrentDetail.payeeFull||bmsCurrentDetail.payee}}</div></div>
+                      <div class="info-item"><div class="info-label">付款种类</div><div class="info-value">{{bmsCurrentDetail.payKind||'对外支付'}}</div></div>
+                      <div class="info-item full"><div class="info-label">付款摘要</div><div class="info-value">{{ bmsCurrentDetail.payKind==='冲销借支' ? bmsCurrentDetail.settleDesc : ('付'+formatMonth(bmsCurrentDetail.settleMonth)+'，'+bmsCurrentDetail.feeType+'，'+(bmsCurrentDetail.payeeFull||bmsCurrentDetail.payee)) }}</div></div>
                     </div>
                   </div>
                   <div style="width:220px;flex-shrink:0">
@@ -1402,8 +1402,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <div class="info-item"><div class="info-label">收款方名称</div><div class="info-value">{{fncDetailRecord.payee}}</div></div>
                         <div class="info-item"><div class="info-label">开户行</div><div class="info-value">中国工商银行天津滨海新区支行</div></div>
                         <div class="info-item"><div class="info-label">银行账号</div><div class="info-value">0200004209200xxxxxx</div></div>
-                        <div class="info-item"><div class="info-label">付款种类</div><div class="info-value">对外支付</div></div>
-                        <div class="info-item full"><div class="info-label">付款摘要</div><div class="info-value">付{{formatMonth(fncDetailRecord.settleMonth)}}，{{fncDetailRecord.feeType}}，{{fncDetailRecord.payee}}</div></div>
+                        <div class="info-item"><div class="info-label">付款种类</div><div class="info-value">{{fncDetailRecord.payKind||'对外支付'}}</div></div>
+                        <div class="info-item full"><div class="info-label">付款摘要</div><div class="info-value">{{ fncDetailRecord.payKind==='冲销借支' ? fncDetailRecord.settleDesc : ('付'+formatMonth(fncDetailRecord.settleMonth)+'，'+fncDetailRecord.feeType+'，'+fncDetailRecord.payee) }}</div></div>
                       </div>
                     </div>
                     <div style="width:220px;flex-shrink:0;margin-left:24px">
@@ -1728,7 +1728,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <!-- 每辆车的借方行 -->
                       <tr v-for="(row, idx) in voucherStep2Rows" :key="idx" style="border-bottom:1px solid #f0f0f0">
                         <td style="padding:7px 8px;text-align:left">2026-4</td>
-                        <td style="padding:7px 8px;text-align:left">{{step2FeeType}}</td>
+                        <td style="padding:7px 8px;text-align:left">{{step2FeeType==='冲销借支' ? '整理费-牌证及邮递费' : step2FeeType}}</td>
                         <td style="padding:7px 8px;text-align:left;font-size:11px">{{row.plate}}</td>
                         <td style="padding:7px 8px;text-align:right;font-weight:600;color:#333">{{row.debit}}</td>
                         <td style="padding:7px 8px;text-align:right;color:#d46b08">{{row.tax}}</td>
@@ -1743,11 +1743,11 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                         <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
                         <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
                       </tr>
-                      <!-- 银行存款贷方行（粉色） -->
+                      <!-- 贷方行（粉色）：冲销借支为其他应收款，其余为银行存款 -->
                       <tr style="background:#fff0f6;border-bottom:1px solid #f0f0f0">
                         <td style="padding:7px 8px;text-align:left">2026-4</td>
-                        <td style="padding:7px 8px;text-align:left">银行存款</td>
-                        <td style="padding:7px 8px;text-align:left;font-size:11px">10020101</td>
+                        <td style="padding:7px 8px;text-align:left">{{step2FeeType==='冲销借支' ? '其他应收款' : '银行存款'}}</td>
+                        <td style="padding:7px 8px;text-align:left;font-size:11px">{{step2FeeType==='冲销借支' ? '122106' : '10020101'}}</td>
                         <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
                         <td style="padding:7px 8px;text-align:right;color:#bbb">—</td>
                         <td style="padding:7px 8px;text-align:right;font-weight:600;color:#c41d7f">{{step2TotalWithTax}}</td>
