@@ -328,38 +328,56 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="section-title" style="margin-bottom:14px">收款信息</div>
               <div class="form-row">
                 <div class="form-item">
-                  <label class="form-label req">收款方名称</label>
+                  <label class="form-label req">付款种类</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请输入收款方名称" v-model="formPayee" :class="{'field-error':formValidated&&!formPayee}">
+                    <select class="sel" style="width:100%" v-model="formPayKind" @change="formPayKind==='冲销借支' ? (formPayee='') : (formIssuer='')">
+                      <option value="对外支付">对外支付</option>
+                      <option value="冲销借支">冲销借支</option>
+                    </select>
+                    <div class="form-note">默认对外支付；选「冲销借支」时无需填收款方，改填发单人</div>
                   </div>
                 </div>
                 <div class="form-item">
-                  <label class="form-label req">开户行</label>
+                  <template v-if="formPayKind==='冲销借支'">
+                    <label class="form-label req">发单人</label>
+                    <div class="form-control">
+                      <select class="sel" style="width:100%" v-model="formIssuer" :class="{'field-error':formValidated&&!formIssuer}">
+                        <option value="">请选择发单人...</option>
+                        <option v-for="e in employeeData.filter(x=>x.active)" :key="e.code" :value="e.name">{{e.name}}（{{e.code}}）</option>
+                      </select>
+                      <div class="form-note">人工选择，来源：U8部门维护 → 员工维护</div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-item">
+                  <label class="form-label" :class="{req:formPayKind==='对外支付'}">收款方名称</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请输入收款方开户行名称">
+                    <input class="inp" style="width:100%" :class="{'field-error':formValidated&&formPayKind==='对外支付'&&!formPayee}" :placeholder="formPayKind==='冲销借支'?'冲销借支无需填写':'请输入收款方名称'" :disabled="formPayKind==='冲销借支'" v-model="formPayee">
+                  </div>
+                </div>
+                <div class="form-item">
+                  <label class="form-label" :class="{req:formPayKind==='对外支付'}">开户行</label>
+                  <div class="form-control">
+                    <input class="inp" style="width:100%" :placeholder="formPayKind==='冲销借支'?'冲销借支无需填写':'请输入收款方开户行名称'" :disabled="formPayKind==='冲销借支'">
                   </div>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-item">
-                  <label class="form-label req">银行账号</label>
+                  <label class="form-label" :class="{req:formPayKind==='对外支付'}">银行账号</label>
                   <div class="form-control">
-                    <input class="inp" style="width:100%" placeholder="请输入收款方银行账号">
+                    <input class="inp" style="width:100%" :placeholder="formPayKind==='冲销借支'?'冲销借支无需填写':'请输入收款方银行账号'" :disabled="formPayKind==='冲销借支'">
                   </div>
                 </div>
-                <div class="form-item">
-                  <label class="form-label">付款种类</label>
-                  <div class="form-control">
-                    <input class="inp" style="width:100%;background:#f5f5f5" readonly value="对外支付">
-                    <div class="form-note">系统固定，不可修改</div>
-                  </div>
-                </div>
+                <div class="form-item"></div>
               </div>
               <div class="form-row">
                 <div class="form-item full">
                   <label class="form-label req">付款摘要</label>
                   <div class="form-control">
-                    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+                    <div v-if="formPayKind==='对外支付'" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px">
                       <span style="font-size:12px;color:#555">付</span>
                       <input class="inp" style="width:72px" placeholder="4月" v-model="formSummaryMonth" title="月份，手动填写" :class="{'field-error':formValidated&&!formSummaryMonth}">
                       <span style="font-size:11px;color:#aaa">（手动）</span>
@@ -368,8 +386,16 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span style="font-size:12px;color:#555" v-if="formPayee">，{{formPayee}}</span>
                       <span style="font-size:11px;color:#aaa">（自动）</span>
                     </div>
+                    <div v-else style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+                      <span style="font-size:12px;color:#555" v-if="formIssuer">{{formIssuer}}</span>
+                      <span style="font-size:12px;color:#bbb" v-else>（发单人）</span>
+                      <span style="font-size:11px;color:#aaa">（自动）</span>
+                      <span style="font-size:12px;color:#555">报销，{{formFeeType}}</span>
+                      <span style="font-size:11px;color:#aaa">（自动）</span>
+                    </div>
                     <div v-if="formPaymentSummary" style="background:#f5f5f5;border-radius:3px;padding:5px 8px;font-size:12px;color:#333;border:1px solid #e8e8e8">{{formPaymentSummary}}</div>
-                    <div class="form-note">月份手动填写（必填）；费用类型、收款方自动带入</div>
+                    <div class="form-note" v-if="formPayKind==='对外支付'">月份手动填写（必填）；费用类型、收款方自动带入</div>
+                    <div class="form-note" v-else>格式：发单人报销，费用类型；发单人、费用类型自动带入，无需填月份</div>
                   </div>
                 </div>
               </div>
@@ -431,7 +457,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <tr><td colspan="5" style="text-align:right;font-weight:600">合计</td><td class="amount">1,360.00</td></tr>
                 </table>
               </div>
-              <div v-if="formValidated && (!formFeeType||!formBipDept||!formPayer||!formPayee||!formInvoiceType||!formSummaryMonth)" class="alert alert-error" style="margin-top:12px">请填写所有必填字段（标有 <b style="color:#ff4d4f">*</b>号）后再提交
+              <div v-if="formValidated && (!formFeeType||!formBipDept||!formPayer||!formInvoiceType||(formPayKind==='冲销借支' ? !formIssuer : (!formPayee||!formSummaryMonth)))" class="alert alert-error" style="margin-top:12px">请填写所有必填字段（标有 <b style="color:#ff4d4f">*</b>号）后再提交
               </div>
               <div style="margin-top:16px;display:flex;gap:8px">
                 <button class="btn btn-primary" @click="submitApproval">提交审批</button>
@@ -446,6 +472,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="tabs" style="margin-bottom:0;background:#fff;padding:0 16px;border-radius:4px 4px 0 0;border:1px solid #e8e8e8;border-bottom:none">
               <span class="tab" :class="{active:bmsListTab==='settle'}" @click="bmsListTab='settle'">批量结算</span>
               <span class="tab" :class="{active:bmsListTab==='deptmap'}" @click="bmsListTab='deptmap'">部门编码映射</span>
+              <span class="tab" :class="{active:bmsListTab==='empmap'}" @click="bmsListTab='empmap'">员工维护</span>
             </div>
 
             <!-- 部门编码映射（只读） -->
@@ -478,6 +505,37 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </table>
                 </div>
                 <div class="pagination"><span>共 {{filteredDeptMapping.length}} 条</span><div class="page-btn active">1</div></div>
+              </div>
+            </div>
+
+            <!-- 员工维护 -->
+            <div v-if="bmsListTab==='empmap'" class="card" style="border-radius:0 4px 4px 4px">
+              <div class="card-header">
+                <span class="card-title">员工维护</span>
+                <button class="btn btn-primary btn-sm" @click="openEmp()">＋ 新增员工</button>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info" style="margin-bottom:12px">员工编码与员工姓名维护，供申请单「冲销借支」选择发单人、以及生成凭证时作为辅助核算（员工）使用。</div>
+                <div class="filter-bar" style="margin-bottom:12px">
+                  <div class="filter-item"><label>员工编码</label><input class="inp" placeholder="编码" style="width:100px" v-model="empFilter.code"></div>
+                  <div class="filter-item"><label>员工姓名</label><input class="inp" placeholder="姓名" style="width:120px" v-model="empFilter.name"></div>
+                  <div class="filter-item"><label>状态</label><select class="sel" v-model="empFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <button class="btn btn-default btn-sm" @click="empFilter={code:'',name:'',active:'全部'}">重置</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <tr><th>员工编码</th><th>员工姓名</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
+                    <tr v-for="e in filteredEmployees" :key="e.code">
+                      <td><b>{{e.code}}</b></td>
+                      <td>{{e.name}}</td>
+                      <td><span class="tag" :class="e.active?'tag-green':'tag-gray'">{{e.active?'启用':'停用'}}</span></td>
+                      <td style="color:#999;font-size:11px">{{e.updatedAt}}</td>
+                      <td style="white-space:nowrap"><button class="btn-link" @click="openEmp(e)">编辑</button> | <button class="btn-link" :style="e.active?'color:#ff4d4f':''" @click="toggleEmpActive(e)">{{e.active?'停用':'启用'}}</button></td>
+                    </tr>
+                    <tr v-if="filteredEmployees.length===0"><td colspan="5" style="text-align:center;color:#999;padding:24px">暂无数据</td></tr>
+                  </table>
+                </div>
+                <div class="pagination"><span>共 {{filteredEmployees.length}} 条</span><div class="page-btn active">1</div></div>
               </div>
             </div>
 
@@ -1805,7 +1863,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <span style="font-weight:500;color:#555">王财务</span>
                       <span style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;padding:2px 8px;border-left:1px dashed #d9d9d9">
                         <span style="font-size:11px;font-weight:400;color:#888">演示模式：</span>
-                        <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" style="padding:2px 8px;font-size:11px;font-weight:400" @click="voucherDetailFeeType=ft">{{ft}}</button>
+                        <button v-for="ft in ['服务费','过户费','整理费-牌证及邮递费','冲销借支']" :key="ft" class="btn btn-sm" :class="voucherDetailFeeType===ft?'btn-primary':'btn-default'" style="padding:2px 8px;font-size:11px;font-weight:400" @click="voucherDetailFeeType=ft">{{ft}}</button>
                       </span>
                     </span>
                     <button class="btn btn-danger btn-sm" @click="showReturnVoucher=true">删除凭证</button>
@@ -1864,16 +1922,18 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td></td><td></td>
                           <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
-                        <!-- 贷方：银行存款 -->
+                        <!-- 贷方：按 scenario.credit 渲染；冲销借支为「其他应收款」带 部门 + 员工 双辅助 -->
                         <tr style="background:#fff0f6">
                           <td>2026</td><td>4</td><td>记</td><td>王财务</td><td></td>
-                          <td>银行存款</td>
-                          <td>10020101</td>
-                          <td style="white-space:normal;line-height:1.4;font-size:11px">付4月，{{voucherDetailFeeType}}，{{voucherDetailScenario.payee}}</td>
+                          <td>{{voucherDetailScenario.credit.subject}}</td>
+                          <td>{{voucherDetailScenario.credit.code}}</td>
+                          <td style="white-space:normal;line-height:1.4;font-size:11px">{{ voucherDetailFeeType==='冲销借支' ? (voucherDetailScenario.payee + '报销，' + voucherDetailFeeType) : ('付4月，' + voucherDetailFeeType + '，' + voucherDetailScenario.payee) }}</td>
                           <td>人民币</td><td>1</td>
                           <td style="color:#bbb">—</td><td style="text-align:right;color:#c41d7f">{{voucherDetailScenario.creditAmt}}</td>
-                          <td>现金流量项目</td><td>0007</td>
-                          <td style="white-space:normal;line-height:1.4">购买商品、接受劳务支付的现金</td><td>04</td>
+                          <td><div v-for="(a,ai) in voucherDetailScenario.credit.aux" :key="'an'+ai">{{a.name}}</div></td>
+                          <td><div v-for="(a,ai) in voucherDetailScenario.credit.aux" :key="'ac'+ai">{{a.code}}</div></td>
+                          <td style="white-space:normal;line-height:1.4"><div v-for="(a,ai) in voucherDetailScenario.credit.aux" :key="'ain'+ai">{{a.infoName}}</div></td>
+                          <td><div v-for="(a,ai) in voucherDetailScenario.credit.aux" :key="'av'+ai">{{a.info}}</div></td>
                           <td></td><td></td>
                           <td style="white-space:nowrap"><button class="btn-link">备注</button> <button class="btn-link" style="color:#ff4d4f">删除</button></td>
                         </tr>
@@ -3057,6 +3117,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <tr><td>整理费-牌证及邮递费</td><td><span class="tag tag-orange" style="font-size:11px">整理费-牌证及邮递费</span></td><td>64011209</td><td>部门</td><td>0001</td><td>BIP部门名称</td><td>BIP部门编码</td></tr>
               <tr style="background:#fffbe6"><td>进项税额</td><td>—</td><td>2221010101</td><td colspan="4" style="color:#999">汇总一行，按总进项税额计入</td></tr>
               <tr style="background:#fff0f6"><td>银行存款</td><td>—</td><td>10020101</td><td>现金流量项目</td><td>0007</td><td>购买商品、接受劳务支付的现金</td><td>04</td></tr>
+              <tr style="background:#f9f0ff"><td>其他应收款</td><td><span class="tag" style="background:#f9f0ff;color:#722ed1;border:1px solid #d3adf7;font-size:11px">冲销借支</span></td><td>122106</td><td>部门 / 员工</td><td>0001 / 0002</td><td>部门名称 / 员工名称</td><td>部门编码 / 员工编码</td></tr>
             </tbody>
           </table>
         </div>
@@ -3384,6 +3445,25 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
     </div>
   </div>
 </div>
+
+<!-- 员工维护 dialog -->
+<div class="modal-mask" v-if="empDialog" @click.self="empDialog=false">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header"><span class="modal-title">{{empEditing?'编辑员工':'新增员工'}}</span><span class="modal-close" @click="empDialog=false">✕</span></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-item full"><label class="form-label req">员工编码</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：E006" v-model="empForm.code"></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item full"><label class="form-label req">员工姓名</label><div class="form-control"><input class="inp" style="width:100%" placeholder="如：周八" v-model="empForm.name"></div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" @click="empDialog=false">取消</button>
+      <button class="btn btn-primary" @click="saveEmp()">保存</button>
+    </div>
+  </div>
+</div>
 </div><!-- /#app -->
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
@@ -3399,6 +3479,8 @@ new Vue({
       toastMsg: '',
       // 填写申请表单 — 表单数据
       formPayer: 'weipu',
+      formPayKind: '对外支付',
+      formIssuer: '',
       formSummaryMonth: '4月',
       formFeeType: '服务费',
       feeTypeOptions: ['服务费', '过户费', '整理费-牌证及邮递费'],
@@ -3616,6 +3698,18 @@ new Vue({
         {company:'weipuyun',code:'5',name:'销售部门',remark:'',active:true,updatedAt:'2026-05-28'},
         {company:'weipuyun',code:'6',name:'人力资源部',remark:'',active:true,updatedAt:'2026-05-28'},
       ],
+      // 员工档案（发单人来源；U8部门维护中维护，编码 + 姓名）
+      employeeData: [
+        {code:'E001', name:'张三', active:true, updatedAt:'2026-05-28'},
+        {code:'E002', name:'李四', active:true, updatedAt:'2026-05-28'},
+        {code:'E003', name:'王五', active:true, updatedAt:'2026-05-28'},
+        {code:'E004', name:'赵六', active:true, updatedAt:'2026-05-28'},
+        {code:'E005', name:'孙七', active:false, updatedAt:'2026-05-28'},
+      ],
+      empForm: { code:'', name:'' },
+      empEditing: null,
+      empDialog: false,
+      empFilter: { code:'', name:'', active:'全部' },
       // FNC Voucher
       voucherNewStep: 0,
       voucherTab: 'all',
@@ -3676,6 +3770,11 @@ new Vue({
       return this.formPayer && this.payerMap[this.formPayer] ? this.payerMap[this.formPayer].account : ''
     },
     formPaymentSummary() {
+      if (this.formPayKind === '冲销借支') {
+        // 冲销借支：发单人报销，费用类型
+        const parts = [this.formIssuer ? this.formIssuer + '报销' : '', this.formFeeType].filter(Boolean)
+        return parts.join('，')
+      }
       const parts = [this.formSummaryMonth, this.formFeeType, this.formPayee].filter(Boolean)
       return parts.length ? '付' + parts.join('，') : ''
     },
@@ -3749,6 +3848,8 @@ new Vue({
     },
     voucherDetailScenario() {
       const ft = this.voucherDetailFeeType
+      // 默认贷方：银行存款（单一辅助：现金流量项目）
+      const bankCredit = { subject:'银行存款', code:'10020101', aux:[{name:'现金流量项目', code:'0007', infoName:'购买商品、接受劳务支付的现金', info:'04'}] }
       const base = {
         '服务费': {
           subjectCode:'64010102', auxName:'项目', auxCode:'0010', auxInfoLabel:'车牌',
@@ -3757,7 +3858,7 @@ new Vue({
             {desc:'付4月，服务费，常有（天津）信息技术有限公司（粤B·67890）', auxInfo:'粤B·67890', debit:'339.62', credit:''},
             {desc:'付4月，服务费，常有（天津）信息技术有限公司（粤C·11111）', auxInfo:'粤C·11111', debit:'320.75', credit:''},
           ],
-          taxAmt:'60.01', creditAmt:'1,060.00', payee:'常有（天津）信息技术有限公司',
+          taxAmt:'60.01', creditAmt:'1,060.00', payee:'常有（天津）信息技术有限公司', credit: bankCredit,
         },
         '过户费': {
           subjectCode:'64010103', auxName:'项目', auxCode:'0010', auxInfoLabel:'车牌',
@@ -3765,7 +3866,7 @@ new Vue({
             {desc:'付4月，过户费，好快帮（广州）科技有限公司（粤D·22222）', auxInfo:'粤D·22222', debit:'377.36', credit:''},
             {desc:'付4月，过户费，好快帮（广州）科技有限公司（LFV3A2BM2N3xxxxx3）', auxInfo:'LFV3A2BM2N3xxxxx3', debit:'377.36', credit:''},
           ],
-          taxAmt:'45.28', creditAmt:'800.00', payee:'好快帮（广州）科技有限公司',
+          taxAmt:'45.28', creditAmt:'800.00', payee:'好快帮（广州）科技有限公司', credit: bankCredit,
         },
         '整理费-牌证及邮递费': {
           subjectCode:'64011209', auxName:'部门', auxCode:'0001', auxInfoLabel:'U8部门名称',
@@ -3773,7 +3874,21 @@ new Vue({
             {desc:'付4月，整理费-牌证及邮递费，常有（天津）信息技术有限公司（番禺车管分所）', auxInfo:'番禺车管分所', auxInfoExt:'7401', debit:'471.70', credit:''},
             {desc:'付4月，整理费-牌证及邮递费，常有（天津）信息技术有限公司（越秀车管）', auxInfo:'越秀车管', auxInfoExt:'7402', debit:'471.70', credit:''},
           ],
-          taxAmt:'56.60', creditAmt:'1,000.00', payee:'常有（天津）信息技术有限公司',
+          taxAmt:'56.60', creditAmt:'1,000.00', payee:'常有（天津）信息技术有限公司', credit: bankCredit,
+        },
+        // 冲销借支：借方同服务费；贷方改为「其他应收款 122106」，带 部门 + 员工 双辅助核算
+        '冲销借支': {
+          subjectCode:'64010102', auxName:'项目', auxCode:'0010', auxInfoLabel:'车牌',
+          rows:[
+            {desc:'张三报销，冲销借支（粤A·12345）', auxInfo:'粤A·12345', debit:'339.62', credit:''},
+            {desc:'张三报销，冲销借支（粤B·67890）', auxInfo:'粤B·67890', debit:'339.62', credit:''},
+            {desc:'张三报销，冲销借支（粤C·11111）', auxInfo:'粤C·11111', debit:'320.75', credit:''},
+          ],
+          taxAmt:'60.01', creditAmt:'1,060.00', payee:'张三',
+          credit: { subject:'其他应收款', code:'122106', aux:[
+            {name:'部门', code:'0001', infoName:'审计部', info:'25'},
+            {name:'员工', code:'0002', infoName:'张三', info:'E001'},
+          ]},
         },
       }
       return base[ft] || base['服务费']
@@ -3822,6 +3937,14 @@ new Vue({
       if (f.code) list = list.filter(d => d.code.includes(f.code))
       if (f.name) list = list.filter(d => d.name.includes(f.name))
       if (f.active !== '全部') list = list.filter(d => d.active === (f.active === '启用'))
+      return list
+    },
+    filteredEmployees() {
+      let list = this.employeeData
+      const f = this.empFilter
+      if (f.code) list = list.filter(e => e.code.includes(f.code))
+      if (f.name) list = list.filter(e => e.name.includes(f.name))
+      if (f.active !== '全部') list = list.filter(e => e.active === (f.active === '启用'))
       return list
     },
     filteredFncList() {
@@ -3988,7 +4111,9 @@ new Vue({
     },
     submitApproval() {
       this.formValidated = true
-      if (!this.formFeeType || !this.formBipDept || !this.formPayer || !this.formPayee || !this.formInvoiceType || !this.formSummaryMonth) return
+      const baseOk = this.formFeeType && this.formBipDept && this.formPayer && this.formInvoiceType
+      const payOk = this.formPayKind === '冲销借支' ? !!this.formIssuer : (!!this.formPayee && !!this.formSummaryMonth)
+      if (!baseOk || !payOk) return
       this.showToast('提交成功')
       setTimeout(() => { this.bmsView = 'list'; this.bmsStatusTab = 'approval'; this.formValidated = false }, 800)
     },
@@ -4116,6 +4241,34 @@ new Vue({
         d.updatedAt = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
         this.showToast('已启用')
       }
+    },
+    openEmp(emp) {
+      if (emp) { this.empEditing = emp; this.empForm = { code: emp.code, name: emp.name } }
+      else { this.empEditing = null; this.empForm = { code:'', name:'' } }
+      this.empDialog = true
+    },
+    saveEmp() {
+      const f = this.empForm
+      if (!f.code || !f.name) { this.showToast('请填写员工编码和姓名'); return }
+      const today = new Date()
+      const pad = n => String(n).padStart(2,'0')
+      const ts = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
+      if (this.empEditing) {
+        this.empEditing.code = f.code; this.empEditing.name = f.name; this.empEditing.updatedAt = ts
+        this.showToast('修改成功')
+      } else {
+        if (this.employeeData.find(e => e.code === f.code)) { this.showToast('该员工编码已存在'); return }
+        this.employeeData.push({ code:f.code, name:f.name, active:true, updatedAt:ts })
+        this.showToast('新增成功')
+      }
+      this.empDialog = false
+    },
+    toggleEmpActive(e) {
+      e.active = !e.active
+      const today = new Date()
+      const pad = n => String(n).padStart(2,'0')
+      e.updatedAt = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`
+      this.showToast(e.active ? '已启用' : '已停用')
     },
     confirmDeptDisable() {
       const d = this.deptDisableTarget
