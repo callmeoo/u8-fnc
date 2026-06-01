@@ -483,6 +483,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="tabs" style="margin-bottom:0;background:#fff;padding:0 16px;border-radius:4px 4px 0 0;border:1px solid #e8e8e8;border-bottom:none">
               <span class="tab" :class="{active:bmsListTab==='settle'}" @click="bmsListTab='settle'">批量结算</span>
               <span class="tab" :class="{active:bmsListTab==='deptmap'}" @click="bmsListTab='deptmap'">部门编码映射</span>
+              <span class="tab" :class="{active:bmsListTab==='empmap'}" @click="bmsListTab='empmap'">员工编码映射</span>
             </div>
 
             <!-- 部门编码映射（只读） -->
@@ -515,6 +516,38 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </table>
                 </div>
                 <div class="pagination"><span>共 {{filteredDeptMapping.length}} 条</span><div class="page-btn active">1</div></div>
+              </div>
+            </div>
+
+            <!-- 员工编码映射（只读） -->
+            <div v-if="bmsListTab==='empmap'" class="card" style="border-radius:0 4px 4px 4px">
+              <div class="card-header">
+                <span class="card-title">员工编码映射</span>
+                <span style="font-size:11px;color:#999">仅支持查询，如需维护请前往 FNC → 凭证管理 → 员工维护</span>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info" style="margin-bottom:12px">员工编码与员工姓名映射关系，供申请单「冲销借支」选择发单人使用。</div>
+                <div class="filter-bar" style="margin-bottom:12px">
+                  <div class="filter-item"><label>主体</label><select class="sel" v-model="empFilter.company"><option value="全部">全部</option><option value="weipu">唯普</option><option value="weipuyun">唯普云</option></select></div>
+                  <div class="filter-item"><label>员工编码</label><input class="inp" placeholder="编码" style="width:100px" v-model="empFilter.code"></div>
+                  <div class="filter-item"><label>员工姓名</label><input class="inp" placeholder="姓名" style="width:120px" v-model="empFilter.name"></div>
+                  <div class="filter-item"><label>状态</label><select class="sel" v-model="empFilter.active"><option>全部</option><option>启用</option><option>停用</option></select></div>
+                  <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredEmployees.length + ' 条')">查询</button>
+                  <button class="btn btn-default btn-sm" @click="empFilter={company:'全部',code:'',name:'',active:'全部'}">重置</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <tr><th>主体</th><th>员工编码</th><th>员工姓名</th><th>状态</th><th>更新时间</th></tr>
+                    <tr v-for="e in filteredEmployees" :key="e.code">
+                      <td>{{companyLabel(e.company)}}</td>
+                      <td><b>{{e.code}}</b></td>
+                      <td>{{e.name}}</td>
+                      <td><span class="tag" :class="e.active?'tag-green':'tag-gray'">{{e.active?'启用':'停用'}}</span></td>
+                      <td style="color:#999;font-size:11px">{{e.updatedAt}}</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="pagination"><span>共 {{filteredEmployees.length}} 条</span><div class="page-btn active">1</div></div>
               </div>
             </div>
 
