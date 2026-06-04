@@ -50,6 +50,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .sel{border:1px solid #d9d9d9;border-radius:3px;padding:4px 8px;font-size:12px;outline:none;color:#333;background:#fff;min-width:110px}
 /* Buttons */
 .btn{display:inline-flex;align-items:center;gap:4px;padding:5px 14px;border-radius:3px;border:1px solid;cursor:pointer;font-size:12px;transition:all .15s;white-space:nowrap}
+@keyframes blinkAttention{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,77,79,.5)}50%{opacity:.55;box-shadow:0 0 10px 3px rgba(255,77,79,.7)}}
+.blink-attention{animation:blinkAttention 1s ease-in-out infinite}
+.blink-attention:hover{animation:none;opacity:1}
 .btn-primary{background:#1890ff;border-color:#1890ff;color:#fff}
 .btn-primary:hover{background:#40a9ff;border-color:#40a9ff}
 .btn-default{background:#fff;border-color:#d9d9d9;color:#333}
@@ -547,11 +550,13 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="card-title">BMS — 批量结算列表</span>
                 <!-- 非待提交 tab：显示"导入"和"申请结算" -->
                 <div v-if="bmsStatusTab!=='draft'" style="display:flex;gap:8px">
+                  <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showDraftHelp=true">保存草稿功能说明</button>
                   <button class="btn btn-default" @click="importDialog=true">导入牌证邮递费及过户费</button>
                   <button class="btn btn-primary" @click="bmsStatusTab='draft'">＋ 申请结算</button>
                 </div>
                 <!-- 待提交 tab：仅显示"马上申请结算" -->
                 <div v-if="bmsStatusTab==='draft'" style="display:flex;gap:8px">
+                  <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showDraftHelp=true">保存草稿功能说明</button>
                   <button class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
                 </div>
               </div>
@@ -867,6 +872,32 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           </div>
 
           <!-- 废弃确认 Dialog -->
+          <div class="modal-mask" v-if="showDraftHelp" @click.self="showDraftHelp=false">
+            <div class="modal" style="max-width:560px">
+              <div class="modal-header"><span class="modal-title">保存草稿 — 功能说明</span><span class="modal-close" @click="showDraftHelp=false">✕</span></div>
+              <div class="modal-body">
+                <div style="font-size:13px;line-height:1.9;color:#333">
+                  <div class="alert alert-info" style="margin-bottom:14px">填结算申请单时还没填完、或暂时不想提交？点<b>「保存草稿」</b>把当前内容先存起来，之后随时回来继续，不必一次填完。</div>
+                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">在哪用</div>
+                  <ul style="margin:0 0 14px 20px;padding:0;color:#555">
+                    <li>申请表单底部「提交审批 ｜ <b style="color:#ff4d4f">保存草稿</b> ｜ 继续添加车辆」中间那个按钮。</li>
+                    <li>保存后进入列表的<b>「草稿」</b>tab（位于「待提交」与「待审批」之间），<b>仅本人可见</b>。</li>
+                  </ul>
+                  <div style="font-weight:600;margin-bottom:6px;color:#0050b3">草稿能做什么</div>
+                  <ul style="margin:0 0 14px 20px;padding:0;color:#555">
+                    <li><b>编辑</b>：重新打开表单，已填字段与已选明细<b>全部带回</b>，可继续填或直接提交审批。</li>
+                    <li><b>删除</b>：丢弃草稿，占用的车辆<b>退回「待提交」</b>。</li>
+                    <li><b>提交审批</b>：草稿转为「待审批」，自动从草稿 tab 移除。</li>
+                  </ul>
+                  <div class="alert alert-warning" style="margin-bottom:0">保存草稿会<b>占用</b>所选车辆（从「待提交」移走），避免同一批车被重复发起结算；删除草稿即释放。</div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" @click="showDraftHelp=false">我知道了</button>
+              </div>
+            </div>
+          </div>
+
           <div class="modal-mask" v-if="showDraftDeleteConfirm" @click.self="showDraftDeleteConfirm=false">
             <div class="modal" style="max-width:420px">
               <div class="modal-header"><span class="modal-title">删除草稿</span><span class="modal-close" @click="showDraftDeleteConfirm=false">✕</span></div>
@@ -3160,6 +3191,7 @@ new Vue({
       showDiscardConfirm: false,
       showDraftDeleteConfirm: false,
       draftDeleteTarget: null,
+      showDraftHelp: false,
       showCancelConfirm: false,
       showReturnVoucher: false,
       showBackfill: false,
