@@ -265,8 +265,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             </div>
             <div class="card-body">
               <div class="info-block">
-                <b>费用类型：</b>{{formFeeType}} &nbsp;&nbsp; <b>已选明细：</b>4条 &nbsp;&nbsp;
-                <b>明细合计：</b><span class="amount">¥ 1,360.00</span>
+                <b>费用类型：</b>{{formFeeType}} &nbsp;&nbsp; <b>已选明细：</b>{{formSelectedVehicles.length}}条 &nbsp;&nbsp;
+                <b>明细合计：</b><span class="amount">¥ {{formSelectedAmount}}</span>
               </div>
               <div class="section-title" style="margin-bottom:14px">基本信息</div>
               <div class="form-row">
@@ -441,25 +441,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                 </div>
               </div>
-              <div class="section-title" style="margin-bottom:10px;margin-top:20px">已选明细（4条）</div>
+              <div class="section-title" style="margin-bottom:10px;margin-top:20px">已选明细（{{formSelectedVehicles.length}}条）</div>
               <div class="table-wrap">
                 <table>
                   <tr>
                     <th>车牌号</th><th>VIN码</th><th>集团</th><th>门店</th><th>服务中心</th><th>实际结算金额(含税)</th>
                   </tr>
-                  <tr>
-                    <td>粤A·12345</td><td>LFV3A2BM2N3xxxxx1</td><td>广州区域</td><td>番禺门店</td><td>番禺服务中心</td><td class="amount">360.00</td>
+                  <tr v-for="v in formSelectedVehicles" :key="v.plate">
+                    <td>{{v.plate}}</td><td>{{v.vin||'—'}}</td><td>{{v.group||'—'}}</td><td>{{v.store||'—'}}</td><td>{{v.serviceCenter||'—'}}</td><td class="amount">{{v.actualAmt}}</td>
                   </tr>
-                  <tr>
-                    <td>粤B·67890</td><td>LFV3A2BM2N3xxxxx2</td><td>广州区域</td><td>天河门店</td><td>天河服务中心</td><td class="amount">360.00</td>
-                  </tr>
-                  <tr>
-                    <td>粤C·11111</td><td>LFV3A2BM2N3xxxxx3</td><td>广州区域</td><td>越秀门店</td><td>越秀服务中心</td><td class="amount">400.00</td>
-                  </tr>
-                  <tr>
-                    <td>粤D·22222</td><td>LFV3A2BM2N3xxxxx4</td><td>广州区域</td><td>花都门店</td><td>花都服务中心</td><td class="amount">240.00</td>
-                  </tr>
-                  <tr><td colspan="5" style="text-align:right;font-weight:600">合计</td><td class="amount">1,360.00</td></tr>
+                  <tr v-if="formSelectedVehicles.length===0"><td colspan="6" style="text-align:center;color:#999;padding:20px">暂无已选车辆</td></tr>
+                  <tr><td colspan="5" style="text-align:right;font-weight:600">合计</td><td class="amount">{{formSelectedAmount}}</td></tr>
                 </table>
               </div>
               <div v-if="formValidated && (!formFeeType||!formBipDept||!formPayer||!formInvoiceType||!formSummaryMonth||(formPayKind==='冲销借支' ? !formIssuer : !formPayee))" class="alert alert-error" style="margin-top:12px">请填写所有必填字段（标有 <b style="color:#ff4d4f">*</b>号）后再提交
@@ -4119,6 +4111,18 @@ new Vue({
     },
     deptNameOptions() {
       return [...new Set(this.deptMappingData.filter(d => d.active).map(d => d.name))]
+    },
+    // 表单"已选明细"：编辑草稿时取草稿快照里的车辆，否则取当前勾选
+    formSelectedVehicles() {
+      if (this.bmsEditingDraftId) {
+        const r = this.bmsAllData.find(x => x.id === this.bmsEditingDraftId)
+        if (r && r.snapshot && r.snapshot.vehicles) return r.snapshot.vehicles
+      }
+      return this.bmsVehicleChecked.map(p => this.bmsVehicleData.find(v => v.plate === p)).filter(Boolean)
+    },
+    formSelectedAmount() {
+      const sum = this.formSelectedVehicles.reduce((s, v) => s + (parseFloat(String(v.actualAmt).replace(/,/g, '')) || 0), 0)
+      return sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     },
   },
   methods: {
