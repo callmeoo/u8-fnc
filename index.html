@@ -700,7 +700,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td>{{r.time}}</td>
                           <td style="white-space:nowrap">
                             <button v-if="r.status!=='manuscript'" class="btn-link" @click="openDetail(r)">查看</button>
-                            <span v-if="r.status==='manuscript'"><button class="btn-link" @click="editDraft(r)">编辑</button> | <button class="btn-link" style="color:#ff4d4f" @click="askDeleteDraft(r)">删除</button></span>
+                            <span v-if="r.status==='manuscript'"><button class="btn-link" @click="editDraft(r)">编辑</button> | <button class="btn-link" style="color:#ff4d4f" @click="askDeleteDraft(r)">删除草稿</button></span>
                             <span v-if="r.status==='approval'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button> | <button class="btn-link" style="color:#ff4d4f" @click="showCancelConfirm=true">取消申请</button></span>
                             <span v-if="r.status==='pay'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button> | <button class="btn-link" style="color:#ff4d4f" @click="showCancelConfirm=true">取消申请</button></span>
                             <span v-if="r.status==='settled'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
@@ -991,15 +991,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
             <div class="modal" style="max-width:560px">
               <div class="modal-header"><span class="modal-title">保存草稿 — 功能说明</span><span class="modal-close" @click="showDraftHelp=false">✕</span></div>
               <div class="modal-body">
-                <div style="font-size:13px;line-height:2;color:#333">
-                  <p style="margin:0 0 10px">填结算申请单时还没填完、或暂时不想提交，可点<b>「保存草稿」</b>把当前内容先存起来，之后随时回来继续，不必一次填完。</p>
+                <div style="font-size:13px;line-height:1.9;color:#333">
+                  <p style="margin:0 0 10px">填结算申请单时还没填完、或暂时不想提交，可点<b>「保存草稿」</b>把当前内容先存起来，之后随时回来续填，不必一次填完。</p>
                   <ul style="margin:0;padding-left:20px;color:#555">
                     <li><b>入口</b>：申请表单底部「提交审批 ｜ 保存草稿 ｜ 继续添加车辆」中间那个按钮。</li>
-                    <li><b>存到哪</b>：列表「草稿」tab（位于「待提交」与「待审批」之间），仅本人可见。</li>
-                    <li><b>编辑</b>：重新打开表单，已填字段与已选明细全部带回，可继续填或提交审批。</li>
-                    <li><b>删除</b>：丢弃草稿，占用的车辆退回「待提交」。</li>
-                    <li><b>提交审批</b>：草稿转为「待审批」，自动从草稿 tab 移除。</li>
-                    <li><b>车辆占用</b>：保存草稿会把所选车辆从「待提交」移走，避免重复发起结算；删除即释放。</li>
+                    <li><b>保存时仍会校验</b>：已选车辆不为空、同一 U8 费用类型、服务费同一集团 / 其他费用同一服务中心、车辆未被其他申请或草稿占用；只有"部门、收款方、发票类型等申请单必填项"可以留空、之后再补。</li>
+                    <li><b>在哪看</b>：保存后进入「草稿」tab（位于「待提交」与「待审批」之间），<b>仅本人可见</b>；草稿不在「全部」tab，只在「草稿」tab 查看。</li>
+                    <li><b>编辑</b>：重新打开表单，已填内容与已选车辆全部带回；编辑中可<b>增删车辆</b>——新增即占用，移除即退回「待提交」。</li>
+                    <li><b>删除草稿</b>：丢弃这份草稿，占用的车辆退回「待提交」。</li>
+                    <li><b>未保存离开会提示</b>：改了内容没保存就返回 / 切菜单 / 关页面，会提示你保存、放弃或继续编辑。</li>
+                    <li><b>提交审批</b>：会重新做一次完整校验；通过后草稿转为「待审批」并发出审批通知，从草稿 tab 移除。</li>
+                    <li><b>发票附件</b>：已上传的发票随草稿一起保存，下次编辑还在。</li>
                   </ul>
                 </div>
               </div>
@@ -3045,11 +3047,17 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </div>
                   <div style="margin-bottom:8px;font-size:13px;margin-top:14px"><b>2.4 新增「保存草稿」与「草稿」状态（2026-06-04 新增）</b></div>
                   <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
-                    <div>① 申请表单底部新增<b>「保存草稿」</b>按钮：允许半填保存，<b>不校验必填</b></div>
-                    <div>② 列表新增<b>「草稿」</b>状态 tab（位于「待提交」与「待审批」之间），为<b>申请单级</b>列表；草稿<b>仅本人可见</b>，不计入「全部」tab</div>
-                    <div>③ 草稿行操作：<b>编辑</b>（重开表单，回填全部已填字段与已选明细）｜<b>删除</b>（二次确认后释放车辆）</div>
-                    <div>④ 保存草稿时<b>占用</b>所选车辆（从「待提交」移走，避免重复发起）；删除草稿时车辆<b>退回</b>「待提交」</div>
-                    <div>⑤ 草稿点<b>「提交审批」</b>后转为<b>「待审批」</b>，从草稿 tab 移除</div>
+                    <div>① <b>入口</b>：申请表单底部新增<b>「保存草稿」</b>按钮，位于「提交审批」与「继续添加车辆」之间。</div>
+                    <div>② <b style="color:#d46b08">保存校验（"不校验必填"≠完全不校验）</b>：保存草稿时仍执行<b>基础校验</b>——已选车辆<b>不为空</b>、所选车辆须<b>同一 U8 费用类型</b>、服务费按<b>同一集团</b>归并 / 其他费用按<b>同一服务中心</b>归并、且<b>车辆未被其他申请单或草稿占用</b>。仅"申请单必填项（U8部门、收款方、发票类型等）"允许留空、待续填。</div>
+                    <div>③ <b>存放与可见性</b>：保存后落入列表<b>「草稿」</b>tab（位于「待提交」与「待审批」之间），为<b>申请单级</b>列表；草稿<b>仅本人可见</b>，<b style="color:#cf1322">不计入「全部」tab</b>——此口径已在列表页说明中写明，草稿只在「草稿」tab 查看，避免用户在「全部」找不到。</div>
+                    <div>④ <b>草稿操作</b>：</div>
+                    <div style="padding-left:16px">· <b>编辑</b>：重开表单，回填全部已填字段与已选明细；<b style="color:#d46b08">编辑中支持增删车辆</b>——新增车辆同样即时占用，从草稿移除的车辆<b>即时释放</b>回「待提交」。</div>
+                    <div style="padding-left:16px">· <b>删除草稿</b>：草稿提交前的动作，明确命名为「删除草稿」（非"废弃"）；删除后车辆释放回「待提交」，<b>后台保留操作日志</b>（操作人 / 时间 / 涉及车辆）。</div>
+                    <div>⑤ <b>车辆占用与释放</b>：保存草稿即<b>占用</b>所选车辆（从「待提交」移走），避免同一批车被重复发起结算。占用随操作即时变更：编辑中新增→占用，编辑中移除 / 删除草稿→释放。</div>
+                    <div>⑥ <b style="color:#d46b08">离开未保存提示</b>：编辑草稿或新建申请时，若有改动未保存，返回列表 / 切换菜单 / 关闭页面前弹出提示：<b>保存 / 放弃 / 继续编辑</b>。</div>
+                    <div>⑦ <b>提交审批</b>：点「提交审批」时<b>重新执行完整校验</b>（含必填项）。提交成功后——申请单状态→<b>「待审批」</b>；车辆状态由「草稿占用」转为「审批中 / 已提交」；触发正常审批通知；草稿从「草稿」tab 移除。</div>
+                    <div>⑧ <b>附件处理</b>：保存草稿时若已上传发票 / 附件，<b>随草稿一并持久化</b>；删除草稿后附件做<b>解绑</b>处理（不随草稿物理删除，便于追溯 / 复用，最终保留策略由后端确定）。</div>
+                    <div>⑨ <b style="color:#cf1322">并发占用兜底</b>：保存草稿、提交审批、编辑中添加车辆时，后端均需校验车辆<b>当前仍可用</b>，避免多人 / 多窗口对同一车辆重复占用；冲突时给出明确提示。</div>
                   </div>
                 </div>
 
