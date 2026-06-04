@@ -264,7 +264,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div v-if="bmsView==='form'" class="card">
             <div class="card-header">
               <span class="card-title">填写申请表单</span>
-              <button class="btn btn-default btn-sm" @click="bmsView='list';bmsEditingDraftId=null">← 返回列表</button>
+              <button class="btn btn-default btn-sm" @click="exitToList">← 返回列表</button>
             </div>
             <div class="card-body">
               <div class="info-block">
@@ -462,7 +462,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div style="margin-top:16px;display:flex;gap:8px">
                 <button class="btn btn-primary" @click="submitApproval">提交审批</button>
                 <button class="btn btn-default" @click="saveDraft">保存草稿</button>
-                <button class="btn btn-default" @click="bmsView='list';bmsEditingDraftId=null">继续添加车辆</button>
+                <button class="btn btn-default" @click="exitToList">继续添加车辆</button>
               </div>
             </div>
           </div>
@@ -987,6 +987,20 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           </div>
 
           <!-- 废弃确认 Dialog -->
+          <div class="modal-mask" v-if="showLeaveConfirm" @click.self="leaveCancel">
+            <div class="modal" style="max-width:440px">
+              <div class="modal-header"><span class="modal-title">有未保存的修改</span><span class="modal-close" @click="leaveCancel">✕</span></div>
+              <div class="modal-body">
+                <div class="alert alert-warning" style="margin-bottom:0">当前申请单有未保存的修改，直接离开将丢失。要先保存为草稿吗？</div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="leaveCancel">继续编辑</button>
+                <button class="btn btn-default" style="color:#ff4d4f" @click="leaveDiscard">放弃修改</button>
+                <button class="btn btn-primary" @click="leaveSave">保存草稿</button>
+              </div>
+            </div>
+          </div>
+
           <div class="modal-mask" v-if="showDraftHelp" @click.self="showDraftHelp=false">
             <div class="modal" style="max-width:560px">
               <div class="modal-header"><span class="modal-title">保存草稿 — 功能说明</span><span class="modal-close" @click="showDraftHelp=false">✕</span></div>
@@ -3742,6 +3756,8 @@ new Vue({
       showDraftDeleteConfirm: false,
       draftDeleteTarget: null,
       showDraftHelp: false,
+      showLeaveConfirm: false,
+      formBaseline: '',
       showCancelConfirm: false,
       showReturnVoucher: false,
       showBackfill: false,
@@ -3938,6 +3954,14 @@ new Vue({
       lightboxFile: '',
       lightboxIsImg: false,
     }
+  },
+  mounted() {
+    // 关闭/刷新页面时，若表单有未保存改动，触发浏览器原生离开提示
+    window.addEventListener('beforeunload', e => { if (this.isFormDirty()) { e.preventDefault(); e.returnValue = '' } })
+  },
+  watch: {
+    // 进入表单时以当前内容为基线，用于"未保存"判断
+    bmsView(v) { if (v === 'form') this.formBaseline = this.formStateKey() }
   },
   computed: {
     formPayerBank() {
@@ -4342,8 +4366,11 @@ new Vue({
       setTimeout(() => { this.bmsView = 'list'; this.bmsStatusTab = 'approval'; this.formValidated = false }, 800)
     },
     saveDraft() {
-      // 草稿允许半填，不做必填校验
+      // 草稿允许"申请单必填项"留空，但车辆分组规则仍需通过基础校验
       const editing = this.bmsEditingDraftId ? this.bmsAllData.find(x => x.id === this.bmsEditingDraftId) : null
+      const checkVehicles = editing ? ((editing.snapshot && editing.snapshot.vehicles) || []) : this.bmsVehicleChecked.map(p => this.bmsVehicleData.find(v => v.plate === p)).filter(Boolean)
+      const vErr = this.validateVehicleGroup(checkVehicles)
+      if (vErr) { this.showToast(vErr); return }
       const payeeLabel = this.formPayKind === '冲销借支' ? (this.formIssuer ? this.formIssuer + '（发单人）' : '—') : (this.formPayee || '—')
       const snapFields = {
         formTitle: this.formTitle, formPayer: this.formPayer, formPayKind: this.formPayKind,
@@ -4447,36 +4474,68 @@ new Vue({
     },
     applyForSettlement() {
       this.bmsApplyError = ''
-      if (this.bmsVehicleChecked.length === 0) {
-        this.bmsApplyError = '请先勾选需要结算的车辆'
-        return
-      }
       const selected = this.bmsVehicleChecked.map(plate => this.bmsVehicleData.find(v => v.plate === plate)).filter(Boolean)
-      const feeTypes = [...new Set(selected.map(v => v.feeType).filter(Boolean))]
-      if (feeTypes.length > 1) {
-        this.bmsApplyError = '所选车辆须属于同一 U8 费用类型，当前混选了：' + feeTypes.join('、')
-        return
-      }
-      // 服务费按同一集团归并，其他费用类型按同一服务中心归并；"空 = 空"算同组
-      const norm = v => (v == null || v === '—') ? '' : String(v).trim()
-      const feeType = feeTypes[0]
-      if (feeType === '服务费') {
-        const groups = [...new Set(selected.map(v => norm(v.group)))]
-        if (groups.length > 1) {
-          this.bmsApplyError = '服务费须按同一集团归并，当前混选了：' + groups.map(g => g || '（空）').join('、')
-          return
-        }
-      } else {
-        const scs = [...new Set(selected.map(v => norm(v.serviceCenter)))]
-        if (scs.length > 1) {
-          this.bmsApplyError = '该费用类型须按同一服务中心归并，当前混选了：' + scs.map(s => s || '（空）').join('、')
-          return
-        }
-      }
+      const err = this.validateVehicleGroup(selected)
+      if (err) { this.bmsApplyError = err; return }
       // 申请单 U8 费用类型由勾选数据带入，不可修改
-      this.formFeeType = feeType || '服务费'
+      this.formFeeType = selected[0].feeType || '服务费'
       this.bmsEditingDraftId = null
       this.bmsView = 'form'
+    },
+    // 校验所选车辆分组规则：返回错误信息（'' 表示通过）。进表单、保存草稿共用
+    validateVehicleGroup(selected) {
+      if (!selected || selected.length === 0) return '请先勾选需要结算的车辆'
+      const feeTypes = [...new Set(selected.map(v => v.feeType).filter(Boolean))]
+      if (feeTypes.length > 1) return '所选车辆须属于同一 U8 费用类型，当前混选了：' + feeTypes.join('、')
+      const norm = v => (v == null || v === '—') ? '' : String(v).trim()
+      if (feeTypes[0] === '服务费') {
+        const groups = [...new Set(selected.map(v => norm(v.group)))]
+        if (groups.length > 1) return '服务费须按同一集团归并，当前混选了：' + groups.map(g => g || '（空）').join('、')
+      } else {
+        const scs = [...new Set(selected.map(v => norm(v.serviceCenter)))]
+        if (scs.length > 1) return '该费用类型须按同一服务中心归并，当前混选了：' + scs.map(s => s || '（空）').join('、')
+      }
+      return ''
+    },
+    // —— 表单"未保存"判断与离开拦截 ——
+    formStateKey() {
+      return JSON.stringify([
+        this.formTitle, this.formPayer, this.formPayKind, this.formIssuer,
+        this.formSummaryMonth, this.formBipDept, this.formPayee, this.formInvoiceType,
+        this.formRemark, this.formUploadedFiles.slice().sort()
+      ])
+    },
+    isFormDirty() {
+      return this.bmsView === 'form' && this.formStateKey() !== this.formBaseline
+    },
+    // 离开表单前拦截：有未保存改动则弹确认，否则直接执行 proceed
+    guardLeaveForm(proceed) {
+      if (this.isFormDirty()) {
+        this.pendingLeaveFn = proceed
+        this.showLeaveConfirm = true
+      } else {
+        proceed()
+      }
+    },
+    exitToList() {
+      this.guardLeaveForm(() => { this.bmsView = 'list'; this.bmsEditingDraftId = null })
+    },
+    leaveSave() {
+      this.showLeaveConfirm = false
+      this.pendingLeaveFn = null
+      this.saveDraft()
+    },
+    leaveDiscard() {
+      this.showLeaveConfirm = false
+      this.formBaseline = this.formStateKey()
+      const go = this.pendingLeaveFn
+      this.pendingLeaveFn = null
+      this.bmsEditingDraftId = null
+      if (typeof go === 'function') go()
+    },
+    leaveCancel() {
+      this.showLeaveConfirm = false
+      this.pendingLeaveFn = null
     },
     openFncSettleConfirm(record) {
       this.fncCurrentRecord = record
@@ -4707,6 +4766,10 @@ new Vue({
       })
     },
     navigate(key) {
+      // 表单有未保存改动时，先弹离开提示
+      this.guardLeaveForm(() => this._doNavigate(key))
+    },
+    _doNavigate(key) {
       this.activeMenu = key
       this.bmsView = 'list'
       this.bmsCurrentDetail = null
