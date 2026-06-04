@@ -562,6 +562,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     {{t.label}}<span v-if="t.count" style="margin-left:3px;color:#ff4d4f">({{t.count}})</span>
                   </span>
                 </div>
+                <div v-if="bmsStatusTab==='all'" style="font-size:12px;color:#999;margin-bottom:10px">因操作便利性和展示列字段差异，全部tab的数据不含"待提交"车辆明细与"草稿"</div>
                 <div v-if="bmsStatusTab==='manuscript'" style="font-size:12px;color:#999;margin-bottom:10px">草稿为未提交审批的申请单（仅本人可见）。「编辑」可继续填写并提交审批；「删除」将释放占用的车辆，退回"待提交"。</div>
                 <!-- Filter bar -->
                 <div class="filter-bar">
@@ -2868,6 +2869,14 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                       <div style="padding-left:14px">· 销售部门 → 唯普 <b>14</b> / 唯普云 <b>5</b>；人力资源部 → 唯普 <b>04</b> / 唯普云 <b>6</b></div>
                       <div style="margin-top:6px"><b style="color:#0958d9">交互规则</b>：未选付款方时部门框禁用并提示"请先选择付款方名称"；切换付款方时<b>清空</b>已选部门，避免残留跨主体的错值。</div>
                     </div>
+                  </div>
+                  <div style="margin-bottom:8px;font-size:13px;margin-top:14px"><b>2.4 新增「保存草稿」与「草稿」状态（2026-06-04 新增）</b></div>
+                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+                    <div>① 申请表单底部新增<b>「保存草稿」</b>按钮：允许半填保存，<b>不校验必填</b></div>
+                    <div>② 列表新增<b>「草稿」</b>状态 tab（位于「待提交」与「待审批」之间），为<b>申请单级</b>列表；草稿<b>仅本人可见</b>，不计入「全部」tab</div>
+                    <div>③ 草稿行操作：<b>编辑</b>（重开表单，回填全部已填字段与已选明细）｜<b>删除</b>（二次确认后释放车辆）</div>
+                    <div>④ 保存草稿时<b>占用</b>所选车辆（从「待提交」移走，避免重复发起）；删除草稿时车辆<b>退回</b>「待提交」</div>
+                    <div>⑤ 草稿点<b>「提交审批」</b>后转为<b>「待审批」</b>，从草稿 tab 移除</div>
                   </div>
                 </div>
 
