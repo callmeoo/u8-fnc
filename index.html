@@ -261,7 +261,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div v-if="bmsView==='form'" class="card">
             <div class="card-header">
               <span class="card-title">填写申请表单</span>
-              <button class="btn btn-default btn-sm" @click="bmsView='list'">← 返回列表</button>
+              <button class="btn btn-default btn-sm" @click="bmsView='list';bmsEditingDraftId=null">← 返回列表</button>
             </div>
             <div class="card-body">
               <div class="info-block">
@@ -272,7 +272,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               <div class="form-row">
                 <div class="form-item full">
                   <label class="form-label req">标题</label>
-                  <div class="form-control"><input class="inp" value="2026年1月服务费结算申请" style="width:100%"></div>
+                  <div class="form-control"><input class="inp" v-model="formTitle" style="width:100%"></div>
                 </div>
               </div>
               <div class="form-row">
@@ -466,7 +466,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
               </div>
               <div style="margin-top:16px;display:flex;gap:8px">
                 <button class="btn btn-primary" @click="submitApproval">提交审批</button>
-                <button class="btn btn-default" @click="bmsView='list'">继续添加车辆</button>
+                <button class="btn btn-default" @click="saveDraft">保存草稿</button>
+                <button class="btn btn-default" @click="bmsView='list';bmsEditingDraftId=null">继续添加车辆</button>
               </div>
             </div>
           </div>
@@ -565,7 +566,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   </span>
                 </div>
                 <!-- 全部tab说明 -->
-                <div v-if="bmsStatusTab==='all'" style="font-size:12px;color:#999;margin-bottom:10px">因操作便利性和展示列字段差异，全部tab的数据不含"待提交"车辆明细</div>
+                <div v-if="bmsStatusTab==='all'" style="font-size:12px;color:#999;margin-bottom:10px">因操作便利性和展示列字段差异，全部tab的数据不含"待提交"车辆明细与"草稿"</div>
+                <div v-if="bmsStatusTab==='manuscript'" style="font-size:12px;color:#999;margin-bottom:10px">草稿为未提交审批的申请单（仅本人可见）。「编辑」可继续填写并提交审批；「删除」将释放占用的车辆，退回"待提交"。</div>
                 <!-- Filter bar -->
                 <div class="filter-bar">
                   <div class="filter-item"><label>申请时间</label><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateFrom"><span>至</span><input class="inp" type="date" style="width:120px" v-model="bmsFilter.dateTo"></div>
@@ -631,7 +633,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="filter-item">
                     <label>结算状态</label>
                     <select class="sel" v-model="bmsFilter.status">
-                      <option>全部</option><option>待提交</option><option>待审批</option><option>待支付</option><option>已结算</option><option>已驳回</option><option>已废弃</option>
+                      <option>全部</option><option>待提交</option><option>草稿</option><option>待审批</option><option>待支付</option><option>已结算</option><option>已驳回</option><option>已废弃</option>
                     </select>
                   </div>
                   <button class="btn btn-primary btn-sm" @click="showToast('查询完毕，共 ' + filteredBmsList.length + ' 条')">查询</button>
@@ -701,7 +703,8 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                           <td>{{r.applicant}}</td>
                           <td>{{r.time}}</td>
                           <td style="white-space:nowrap">
-                            <button class="btn-link" @click="openDetail(r)">查看</button>
+                            <button v-if="r.status!=='manuscript'" class="btn-link" @click="openDetail(r)">查看</button>
+                            <span v-if="r.status==='manuscript'"><button class="btn-link" @click="editDraft(r)">编辑</button> | <button class="btn-link" style="color:#ff4d4f" @click="askDeleteDraft(r)">删除</button></span>
                             <span v-if="r.status==='approval'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button> | <button class="btn-link" style="color:#ff4d4f" @click="showCancelConfirm=true">取消申请</button></span>
                             <span v-if="r.status==='pay'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button> | <button class="btn-link" style="color:#ff4d4f" @click="showCancelConfirm=true">取消申请</button></span>
                             <span v-if="r.status==='settled'"> | <button class="btn-link" @click="showUploadInvoice=true">上传发票</button></span>
@@ -988,6 +991,19 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           </div>
 
           <!-- 废弃确认 Dialog -->
+          <div class="modal-mask" v-if="showDraftDeleteConfirm" @click.self="showDraftDeleteConfirm=false">
+            <div class="modal" style="max-width:420px">
+              <div class="modal-header"><span class="modal-title">删除草稿</span><span class="modal-close" @click="showDraftDeleteConfirm=false">✕</span></div>
+              <div class="modal-body">
+                <div class="alert alert-warning">删除后该草稿不可恢复，已占用的车辆将退回"待提交"。确认删除？</div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" @click="showDraftDeleteConfirm=false">取消</button>
+                <button class="btn btn-danger" @click="confirmDeleteDraft">确认删除</button>
+              </div>
+            </div>
+          </div>
+
           <div class="modal-mask" v-if="showDiscardConfirm" @click.self="showDiscardConfirm=false">
             <div class="modal" style="max-width:420px">
               <div class="modal-header"><span class="modal-title">废弃申请</span><span class="modal-close" @click="showDiscardConfirm=false">✕</span></div>
@@ -3592,6 +3608,7 @@ new Vue({
       deptMapFilter: { company:'全部', code:'', name:'', active:'全部' },
       toastMsg: '',
       // 填写申请表单 — 表单数据
+      formTitle: '2026年1月服务费结算申请',
       formPayer: 'weipu',
       formPayKind: '对外支付',
       formIssuer: '',
@@ -3611,6 +3628,7 @@ new Vue({
       },
       // BMS
       bmsView: 'list',
+      bmsEditingDraftId: null,
       bmsListTab: 'settle',
       bmsStatusTab: 'all',
       bmsCurrentDetail: null,
@@ -3618,6 +3636,7 @@ new Vue({
       bmsStatusTabs: [
         {key:'all',    label:'全部',  count:0},
         {key:'draft',  label:'待提交', count:5},
+        {key:'manuscript',label:'草稿',count:1},
         {key:'approval',label:'待审批',count:5},
         {key:'pay',    label:'待支付', count:2},
         {key:'settled',label:'已结算', count:2},
@@ -3636,14 +3655,13 @@ new Vue({
         {clearTime:'2026-04-08',plate:'粤A·12345',vin:'LFV3A2BM2N3000001',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普云服务',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
         {clearTime:'2026-04-08',plate:'粤B·67890',vin:'LFV3A2BM2N3000002',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普云服务',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'360.00'},
         {clearTime:'2026-04-08',plate:'粤D·22222',vin:'LFV3A2BM2N3000004',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普云服务',serviceCenter:'广州番禺服务中心',store:'广州番禺门店',org:'番禺车管分所',group:'广州区域',bipCode:'7401',actualAmt:'240.00'},
-        {clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},
         {clearTime:'2026-04-10',plate:'粤G·55555',vin:'LFV3A2BM2N3000007',bizFeeType:'代办过户费',feeType:'服务费',settleOrg:'柠檬车服',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'420.00'},
-        {clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},
-        {clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州花都服务中心',store:'广州花都门店',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'},
       ],
       bmsVehicleChecked: [],
       bmsApplyError: '',
       bmsAllData: [
+        // 草稿（未提交审批，仅本人可见）
+        {id:'BSD202604001',title:'2026年4月服务费结算申请（未完成）',org:'',serviceCenter:'广州天河服务中心',group:'广州区域',feeType:'服务费',payKind:'对外支付',settleMonth:'2026-04',payee:'常有（天津）信息技术有限公司',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,200.00',status:'manuscript',statusLabel:'草稿',tagClass:'tag-gray',applicant:'张三',time:'2026-04-12 15:30',settleDesc:'付4月，服务费，常有（天津）信息技术有限公司',approvalStatus:'',approvalTagClass:'tag-gray',snapshot:{formTitle:'2026年4月服务费结算申请（未完成）',formPayer:'weipu',formPayKind:'对外支付',formIssuer:'',formSummaryMonth:'4',formFeeType:'服务费',formBipDept:'',formPayee:'常有（天津）信息技术有限公司',formInvoiceType:'',formRemark:'',formUploadedFiles:[],plates:['粤F·44444','粤H·66666','粤J·77777'],vehicles:[{clearTime:'2026-04-10',plate:'粤F·44444',vin:'LFV3A2BM2N3000006',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州天河服务中心',store:'广州天河门店',org:'天河车管',group:'广州区域',bipCode:'70',actualAmt:'360.00'},{clearTime:'2026-04-11',plate:'粤H·66666',vin:'LFV3A2BM2N3000008',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州越秀服务中心',store:'广州越秀门店',org:'越秀车管',group:'广州区域',bipCode:'7402',actualAmt:'360.00'},{clearTime:'2026-04-11',plate:'粤J·77777',vin:'LFV3A2BM2N3000009',bizFeeType:'发票代开',feeType:'服务费',settleOrg:'唯普服务',serviceCenter:'广州花都服务中心',store:'广州花都门店',org:'花都车管',group:'广州区域',bipCode:'7403',actualAmt:'480.00'}]}},
         // 待审批
         {id:'BS202601001',title:'2026年1月服务费结算申请',org:'车源生态事业部（广州）',serviceCenter:'广州番禺服务中心',group:'广州区域',feeType:'服务费',settleMonth:'2026-01',payee:'常有（天津）...',payeeFull:'常有（天津）信息技术有限公司',count:3,amount:'1,060.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'张三',time:'2026-01-15 23:45',settleDesc:'付1月，服务费，常有（天津）信息技术有限公司',handler:'王财务',approvalStatus:'审批中',approvalTagClass:'tag-blue',approvalStage:'待财务审批',settledPlates:['粤A·12345','粤C·11111'],remark:'粤C·11111 曾于上月已结算（BS202512001），本次申请为补充结算，已与财务确认可再次提交。'},
         {id:'BS202512003',title:'2025年12月过户费结算申请',org:'车源生态事业部（武汉）',serviceCenter:'广州越秀服务中心',group:'广州区域',feeType:'过户费',settleMonth:'2025-12',payee:'好快帮（广州）...',payeeFull:'好快帮（广州）科技有限公司',count:9,amount:'3,800.00',status:'approval',statusLabel:'待审批',tagClass:'tag-orange',applicant:'赵华',time:'2026-01-10 18:10',settleDesc:'付12月，过户费，好快帮（广州）科技有限公司',handler:'王财务',approvalStatus:'待审批',approvalTagClass:'tag-gray',approvalStage:'待领导审批'},
@@ -3687,6 +3705,8 @@ new Vue({
       },
       showUploadInvoice: false,
       showDiscardConfirm: false,
+      showDraftDeleteConfirm: false,
+      draftDeleteTarget: null,
       showCancelConfirm: false,
       showReturnVoucher: false,
       showBackfill: false,
@@ -4034,6 +4054,7 @@ new Vue({
       if (this.bmsStatusTab === 'draft') return []
       let list = this.bmsAllData
       if (this.bmsStatusTab !== 'all') list = list.filter(r => r.status === this.bmsStatusTab)
+      else list = list.filter(r => r.status !== 'manuscript')
       const f = this.bmsFilter
       if (f.dept && f.dept !== '全部') list = list.filter(r => r.org === f.dept)
       if (f.feeType && f.feeType !== '全部') list = list.filter(r => r.feeType === f.feeType)
@@ -4255,11 +4276,117 @@ new Vue({
       const baseOk = this.formFeeType && this.formBipDept && this.formPayer && this.formInvoiceType && this.formSummaryMonth
       const payOk = this.formPayKind === '冲销借支' ? !!this.formIssuer : !!this.formPayee
       if (!baseOk || !payOk) return
+      // 若由草稿编辑而来：草稿单转为「待审批」，从草稿 tab 消失
+      if (this.bmsEditingDraftId) {
+        const r = this.bmsAllData.find(x => x.id === this.bmsEditingDraftId)
+        if (r) {
+          r.status = 'approval'; r.statusLabel = '待审批'; r.tagClass = 'tag-orange'
+          r.approvalStatus = '待审批'; r.approvalTagClass = 'tag-gray'
+          r.title = this.formTitle || r.title
+          r.org = this.formBipDept || r.org
+          r.payKind = this.formPayKind
+          r.settleDesc = this.formPaymentSummary || r.settleDesc
+          r.time = this.nowStr()
+        }
+        this.bmsEditingDraftId = null
+        this.syncDraftCount()
+      }
       this.showToast('提交成功')
       setTimeout(() => { this.bmsView = 'list'; this.bmsStatusTab = 'approval'; this.formValidated = false }, 800)
     },
     saveDraft() {
+      // 草稿允许半填，不做必填校验
+      const editing = this.bmsEditingDraftId ? this.bmsAllData.find(x => x.id === this.bmsEditingDraftId) : null
+      const payeeLabel = this.formPayKind === '冲销借支' ? (this.formIssuer ? this.formIssuer + '（发单人）' : '—') : (this.formPayee || '—')
+      const snapFields = {
+        formTitle: this.formTitle, formPayer: this.formPayer, formPayKind: this.formPayKind,
+        formIssuer: this.formIssuer, formSummaryMonth: this.formSummaryMonth, formFeeType: this.formFeeType,
+        formBipDept: this.formBipDept, formPayee: this.formPayee, formInvoiceType: this.formInvoiceType,
+        formRemark: this.formRemark, formUploadedFiles: this.formUploadedFiles.slice()
+      }
+      if (editing) {
+        // 更新已有草稿（车辆占用不变）
+        editing.title = this.formTitle || '（未命名草稿）'
+        editing.feeType = this.formFeeType
+        editing.payKind = this.formPayKind
+        editing.payee = payeeLabel
+        editing.org = this.formBipDept || ''
+        editing.settleDesc = this.formPaymentSummary || ''
+        editing.time = this.nowStr()
+        editing.snapshot = Object.assign({}, editing.snapshot, snapFields)
+      } else {
+        // 新建草稿：打包当前已选车辆，并从「待提交」池移走（占用）
+        const plates = this.bmsVehicleChecked.slice()
+        const vehicles = plates.map(p => this.bmsVehicleData.find(v => v.plate === p)).filter(Boolean)
+        const amt = vehicles.reduce((s, v) => s + (parseFloat(String(v.actualAmt).replace(/,/g, '')) || 0), 0)
+        this.bmsAllData.unshift({
+          id: 'BSD' + Date.now(), title: this.formTitle || '（未命名草稿）', org: this.formBipDept || '',
+          group: (vehicles[0] && vehicles[0].group) || '广州区域', serviceCenter: (vehicles[0] && vehicles[0].serviceCenter) || '',
+          feeType: this.formFeeType, payKind: this.formPayKind, payee: payeeLabel,
+          count: vehicles.length, amount: amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          status: 'manuscript', statusLabel: '草稿', tagClass: 'tag-gray',
+          applicant: '张三', time: this.nowStr(), settleDesc: this.formPaymentSummary || '',
+          approvalStatus: '', approvalTagClass: 'tag-gray',
+          snapshot: Object.assign({ plates: plates, vehicles: vehicles }, snapFields)
+        })
+        plates.forEach(p => {
+          const i = this.bmsVehicleData.findIndex(v => v.plate === p)
+          if (i > -1) this.bmsVehicleData.splice(i, 1)
+        })
+        this.bmsVehicleChecked = []
+      }
+      this.syncDraftCount()
+      this.bmsEditingDraftId = null
+      this.formValidated = false
       this.showToast('草稿已保存')
+      setTimeout(() => { this.bmsView = 'list'; this.bmsStatusTab = 'manuscript' }, 600)
+    },
+    editDraft(r) {
+      // 重开表单并回填草稿内容
+      const s = r.snapshot || {}
+      this.formTitle = s.formTitle != null ? s.formTitle : (r.title || '')
+      this.formPayer = s.formPayer || 'weipu'
+      this.formPayKind = s.formPayKind || '对外支付'
+      this.formIssuer = s.formIssuer || ''
+      this.formSummaryMonth = s.formSummaryMonth || ''
+      this.formFeeType = s.formFeeType || r.feeType || ''
+      this.formBipDept = s.formBipDept || ''
+      this.formPayee = s.formPayee || ''
+      this.formInvoiceType = s.formInvoiceType || ''
+      this.formRemark = s.formRemark || ''
+      this.formUploadedFiles = (s.formUploadedFiles || []).slice()
+      this.bmsVehicleChecked = (s.plates || []).slice()
+      this.bmsEditingDraftId = r.id
+      this.formValidated = false
+      this.bmsView = 'form'
+    },
+    askDeleteDraft(r) {
+      this.draftDeleteTarget = r
+      this.showDraftDeleteConfirm = true
+    },
+    confirmDeleteDraft() {
+      const r = this.draftDeleteTarget
+      if (r) {
+        // 释放占用车辆，退回「待提交」池
+        const vs = (r.snapshot && r.snapshot.vehicles) || []
+        vs.forEach(v => { if (!this.bmsVehicleData.find(x => x.plate === v.plate)) this.bmsVehicleData.push(v) })
+        const i = this.bmsAllData.indexOf(r)
+        if (i > -1) this.bmsAllData.splice(i, 1)
+        this.syncDraftCount()
+      }
+      this.showDraftDeleteConfirm = false
+      this.draftDeleteTarget = null
+      this.showToast('草稿已删除，车辆已退回待提交')
+    },
+    syncDraftCount() {
+      const n = this.bmsAllData.filter(r => r.status === 'manuscript').length
+      const tab = this.bmsStatusTabs.find(t => t.key === 'manuscript')
+      if (tab) tab.count = n
+    },
+    nowStr() {
+      const d = new Date()
+      const p = n => String(n).padStart(2, '0')
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())
     },
     showToast(msg) {
       this.toastMsg = msg
@@ -4301,6 +4428,7 @@ new Vue({
       }
       // 申请单 U8 费用类型由勾选数据带入，不可修改
       this.formFeeType = feeType || '服务费'
+      this.bmsEditingDraftId = null
       this.bmsView = 'form'
     },
     openFncSettleConfirm(record) {
