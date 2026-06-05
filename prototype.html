@@ -553,6 +553,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <span class="card-title">BMS — 批量结算列表</span>
                 <!-- 非待提交 tab：显示"导入"和"申请结算" -->
                 <div v-if="bmsStatusTab!=='draft'" style="display:flex;gap:8px">
+                  <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showExportHelp=true">导出车辆明细需求说明</button>
                   <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showDraftHelp=true">保存草稿功能说明</button>
                   <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showChongxiaoHelp=true">冲销借支需求点说明</button>
                   <button class="btn btn-default" @click="importDialog=true">导入牌证邮递费及过户费</button>
@@ -560,6 +561,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
                 <!-- 待提交 tab：仅显示"马上申请结算" -->
                 <div v-if="bmsStatusTab==='draft'" style="display:flex;gap:8px">
+                  <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showExportHelp=true">导出车辆明细需求说明</button>
                   <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showDraftHelp=true">保存草稿功能说明</button>
                   <button class="btn blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showChongxiaoHelp=true">冲销借支需求点说明</button>
                   <button class="btn btn-primary" @click="applyForSettlement">马上申请结算</button>
@@ -887,66 +889,6 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <button class="btn btn-default" @click="leaveCancel">继续编辑</button>
                 <button class="btn btn-default" style="color:#ff4d4f" @click="leaveDiscard">放弃修改</button>
                 <button class="btn btn-primary" @click="leaveSave">保存草稿</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-mask" v-if="showChongxiaoHelp" @click.self="showChongxiaoHelp=false">
-            <div class="modal" style="max-width:720px">
-              <div class="modal-header"><span class="modal-title">冲销借支 — 需求点说明</span><span class="modal-close" @click="showChongxiaoHelp=false">✕</span></div>
-              <div class="modal-body">
-                <!-- 内容同「需求说明 → ⑥ 冲销借支」模块；如有变更两处需同步 -->
-                <div style="font-weight:600;font-size:13px;color:#333;margin-bottom:14px;border-bottom:1px solid #f0f0f0;padding-bottom:8px">冲销借支 — 本次需求点及关联改动（2026-05-28 新增）</div>
-
-                <div style="margin-bottom:18px;padding:10px 12px;background:#f9f0ff;border-left:3px solid #722ed1;border-radius:2px;line-height:1.9;font-size:12px;color:#444">
-                  <b style="color:#531dab">什么是冲销借支</b>：一种<b>付款种类</b>（与「对外支付」并列）。员工先行垫付费用后，用本次结算冲销其在公司的借支，<b>不对外付款</b>，会计上贷记「<b>其他应收款</b>」而非「银行存款」。费用类型仍是服务费 / 过户费 / 整理费，冲销借支只改变"怎么付"和"凭证贷方科目"。
-                </div>
-
-                <div style="margin-bottom:18px">
-                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">1. 申请表单（BMS 批量结算 → 马上结算）</div>
-                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
-                    <div>· <b>付款种类</b>：收款信息区新增下拉，默认<b>对外支付</b>，可切<b>冲销借支</b></div>
-                    <div>· 选「冲销借支」时：<b>收款方名称 / 开户行 / 银行账号</b> 置空且无需填写（禁用）；新增 <b>发单人</b>（必填）</div>
-                    <div>· <b>发单人</b>：人工选择，<b>按付款主体级联</b>（唯普 / 唯普云 各自的员工），来源见第 2 节</div>
-                    <div>· <b>付款摘要</b>：冲销借支格式 = <b>「发单人 + 报销 + X月 + 费用类型」</b>，如「陈凤芹报销4月整理费-牌证及邮递费」；月份手动填、<b>仅 1-12 的正整数</b></div>
-                  </div>
-                </div>
-
-                <div style="margin-bottom:18px">
-                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">2. 员工维护（发单人数据源）</div>
-                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
-                    <div>· <b>维护入口（增删改）</b>：<b>财务管理 → 凭证管理 → 员工维护</b> tab（与「部门编码映射」并列），支持增删改、启停、按主体筛选</div>
-                    <div>· <b>业务查询入口（只读）</b>：<b>BMS-批量结算 → 员工编码映射</b> tab（与「部门编码映射」并列），仅查询，与维护入口同源</div>
-                    <div>· 维护内容：<b>主体（唯普 / 唯普云）+ 员工编码 + 员工姓名</b></div>
-                    <div>· 存在同名不同码：如 张伟林（唯普 0221 / 唯普云 0001）、陈凤芹（唯普 0215 / 唯普云 0002），故发单人须按主体过滤以消歧</div>
-                  </div>
-                </div>
-
-                <div style="margin-bottom:18px">
-                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">3. 列表与详情</div>
-                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
-                    <div>· <b>BMS / FNC 批量结算列表</b>（非待提交 tab）：新增「<b>付款种类</b>」查询项 + 展示列（冲销借支显紫色标签）</div>
-                    <div>· <b>申请详情</b>：付款种类按记录显示；冲销借支时<b>付款银行 / 收款开户行 / 银行账号 显「—」</b>（无银行收付）；摘要按发单人报销格式</div>
-                  </div>
-                </div>
-
-                <div style="margin-bottom:8px">
-                  <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">4. 凭证管理（与服务费 / 整理费的差异）</div>
-                  <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
-                    <div>· 冲销借支凭证以<b>整理费-牌证及邮递费</b>为例：借方科目 <b>64011209</b>、辅助=部门（同整理费），<b>借方不变</b></div>
-                    <div>· <b style="color:#c41d7f">关键差异 — 贷方</b>：原「银行存款 10020101」改为「<b>其他应收款 122106</b>」</div>
-                    <div>· 其他应收款带<b>两条辅助核算</b>（其他应收款的特殊之处）：</div>
-                    <div style="margin:2px 0 0 14px;color:#666">
-                      ① 辅助项目名称=<b>部门</b>、辅助项目编码 <b>0001</b> → 辅助信息=部门名称 / 部门编码<br>
-                      ② 辅助项目名称=<b>员工</b>、辅助项目编码 <b>0002</b> → 辅助信息=员工名称 / 员工编码
-                    </div>
-                    <div>· 新增成本 Step1 选单 / Step2 预览 / 凭证详情演示模式 均已支持「冲销借支」切换</div>
-                    <div>· 科目映射表新增 <b>其他应收款 122106</b> 映射行</div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-primary" @click="showChongxiaoHelp=false">我知道了</button>
               </div>
             </div>
           </div>
@@ -1531,6 +1473,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <div class="filter-item"><label>制单日期</label><input class="inp" type="date" placeholder="开始日期" style="width:120px"><span>—</span><input class="inp" type="date" placeholder="结束日期" style="width:120px"></div>
                   <div class="filter-item"><label>摘要</label><input class="inp" placeholder="请输入" style="width:140px"></div>
                   <span style="flex:1"></span>
+                  <button class="btn btn-sm blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showChongxiaoHelp=true">冲销借支需求点说明</button>
                   <button class="btn btn-primary btn-sm">查询</button>
                   <button class="btn btn-default btn-sm" @click="showVoucherGroupNew=true">新增</button>
                   <button class="btn btn-primary btn-sm" @click="voucherNewStep=1">新增(成本)</button>
@@ -3069,19 +3012,80 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
     </div><!-- /main -->
   </div>
 
+  <!-- 冲销借支 需求点说明 (global) -->
+  <div class="modal-mask" v-if="showChongxiaoHelp" @click.self="showChongxiaoHelp=false">
+    <div class="modal" style="max-width:720px">
+      <div class="modal-header"><span class="modal-title">冲销借支 — 需求点说明</span><span class="modal-close" @click="showChongxiaoHelp=false">✕</span></div>
+      <div class="modal-body">
+        <!-- 内容同「需求说明 → ⑥ 冲销借支」模块；如有变更两处需同步 -->
+        <div style="font-weight:600;font-size:13px;color:#333;margin-bottom:14px;border-bottom:1px solid #f0f0f0;padding-bottom:8px">冲销借支 — 本次需求点及关联改动（2026-05-28 新增）</div>
+
+        <div style="margin-bottom:18px;padding:10px 12px;background:#f9f0ff;border-left:3px solid #722ed1;border-radius:2px;line-height:1.9;font-size:12px;color:#444">
+          <b style="color:#531dab">什么是冲销借支</b>：一种<b>付款种类</b>（与「对外支付」并列）。员工先行垫付费用后，用本次结算冲销其在公司的借支，<b>不对外付款</b>，会计上贷记「<b>其他应收款</b>」而非「银行存款」。费用类型仍是服务费 / 过户费 / 整理费，冲销借支只改变"怎么付"和"凭证贷方科目"。
+        </div>
+
+        <div style="margin-bottom:18px">
+          <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">1. 申请表单（BMS 批量结算 → 马上结算）</div>
+          <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+            <div>· <b>付款种类</b>：收款信息区新增下拉，默认<b>对外支付</b>，可切<b>冲销借支</b></div>
+            <div>· 选「冲销借支」时：<b>收款方名称 / 开户行 / 银行账号</b> 置空且无需填写（禁用）；新增 <b>发单人</b>（必填）</div>
+            <div>· <b>发单人</b>：人工选择，<b>按付款主体级联</b>（唯普 / 唯普云 各自的员工），来源见第 2 节</div>
+            <div>· <b>付款摘要</b>：冲销借支格式 = <b>「发单人 + 报销 + X月 + 费用类型」</b>，如「陈凤芹报销4月整理费-牌证及邮递费」；月份手动填、<b>仅 1-12 的正整数</b></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">2. 员工维护（发单人数据源）</div>
+          <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+            <div>· <b>维护入口（增删改）</b>：<b>财务管理 → 凭证管理 → 员工维护</b> tab（与「部门编码映射」并列），支持增删改、启停、按主体筛选</div>
+            <div>· <b>业务查询入口（只读）</b>：<b>BMS-批量结算 → 员工编码映射</b> tab（与「部门编码映射」并列），仅查询，与维护入口同源</div>
+            <div>· 维护内容：<b>主体（唯普 / 唯普云）+ 员工编码 + 员工姓名</b></div>
+            <div>· 存在同名不同码：如 张伟林（唯普 0221 / 唯普云 0001）、陈凤芹（唯普 0215 / 唯普云 0002），故发单人须按主体过滤以消歧</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">3. 列表与详情</div>
+          <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+            <div>· <b>BMS / FNC 批量结算列表</b>（非待提交 tab）：新增「<b>付款种类</b>」查询项 + 展示列（冲销借支显紫色标签）</div>
+            <div>· <b>申请详情</b>：付款种类按记录显示；冲销借支时<b>付款银行 / 收款开户行 / 银行账号 显「—」</b>（无银行收付）；摘要按发单人报销格式</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:8px">
+          <div style="font-weight:600;font-size:13px;color:#722ed1;margin-bottom:10px">4. 凭证管理（与服务费 / 整理费的差异）</div>
+          <div style="font-size:12px;color:#555;line-height:2;padding-left:16px">
+            <div>· 冲销借支凭证以<b>整理费-牌证及邮递费</b>为例：借方科目 <b>64011209</b>、辅助=部门（同整理费），<b>借方不变</b></div>
+            <div>· <b style="color:#c41d7f">关键差异 — 贷方</b>：原「银行存款 10020101」改为「<b>其他应收款 122106</b>」</div>
+            <div>· 其他应收款带<b>两条辅助核算</b>（其他应收款的特殊之处）：</div>
+            <div style="margin:2px 0 0 14px;color:#666">
+              ① 辅助项目名称=<b>部门</b>、辅助项目编码 <b>0001</b> → 辅助信息=部门名称 / 部门编码<br>
+              ② 辅助项目名称=<b>员工</b>、辅助项目编码 <b>0002</b> → 辅助信息=员工名称 / 员工编码
+            </div>
+            <div>· 新增成本 Step1 选单 / Step2 预览 / 凭证详情演示模式 均已支持「冲销借支」切换</div>
+            <div>· 科目映射表新增 <b>其他应收款 122106</b> 映射行</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" @click="showChongxiaoHelp=false">我知道了</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 导出车辆明细 需求说明 (global) -->
   <div class="modal-mask" v-if="showExportHelp" @click.self="showExportHelp=false">
     <div class="modal" style="max-width:600px">
       <div class="modal-header"><span class="modal-title">导出车辆明细 — 需求说明</span><span class="modal-close" @click="showExportHelp=false">✕</span></div>
       <div class="modal-body">
         <div style="font-size:13px;line-height:1.9;color:#333">
-          <p style="margin:0 0 10px">在 FNC 批量结算的<b>申请单详情</b>页，可将该申请单的<b>车辆明细一键导出</b>，方便财务核对、归档或二次加工。</p>
+          <p style="margin:0 0 10px">BMS / FNC 批量结算均可把申请单的<b>车辆明细一键导出</b>为表格文件，方便财务核对、归档或二次加工。</p>
           <ul style="margin:0;padding-left:20px;color:#555">
-            <li><b>入口</b>：详情页操作区，位于「上传发票」之后、「打印车辆明细」之前的<b>「导出车辆明细」</b>按钮。</li>
+            <li><b>入口（共三处）</b>：① BMS <b>申请表单</b>（填写页右上「导出车辆明细」）；② BMS <b>申请详情</b>（操作栏「导出车辆明细」）；③ FNC <b>申请详情</b>（操作栏，「上传发票」之后、「打印车辆明细」之前）。</li>
             <li><b>格式</b>：导出 <b>CSV</b>（UTF-8 带 BOM，Excel / WPS 可直接打开，中文不乱码）。</li>
-            <li><b>内容</b>：与详情页「明细列表」一致——车牌号 / VIN码 / 集团 / 门店 / 服务中心 / 实际结算金额(含税)，末行为合计。</li>
-            <li><b>文件名</b>：按申请编号命名，如「BS202601001_车辆明细.csv」。</li>
-            <li><b>适用</b>：待审批 / 待支付 / 已结算 的申请详情均可导出。</li>
+            <li><b>内容</b>：与所在页「已选明细 / 明细列表」一致——车牌号 / VIN码 / 集团 / 门店 / 服务中心 / 实际结算金额(含税)，末行为合计。</li>
+            <li><b>文件名</b>：按申请编号或标题命名，如「BS202601001_车辆明细.csv」。</li>
+            <li><b>适用</b>：申请表单、各状态（待审批 / 待支付 / 已结算）详情均可导出。</li>
           </ul>
         </div>
       </div>
