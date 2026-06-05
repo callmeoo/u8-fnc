@@ -264,7 +264,10 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
           <div v-if="bmsView==='form'" class="card">
             <div class="card-header">
               <span class="card-title">填写申请表单</span>
-              <button class="btn btn-default btn-sm" @click="exitToList">← 返回列表</button>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-default btn-sm" @click="exportDetailCSV()">导出车辆明细</button>
+                <button class="btn btn-default btn-sm" @click="exitToList">← 返回列表</button>
+              </div>
             </div>
             <div class="card-body">
               <div class="info-block">
@@ -445,7 +448,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 </div>
               </div>
               <div class="section-title" style="margin-bottom:10px;margin-top:20px">已选明细（{{formSelectedVehicles.length}}条）</div>
-              <div class="table-wrap">
+              <div class="table-wrap js-form-detail-table">
                 <table>
                   <tr>
                     <th>车牌号</th><th>VIN码</th><th>集团</th><th>门店</th><th>服务中心</th><th>实际结算金额(含税)</th>
@@ -1155,17 +1158,20 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                   <span style="font-size:12px;color:#d46b08;margin-right:4px">当前状态：<b>待审批</b></span>
                   <button class="btn btn-default btn-sm" @click="showUploadInvoice=true">上传发票</button>
                   <button class="btn btn-danger btn-sm" @click="showCancelConfirm=true">取消申请</button>
+                  <button class="btn btn-default btn-sm" @click="exportDetailCSV()">导出车辆明细</button>
                 </div>
                 <!-- 待支付：操作按钮 -->
                 <div v-if="bmsCurrentDetail.status==='pay'" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#f6ffed;border-radius:4px;border:1px solid #b7eb8f">
                   <span style="font-size:12px;color:#389e0d;margin-right:4px">当前状态：<b>待支付</b></span>
                   <button class="btn btn-default btn-sm" @click="showUploadInvoice=true">上传发票</button>
+                  <button class="btn btn-default btn-sm" @click="exportDetailCSV()">导出车辆明细</button>
                 </div>
                 <!-- 已驳回：操作按钮 -->
                 <div v-if="bmsCurrentDetail.status==='rejected'" style="margin-bottom:16px;display:flex;gap:8px;align-items:center;padding:12px 14px;background:#fff2f0;border-radius:4px;border:1px solid #ffccc7">
                   <span style="font-size:12px;color:#666;flex:1">审批已驳回，请修改后重新提交或废弃申请。</span>
                   <button class="btn btn-primary btn-sm" @click="bmsView='form'">修改</button>
                   <button class="btn btn-danger btn-sm" @click="showDiscardConfirm=true">废弃</button>
+                  <button class="btn btn-default btn-sm" @click="exportDetailCSV()">导出车辆明细</button>
                 </div>
 
                 <div class="info-grid">
@@ -1306,6 +1312,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                 <button class="btn btn-sm" style="background:#fa8c16;border:1px solid #fa8c16;color:#fff;font-weight:600" @click="showFncRule=true">功能说明</button>
                 <button class="btn btn-primary btn-sm" @click="fncFilterChanged=false;$nextTick(()=>{fncFilterChanged=true;showToast('查询成功，显示匹配结果')})">查询</button>
                 <button class="btn btn-default btn-sm" @click="fncFilterChanged=false">重置</button>
+                <button class="btn btn-sm blink-attention" style="background:#ff4d4f;border:1px solid #ff4d4f;color:#fff;font-weight:600" @click="showExportHelp=true">导出车辆明细需求说明</button>
               </div>
               <div v-if="fncFilterChanged" class="alert alert-info" style="margin-bottom:10px">已根据筛选条件过滤，当前显示匹配结果。</div>
               <!-- Table -->
@@ -1466,6 +1473,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <button class="btn btn-primary btn-sm" @click="showFncApproveDialog=true">审批通过</button>
                     <button class="btn btn-danger btn-sm" @click="showFncRejectDialog=true">驳回</button>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
+                    <button class="btn btn-default btn-sm" @click="exportDetailCSV()">导出车辆明细</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
                     <button class="btn btn-default btn-sm" @click="printDetailExceptList()">打印</button>
                     <button class="btn btn-default btn-sm" @click="exportDetailPDF()">导出 PDF</button>
@@ -1474,6 +1482,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <span style="font-size:12px;color:#389e0d;margin-right:4px">当前状态：<b>待支付</b></span>
                     <button class="btn btn-primary btn-sm" @click="openFncSettleConfirm(fncDetailRecord)">已结算</button>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
+                    <button class="btn btn-default btn-sm" @click="exportDetailCSV()">导出车辆明细</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
                     <button class="btn btn-default btn-sm" @click="printDetailExceptList()">打印</button>
                     <button class="btn btn-default btn-sm" @click="exportDetailPDF()">导出 PDF</button>
@@ -1482,6 +1491,7 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
                     <span style="font-size:12px;color:#08979c;flex:1">当前状态：<b>已结算</b></span>
                     <button class="btn btn-default btn-sm" @click="showFncUploadInvoice=true">上传发票</button>
                     <button class="btn btn-danger btn-sm" @click="showFncDeleteInvoice=true">删除发票</button>
+                    <button class="btn btn-default btn-sm" @click="exportDetailCSV()">导出车辆明细</button>
                     <button class="btn btn-default btn-sm" @click="printDetailOnly()">打印车辆明细</button>
                     <button class="btn btn-default btn-sm" @click="printDetailExceptList()">打印</button>
                     <button class="btn btn-default btn-sm" @click="exportDetailPDF()">导出 PDF</button>
@@ -3380,6 +3390,28 @@ hr.sep{border:none;border-top:1px solid #f0f0f0;margin:12px 0}
   </div>
 </div>
 
+<!-- 导出车辆明细 需求说明 (global) -->
+<div class="modal-mask" v-if="showExportHelp" @click.self="showExportHelp=false">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header"><span class="modal-title">导出车辆明细 — 需求说明</span><span class="modal-close" @click="showExportHelp=false">✕</span></div>
+    <div class="modal-body">
+      <div style="font-size:13px;line-height:1.9;color:#333">
+        <p style="margin:0 0 10px">在 FNC 批量结算的<b>申请单详情</b>页，可将该申请单的<b>车辆明细一键导出</b>，方便财务核对、归档或二次加工。</p>
+        <ul style="margin:0;padding-left:20px;color:#555">
+          <li><b>入口</b>：详情页操作区，位于「上传发票」之后、「打印车辆明细」之前的<b>「导出车辆明细」</b>按钮。</li>
+          <li><b>格式</b>：导出 <b>CSV</b>（UTF-8 带 BOM，Excel / WPS 可直接打开，中文不乱码）。</li>
+          <li><b>内容</b>：与详情页「明细列表」一致——车牌号 / VIN码 / 集团 / 门店 / 服务中心 / 实际结算金额(含税)，末行为合计。</li>
+          <li><b>文件名</b>：按申请编号命名，如「BS202601001_车辆明细.csv」。</li>
+          <li><b>适用</b>：待审批 / 待支付 / 已结算 的申请详情均可导出。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" @click="showExportHelp=false">我知道了</button>
+    </div>
+  </div>
+</div>
+
 <!-- FNC 批量结算功能说明 (global) -->
 <div class="modal-mask" v-if="showFncRule" @click.self="showFncRule=false">
   <div class="modal" style="max-width:780px">
@@ -3832,6 +3864,7 @@ new Vue({
       showBmsRule: false,
       showVoucherRule: false,
       showFncRule: false,
+      showExportHelp: false,
       // FNC settle
       fncStatusTab: 'all',
       fncStatusTabs: [
@@ -4391,6 +4424,52 @@ new Vue({
         iframe.contentWindow.print()
         setTimeout(() => document.body.removeChild(iframe), 1500)
       }, 300)
+    },
+    exportDetailCSV() {
+      // 按当前视图取明细：FNC详情 / BMS详情 / 申请表单已选明细；导出 CSV（UTF-8 带 BOM，Excel / WPS 可直接打开）
+      const inDetail = this.fncDetailVisible || this.bmsView === 'detail'
+      const idBase = (this.fncDetailVisible && this.fncDetailRecord) ? this.fncDetailRecord.id
+        : (this.bmsView === 'detail' && this.bmsCurrentDetail) ? this.bmsCurrentDetail.id
+        : (this.formTitle || '申请单')
+      const esc = t => /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t
+      const table = inDetail
+        ? document.querySelector('.detail-overlay-content .table-wrap table')
+        : document.querySelector('.js-form-detail-table table')
+      let lines
+      if (table) {
+        lines = Array.from(table.querySelectorAll('tr')).map(tr => {
+          const fields = []
+          tr.querySelectorAll('th,td').forEach(cell => {
+            const t = (cell.innerText || '').replace(/\s+/g, ' ').trim()
+            fields.push(esc(t))
+            const span = parseInt(cell.getAttribute('colspan')) || 1
+            for (let k = 1; k < span; k++) fields.push('')
+          })
+          return fields.join(',')
+        })
+      } else {
+        // 备用：明细以标签(chip)展示、无表格时，提取车牌号 + 金额
+        const box = document.querySelector('.detail-overlay-content .js-bms-detail-chips')
+        if (!box) { this.showToast('未找到车辆明细'); return }
+        lines = ['车牌号,实际结算金额(含税)']
+        let chipTotal = ''
+        box.querySelectorAll(':scope > span').forEach(c => {
+          const b = c.querySelector('b'), amt = c.querySelector('.amount')
+          if (!b || b.classList.contains('amount')) { if (amt) chipTotal = amt.innerText.replace(/[¥\s]/g, '').trim(); return }
+          lines.push(esc(b.innerText.trim()) + ',' + esc(amt ? amt.innerText.replace(/[¥\s]/g, '').trim() : ''))
+        })
+        if (chipTotal) lines.push('合计,' + esc(chipTotal))
+      }
+      const csv = '﻿' + lines.join('\r\n')
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = (idBase || '申请单') + '_车辆明细.csv'
+      document.body.appendChild(a)
+      a.click()
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url) }, 100)
+      this.showToast('车辆明细已导出（CSV，Excel 可直接打开）')
     },
     // 将结算月份格式化为"只显示月份"：'2026-01' → '1月'，'2026年1月' → '1月'
     formatMonth(settleMonth) {
